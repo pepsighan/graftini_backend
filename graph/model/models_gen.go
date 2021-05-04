@@ -15,6 +15,9 @@ type Todo struct {
 }
 
 type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID          string  `json:"id"`
+	FirebaseUID string  `json:"firebaseUID"`
+	FirstName   *string `json:"firstName"`
+	LastName    *string `json:"lastName"`
+	Email       string  `json:"email"`
 }
