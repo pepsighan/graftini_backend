@@ -17,7 +17,8 @@ func graphqlHandler(client *ent.Client) echo.HandlerFunc {
 	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: graph.NewResolver(client)}))
 
 	return func(c echo.Context) error {
-		h.ServeHTTP(c.Response().Writer, c.Request())
+		ctx := middleware.WithBearerAuth(c)
+		h.ServeHTTP(c.Response().Writer, c.Request().WithContext(ctx))
 		return nil
 	}
 }
@@ -39,7 +40,6 @@ func main() {
 	defer client.Close()
 
 	e := echo.New()
-	e.Use(middleware.BearerAuth(client))
 	e.POST("/query", graphqlHandler(client))
 	e.GET("/", playgroundHandler())
 	e.Logger.Fatal(e.Start(":1323"))

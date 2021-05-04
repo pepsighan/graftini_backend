@@ -9,6 +9,7 @@ import (
 
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 	"github.com/pepsighan/nocodepress_backend/graph/model"
+	"github.com/pepsighan/nocodepress_backend/middleware"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
@@ -16,7 +17,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 }
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	panic(fmt.Errorf("not implemented"))
+	return middleware.UserFromContext(ctx, r.Ent)
 }
 
 // Mutation returns generated.MutationResolver implementation.
