@@ -2,12 +2,23 @@ package main
 
 import (
 	"log"
-	"net/http"
 
+	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/labstack/echo"
 	_ "github.com/lib/pq"
 	"github.com/pepsighan/nocodepress_backend/ent"
+	"github.com/pepsighan/nocodepress_backend/graph"
+	"github.com/pepsighan/nocodepress_backend/graph/generated"
 )
+
+func graphqlHandler() echo.HandlerFunc {
+	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+
+	return func(c echo.Context) error {
+		h.ServeHTTP(c.Response().Writer, c.Request())
+		return nil
+	}
+}
 
 func main() {
 	client, err := ent.Open("postgres", "host=<host> port=<port> user=<user> dbname=<database> password=<pass>")
@@ -17,8 +28,6 @@ func main() {
 	defer client.Close()
 
 	e := echo.New()
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
-	})
+	e.POST("/query", graphqlHandler())
 	e.Logger.Fatal(e.Start(":1323"))
 }
