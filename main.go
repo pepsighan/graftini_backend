@@ -8,6 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 	_ "github.com/lib/pq"
 	"github.com/pepsighan/nocodepress_backend/auth"
 	"github.com/pepsighan/nocodepress_backend/ent"
@@ -47,6 +48,17 @@ func main() {
 	defer client.Close()
 
 	e := echo.New()
+	e.Use(middleware.Logger())
+
+	// Do not allow any request with body more than 2MB by default. This will
+	// limit DoS attacks by file uploads.
+	maxBodySize, ok := os.LookupEnv("MAX_BODY_SIZE")
+	if ok {
+		e.Use(middleware.BodyLimit(maxBodySize))
+	} else {
+		e.Use(middleware.BodyLimit("2M"))
+	}
+
 	e.POST("/query", graphqlHandler(client))
 	e.GET("/", playgroundHandler())
 	e.Logger.Fatal(e.Start(":1323"))
