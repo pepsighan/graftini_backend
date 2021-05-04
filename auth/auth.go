@@ -45,7 +45,20 @@ func (a *AuthContext) User(ctx context.Context, entClient *ent.Client) (*ent.Use
 		return nil, fmt.Errorf("could not get user from database: %w", err)
 	}
 
-	// Return either the user or none if not found.
+	// Try to save the user as this is the first login.
+	if user == nil {
+		userRecord, err := client.GetUser(ctx, token.UID)
+		if err != nil {
+			return nil, fmt.Errorf("could not get user from firebase: %w", err)
+		}
+
+		// Store the user in the database for later. This is probably the first login.
+		user, err = entClient.User.Create().SetEmail(userRecord.Email).SetFirebaseUID(token.UID).Save(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("could not save user for the first time: %w", err)
+		}
+	}
+
 	return user, nil
 }
 
