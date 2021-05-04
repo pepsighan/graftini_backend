@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo"
 	_ "github.com/lib/pq"
 	"github.com/pepsighan/nocodepress_backend/ent"
@@ -20,6 +21,15 @@ func graphqlHandler() echo.HandlerFunc {
 	}
 }
 
+func playgroundHandler() echo.HandlerFunc {
+	h := playground.Handler("GraphQL", "/query")
+
+	return func(c echo.Context) error {
+		h.ServeHTTP(c.Response().Writer, c.Request())
+		return nil
+	}
+}
+
 func main() {
 	client, err := ent.Open("postgres", "host=<host> port=<port> user=<user> dbname=<database> password=<pass>")
 	if err != nil {
@@ -29,5 +39,6 @@ func main() {
 
 	e := echo.New()
 	e.POST("/query", graphqlHandler())
+	e.GET("/", playgroundHandler())
 	e.Logger.Fatal(e.Start(":1323"))
 }
