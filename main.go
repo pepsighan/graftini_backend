@@ -12,8 +12,8 @@ import (
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 )
 
-func graphqlHandler() echo.HandlerFunc {
-	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+func graphqlHandler(client *ent.Client) echo.HandlerFunc {
+	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: graph.NewResolver(client)}))
 
 	return func(c echo.Context) error {
 		h.ServeHTTP(c.Response().Writer, c.Request())
@@ -38,7 +38,7 @@ func main() {
 	defer client.Close()
 
 	e := echo.New()
-	e.POST("/query", graphqlHandler())
+	e.POST("/query", graphqlHandler(client))
 	e.GET("/", playgroundHandler())
 	e.Logger.Fatal(e.Start(":1323"))
 }
