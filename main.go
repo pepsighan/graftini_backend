@@ -10,6 +10,7 @@ import (
 	"github.com/pepsighan/nocodepress_backend/ent"
 	"github.com/pepsighan/nocodepress_backend/graph"
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
+	"github.com/pepsighan/nocodepress_backend/middleware"
 )
 
 func graphqlHandler(client *ent.Client) echo.HandlerFunc {
@@ -38,6 +39,7 @@ func main() {
 	defer client.Close()
 
 	e := echo.New()
+	e.Use(middleware.BearerAuth())
 	e.POST("/query", graphqlHandler(client))
 	e.GET("/", playgroundHandler())
 	e.Logger.Fatal(e.Start(":1323"))
