@@ -7,9 +7,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pepsighan/nocodepress_backend/auth"
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 	"github.com/pepsighan/nocodepress_backend/graph/model"
-	"github.com/pepsighan/nocodepress_backend/middleware"
 )
 
 func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
@@ -17,7 +17,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 }
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	return middleware.UserFromContext(ctx, r.Ent)
+	return auth.UserFromContext(ctx, r.Ent)
 }
 
 // Mutation returns generated.MutationResolver implementation.
