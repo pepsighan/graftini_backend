@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"github.com/pepsighan/nocodepress_backend/auth"
+	"github.com/pepsighan/nocodepress_backend/ent"
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 	"github.com/pepsighan/nocodepress_backend/graph/model"
 )
@@ -16,7 +17,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {
 	return auth.UserFromContext(ctx, r.Ent)
 }
 
