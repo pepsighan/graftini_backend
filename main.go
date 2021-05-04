@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -48,7 +49,27 @@ func main() {
 	defer client.Close()
 
 	e := echo.New()
+
+	// Recover from panics within route handlers. This saves the app from crashes.
+	e.Use(middleware.Recover())
+
+	// Secure middleware provides protection against cross-site scripting (XSS) attack,
+	// content type sniffing, clickjacking, insecure connection and other code injection attacks.
+	e.Use(middleware.Secure())
+
 	e.Use(middleware.Logger())
+
+	// Do not allow CORs requests by default. If allowed origins are provided, then
+	// use them.
+	corsConfig := middleware.DefaultCORSConfig
+	allowedOrigins, ok := os.LookupEnv("ALLOWED_ORIGINS")
+	if ok {
+		corsConfig.AllowOrigins = strings.Split(allowedOrigins, ",")
+	} else {
+		corsConfig.AllowOrigins = []string{}
+	}
+
+	e.Use(middleware.CORSWithConfig(corsConfig))
 
 	// Do not allow any request with body more than 2MB by default. This will
 	// limit DoS attacks by file uploads.
