@@ -16,3 +16,6 @@
 
 # VSCode
 .vscode
+
+# Environment files
+.env
