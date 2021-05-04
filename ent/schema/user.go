@@ -1,6 +1,11 @@
 package schema
 
-import "entgo.io/ent"
+import (
+	"time"
+
+	"entgo.io/ent"
+	"entgo.io/ent/schema/field"
+)
 
 // User holds the schema definition for the User entity.
 type User struct {
@@ -9,7 +14,14 @@ type User struct {
 
 // Fields of the User.
 func (User) Fields() []ent.Field {
-	return nil
+	return []ent.Field{
+		field.String("firebase_uid").Unique(),
+		field.String("first_name").Optional(),
+		field.String("last_name").Optional(),
+		field.String("email"),
+		field.Time("created_at").Default(time.Now).Immutable(),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
+	}
 }
 
 // Edges of the User.
