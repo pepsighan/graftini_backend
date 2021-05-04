@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	entgo.io/ent v0.8.0
+	firebase.google.com/go/v4 v4.5.0 // indirect
 	github.com/99designs/gqlgen v0.13.0
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect

@@ -39,7 +39,7 @@ func main() {
 	defer client.Close()
 
 	e := echo.New()
-	e.Use(middleware.BearerAuth())
+	e.Use(middleware.BearerAuth(client))
 	e.POST("/query", graphqlHandler(client))
 	e.GET("/", playgroundHandler())
 	e.Logger.Fatal(e.Start(":1323"))
