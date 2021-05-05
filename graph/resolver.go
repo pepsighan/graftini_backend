@@ -1,6 +1,9 @@
 package graph
 
-import "github.com/pepsighan/nocodepress_backend/ent"
+import (
+	"firebase.google.com/go/v4/auth"
+	"github.com/pepsighan/nocodepress_backend/ent"
+)
 
 //go:generate go run github.com/99designs/gqlgen
 
@@ -9,11 +12,13 @@ import "github.com/pepsighan/nocodepress_backend/ent"
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	Ent *ent.Client
+	Ent          *ent.Client
+	FirebaseAuth *auth.Client
 }
 
-func NewResolver(client *ent.Client) *Resolver {
+func NewResolver(client *ent.Client, auth *auth.Client) *Resolver {
 	return &Resolver{
-		Ent: client,
+		Ent:          client,
+		FirebaseAuth: auth,
 	}
 }

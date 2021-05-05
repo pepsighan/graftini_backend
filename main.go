@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"strings"
 
+	firebase "firebase.google.com/go/v4"
+	authFirebase "firebase.google.com/go/v4/auth"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/joho/godotenv"
@@ -17,8 +20,26 @@ import (
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 )
 
+func firebaseAuth() *authFirebase.Client {
+	// The configuration for firebase is taken from the environment.
+	// Make sure to add `GOOGLE_APPLICATION_CREDENTIALS` as a JSON file path.
+	app, err := firebase.NewApp(context.Background(), nil)
+	if err != nil {
+		log.Panicf("could not initialize firebase app: %v", err)
+	}
+
+	client, err := app.Auth(context.Background())
+	if err != nil {
+		log.Panicf("could not initialize firebase auth: %v", err)
+	}
+
+	return client
+}
+
 func graphqlHandler(client *ent.Client) echo.HandlerFunc {
-	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: graph.NewResolver(client)}))
+	h := handler.NewDefaultServer(generated.NewExecutableSchema(
+		generated.Config{Resolvers: graph.NewResolver(client, firebaseAuth())},
+	))
 
 	return func(c echo.Context) error {
 		ctx := auth.WithBearerAuth(c)

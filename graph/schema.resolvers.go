@@ -18,7 +18,7 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 }
 
 func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {
-	return auth.UserFromContext(ctx, r.Ent)
+	return auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
 }
 
 // Mutation returns generated.MutationResolver implementation.

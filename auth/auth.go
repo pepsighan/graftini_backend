@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	firebase "firebase.google.com/go/v4"
+	"firebase.google.com/go/v4/auth"
 	"github.com/labstack/echo"
 	"github.com/pepsighan/nocodepress_backend/ent"
 	"github.com/pepsighan/nocodepress_backend/ent/user"
@@ -17,25 +17,13 @@ type AuthContext struct {
 }
 
 // User gets the user if a valid authentication header is present in the request.
-func (a *AuthContext) User(ctx context.Context, entClient *ent.Client) (*ent.User, error) {
+func (a *AuthContext) User(ctx context.Context, entClient *ent.Client, firebaseAuth *auth.Client) (*ent.User, error) {
 	if a.token == "" {
 		// There is no user in the request.
 		return nil, nil
 	}
 
-	// The configuration for firebase is taken from the environment.
-	// Make sure to use `FIREBASE_CONFIG` as a JSON value of the credentials.
-	app, err := firebase.NewApp(ctx, nil)
-	if err != nil {
-		return nil, fmt.Errorf("could not get user from auth: %w", err)
-	}
-
-	client, err := app.Auth(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("could not get user from auth: %w", err)
-	}
-
-	token, err := client.VerifyIDToken(ctx, a.token)
+	token, err := firebaseAuth.VerifyIDToken(ctx, a.token)
 	if err != nil {
 		return nil, fmt.Errorf("could not get user from auth: %w", err)
 	}
@@ -47,7 +35,7 @@ func (a *AuthContext) User(ctx context.Context, entClient *ent.Client) (*ent.Use
 
 	// Try to save the user as this is the first login.
 	if user == nil {
-		userRecord, err := client.GetUser(ctx, token.UID)
+		userRecord, err := firebaseAuth.GetUser(ctx, token.UID)
 		if err != nil {
 			return nil, fmt.Errorf("could not get user from firebase: %w", err)
 		}
@@ -63,13 +51,13 @@ func (a *AuthContext) User(ctx context.Context, entClient *ent.Client) (*ent.Use
 }
 
 // UserFromContext gets user from the context.
-func UserFromContext(ctx context.Context, entClient *ent.Client) (*ent.User, error) {
+func UserFromContext(ctx context.Context, entClient *ent.Client, firebaseAuth *auth.Client) (*ent.User, error) {
 	authContext, _ := ctx.Value(authContextKey).(*AuthContext)
 	if authContext == nil {
 		return nil, nil
 	}
 
-	return authContext.User(ctx, entClient)
+	return authContext.User(ctx, entClient, firebaseAuth)
 }
 
 // WithBearerAuth middleware extract the authorization bearer header into a struct that can be used

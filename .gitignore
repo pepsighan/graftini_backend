@@ -19,3 +19,6 @@
 
 # Environment files
 .env
+
+# Firebase Admin SDK Credentials
+/adminsdk-credentials.json
