@@ -23,8 +23,17 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// EdgeProjects holds the string denoting the projects edge name in mutations.
+	EdgeProjects = "projects"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// ProjectsTable is the table the holds the projects relation/edge.
+	ProjectsTable = "projects"
+	// ProjectsInverseTable is the table name for the Project entity.
+	// It exists in this package in order to avoid circular dependency with the "project" package.
+	ProjectsInverseTable = "projects"
+	// ProjectsColumn is the table column denoting the projects relation/edge.
+	ProjectsColumn = "user_projects"
 )
 
 // Columns holds all SQL columns for user fields.

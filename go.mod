@@ -12,6 +12,8 @@ require (
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/lib/pq v1.10.0
 	github.com/mattn/go-colorable v0.1.7 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/urfave/cli/v2 v2.3.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/vektah/gqlparser/v2 v2.1.0
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a // indirect

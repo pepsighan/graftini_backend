@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/pepsighan/nocodepress_backend/ent/project"
 	"github.com/pepsighan/nocodepress_backend/ent/user"
 )
 
@@ -86,6 +87,21 @@ func (uc *UserCreate) SetNillableUpdatedAt(t *time.Time) *UserCreate {
 		uc.SetUpdatedAt(*t)
 	}
 	return uc
+}
+
+// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
+func (uc *UserCreate) AddProjectIDs(ids ...int) *UserCreate {
+	uc.mutation.AddProjectIDs(ids...)
+	return uc
+}
+
+// AddProjects adds the "projects" edges to the Project entity.
+func (uc *UserCreate) AddProjects(p ...*Project) *UserCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uc.AddProjectIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -238,6 +254,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := uc.mutation.ProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ProjectsTable,
+			Columns: []string{user.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

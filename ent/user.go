@@ -28,6 +28,27 @@ type User struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserQuery when eager-loading is set.
+	Edges UserEdges `json:"edges"`
+}
+
+// UserEdges holds the relations/edges for other nodes in the graph.
+type UserEdges struct {
+	// Projects holds the value of the projects edge.
+	Projects []*Project `json:"projects,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// ProjectsOrErr returns the Projects value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ProjectsOrErr() ([]*Project, error) {
+	if e.loadedTypes[0] {
+		return e.Projects, nil
+	}
+	return nil, &NotLoadedError{edge: "projects"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -101,6 +122,11 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryProjects queries the "projects" edge of the User entity.
+func (u *User) QueryProjects() *ProjectQuery {
+	return (&UserClient{config: u.config}).QueryProjects(u)
 }
 
 // Update returns a builder for updating this User.
