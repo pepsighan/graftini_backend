@@ -8,6 +8,8 @@ import (
 
 	"github.com/pepsighan/nocodepress_backend/auth"
 	"github.com/pepsighan/nocodepress_backend/ent"
+	"github.com/pepsighan/nocodepress_backend/ent/project"
+	"github.com/pepsighan/nocodepress_backend/ent/user"
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 	"github.com/pepsighan/nocodepress_backend/graph/model"
 )
@@ -22,6 +24,19 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 		SetName(input.Name).
 		SetOwner(user).
 		Save(ctx)
+}
+
+func (r *mutationResolver) DeleteProject(ctx context.Context, id int) (int, error) {
+	auth, err := auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
+	if err != nil {
+		return 0, err
+	}
+
+	return r.Ent.Project.Delete().
+		Where(project.And(
+			project.IDEQ(id),
+			project.HasOwnerWith(user.IDEQ(auth.ID)))).
+		Exec(ctx)
 }
 
 func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {
