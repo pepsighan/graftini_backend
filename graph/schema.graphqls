@@ -1,7 +1,3 @@
-# GraphQL schema example
-#
-# https://gqlgen.com/getting-started/
-
 type User {
   id: ID!
   firebaseUID: String!
@@ -20,20 +16,10 @@ type Query {
   myProjects: [Project!]!
 }
 
-# The following is just a template for now until there are mutations.
-
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
-}
-
-input NewTodo {
-  text: String!
-  userId: String!
+input NewProject {
+  name: String!
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  createProject(input: NewProject!): Project!
 }

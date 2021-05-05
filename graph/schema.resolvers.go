@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/pepsighan/nocodepress_backend/auth"
 	"github.com/pepsighan/nocodepress_backend/ent"
@@ -13,8 +12,16 @@ import (
 	"github.com/pepsighan/nocodepress_backend/graph/model"
 )
 
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewProject) (*ent.Project, error) {
+	user, err := auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Ent.Project.Create().
+		SetName(input.Name).
+		SetOwner(user).
+		Save(ctx)
 }
 
 func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {

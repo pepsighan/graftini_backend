@@ -2,18 +2,6 @@
 
 package model
 
-import (
-	"github.com/pepsighan/nocodepress_backend/ent"
-)
-
-type NewTodo struct {
-	Text   string `json:"text"`
-	UserID string `json:"userId"`
-}
-
-type Todo struct {
-	ID   string    `json:"id"`
-	Text string    `json:"text"`
-	Done bool      `json:"done"`
-	User *ent.User `json:"user"`
+type NewProject struct {
+	Name string `json:"name"`
 }
