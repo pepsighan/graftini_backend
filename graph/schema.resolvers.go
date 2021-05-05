@@ -21,6 +21,15 @@ func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {
 	return auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
 }
 
+func (r *queryResolver) MyProjects(ctx context.Context) ([]*ent.Project, error) {
+	user, err := auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	return user.QueryProjects().All(ctx)
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

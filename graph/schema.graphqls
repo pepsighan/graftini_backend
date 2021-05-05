@@ -10,8 +10,14 @@ type User {
   email: String!
 }
 
+type Project {
+  id: ID!
+  name: String!
+}
+
 type Query {
   me: User
+  myProjects: [Project!]!
 }
 
 # The following is just a template for now until there are mutations.
