@@ -22,5 +22,4 @@ input NewProject {
 
 type Mutation {
   createProject(input: NewProject!): Project!
-  deleteProject(id: ID!): ID!
 }
