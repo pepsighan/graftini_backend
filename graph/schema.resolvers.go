@@ -5,10 +5,11 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/pepsighan/nocodepress_backend/auth"
 	"github.com/pepsighan/nocodepress_backend/ent"
+	"github.com/pepsighan/nocodepress_backend/ent/project"
+	"github.com/pepsighan/nocodepress_backend/ent/user"
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 	"github.com/pepsighan/nocodepress_backend/graph/model"
 )
@@ -43,7 +44,17 @@ func (r *queryResolver) MyProjects(ctx context.Context) ([]*ent.Project, error) 
 }
 
 func (r *queryResolver) MyProject(ctx context.Context, id int) (*ent.Project, error) {
-	panic(fmt.Errorf("not implemented"))
+	owner, err := auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Ent.Project.Query().
+		Where(project.And(
+			project.IDEQ(id),
+			project.HasOwnerWith(user.IDEQ(owner.ID)),
+		)).
+		First(ctx)
 }
 
 // Mutation returns generated.MutationResolver implementation.
