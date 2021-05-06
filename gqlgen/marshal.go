@@ -10,7 +10,9 @@ import (
 
 func MarshalUUID(b uuid.UUID) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
+		w.Write([]byte("\""))
 		w.Write([]byte(b.String()))
+		w.Write([]byte("\""))
 	})
 }
 
