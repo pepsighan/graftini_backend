@@ -17,7 +17,7 @@ import (
 )
 
 func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewProject) (*ent.Project, error) {
-	user, err := auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
+	user, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
 	if err != nil {
 		return nil, err
 	}
@@ -55,11 +55,12 @@ func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.P
 }
 
 func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {
+	// This will return nil if there is no logged in user.
 	return auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
 }
 
 func (r *queryResolver) MyProjects(ctx context.Context) ([]*ent.Project, error) {
-	user, err := auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
+	user, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +69,7 @@ func (r *queryResolver) MyProjects(ctx context.Context) ([]*ent.Project, error) 
 }
 
 func (r *queryResolver) MyProject(ctx context.Context, id uuid.UUID) (*ent.Project, error) {
-	owner, err := auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
+	owner, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
 	if err != nil {
 		return nil, err
 	}
