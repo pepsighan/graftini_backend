@@ -28,5 +28,6 @@ func (Project) Edges() []ent.Edge {
 		edge.From("owner", User.Type).
 			Ref("projects").
 			Unique(),
+		edge.To("pages", Page.Type),
 	}
 }

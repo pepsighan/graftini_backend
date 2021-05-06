@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 	"github.com/pepsighan/nocodepress_backend/ent/user"
 )
@@ -72,6 +73,21 @@ func (pc *ProjectCreate) SetNillableOwnerID(id *int) *ProjectCreate {
 // SetOwner sets the "owner" edge to the User entity.
 func (pc *ProjectCreate) SetOwner(u *User) *ProjectCreate {
 	return pc.SetOwnerID(u.ID)
+}
+
+// AddPageIDs adds the "pages" edge to the Page entity by IDs.
+func (pc *ProjectCreate) AddPageIDs(ids ...int) *ProjectCreate {
+	pc.mutation.AddPageIDs(ids...)
+	return pc
+}
+
+// AddPages adds the "pages" edges to the Page entity.
+func (pc *ProjectCreate) AddPages(p ...*Page) *ProjectCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddPageIDs(ids...)
 }
 
 // Mutation returns the ProjectMutation object of the builder.
@@ -216,6 +232,25 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.user_projects = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.PagesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.PagesTable,
+			Columns: []string{project.PagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: page.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

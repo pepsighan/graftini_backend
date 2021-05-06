@@ -405,6 +405,34 @@ func HasOwnerWith(preds ...predicate.User) predicate.Project {
 	})
 }
 
+// HasPages applies the HasEdge predicate on the "pages" edge.
+func HasPages() predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PagesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PagesTable, PagesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPagesWith applies the HasEdge predicate on the "pages" edge with a given conditions (other predicates).
+func HasPagesWith(preds ...predicate.Page) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PagesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PagesTable, PagesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Project) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {

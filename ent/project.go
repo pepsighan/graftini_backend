@@ -33,9 +33,11 @@ type Project struct {
 type ProjectEdges struct {
 	// Owner holds the value of the owner edge.
 	Owner *User `json:"owner,omitempty"`
+	// Pages holds the value of the pages edge.
+	Pages []*Page `json:"pages,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // OwnerOrErr returns the Owner value or an error if the edge
@@ -50,6 +52,15 @@ func (e ProjectEdges) OwnerOrErr() (*User, error) {
 		return e.Owner, nil
 	}
 	return nil, &NotLoadedError{edge: "owner"}
+}
+
+// PagesOrErr returns the Pages value or an error if the edge
+// was not loaded in eager-loading.
+func (e ProjectEdges) PagesOrErr() ([]*Page, error) {
+	if e.loadedTypes[1] {
+		return e.Pages, nil
+	}
+	return nil, &NotLoadedError{edge: "pages"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -119,6 +130,11 @@ func (pr *Project) assignValues(columns []string, values []interface{}) error {
 // QueryOwner queries the "owner" edge of the Project entity.
 func (pr *Project) QueryOwner() *UserQuery {
 	return (&ProjectClient{config: pr.config}).QueryOwner(pr)
+}
+
+// QueryPages queries the "pages" edge of the Project entity.
+func (pr *Project) QueryPages() *PageQuery {
+	return (&ProjectClient{config: pr.config}).QueryPages(pr)
 }
 
 // Update returns a builder for updating this Project.

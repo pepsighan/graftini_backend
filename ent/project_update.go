@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/predicate"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 	"github.com/pepsighan/nocodepress_backend/ent/user"
@@ -59,6 +60,21 @@ func (pu *ProjectUpdate) SetOwner(u *User) *ProjectUpdate {
 	return pu.SetOwnerID(u.ID)
 }
 
+// AddPageIDs adds the "pages" edge to the Page entity by IDs.
+func (pu *ProjectUpdate) AddPageIDs(ids ...int) *ProjectUpdate {
+	pu.mutation.AddPageIDs(ids...)
+	return pu
+}
+
+// AddPages adds the "pages" edges to the Page entity.
+func (pu *ProjectUpdate) AddPages(p ...*Page) *ProjectUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddPageIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (pu *ProjectUpdate) Mutation() *ProjectMutation {
 	return pu.mutation
@@ -68,6 +84,27 @@ func (pu *ProjectUpdate) Mutation() *ProjectMutation {
 func (pu *ProjectUpdate) ClearOwner() *ProjectUpdate {
 	pu.mutation.ClearOwner()
 	return pu
+}
+
+// ClearPages clears all "pages" edges to the Page entity.
+func (pu *ProjectUpdate) ClearPages() *ProjectUpdate {
+	pu.mutation.ClearPages()
+	return pu
+}
+
+// RemovePageIDs removes the "pages" edge to Page entities by IDs.
+func (pu *ProjectUpdate) RemovePageIDs(ids ...int) *ProjectUpdate {
+	pu.mutation.RemovePageIDs(ids...)
+	return pu
+}
+
+// RemovePages removes "pages" edges to Page entities.
+func (pu *ProjectUpdate) RemovePages(p ...*Page) *ProjectUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemovePageIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -197,6 +234,60 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.PagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.PagesTable,
+			Columns: []string{project.PagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: page.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedPagesIDs(); len(nodes) > 0 && !pu.mutation.PagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.PagesTable,
+			Columns: []string{project.PagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: page.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.PagesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.PagesTable,
+			Columns: []string{project.PagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: page.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{project.Label}
@@ -247,6 +338,21 @@ func (puo *ProjectUpdateOne) SetOwner(u *User) *ProjectUpdateOne {
 	return puo.SetOwnerID(u.ID)
 }
 
+// AddPageIDs adds the "pages" edge to the Page entity by IDs.
+func (puo *ProjectUpdateOne) AddPageIDs(ids ...int) *ProjectUpdateOne {
+	puo.mutation.AddPageIDs(ids...)
+	return puo
+}
+
+// AddPages adds the "pages" edges to the Page entity.
+func (puo *ProjectUpdateOne) AddPages(p ...*Page) *ProjectUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddPageIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (puo *ProjectUpdateOne) Mutation() *ProjectMutation {
 	return puo.mutation
@@ -256,6 +362,27 @@ func (puo *ProjectUpdateOne) Mutation() *ProjectMutation {
 func (puo *ProjectUpdateOne) ClearOwner() *ProjectUpdateOne {
 	puo.mutation.ClearOwner()
 	return puo
+}
+
+// ClearPages clears all "pages" edges to the Page entity.
+func (puo *ProjectUpdateOne) ClearPages() *ProjectUpdateOne {
+	puo.mutation.ClearPages()
+	return puo
+}
+
+// RemovePageIDs removes the "pages" edge to Page entities by IDs.
+func (puo *ProjectUpdateOne) RemovePageIDs(ids ...int) *ProjectUpdateOne {
+	puo.mutation.RemovePageIDs(ids...)
+	return puo
+}
+
+// RemovePages removes "pages" edges to Page entities.
+func (puo *ProjectUpdateOne) RemovePages(p ...*Page) *ProjectUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemovePageIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -401,6 +528,60 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.PagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.PagesTable,
+			Columns: []string{project.PagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: page.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedPagesIDs(); len(nodes) > 0 && !puo.mutation.PagesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.PagesTable,
+			Columns: []string{project.PagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: page.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.PagesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.PagesTable,
+			Columns: []string{project.PagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: page.FieldID,
 				},
 			},
 		}

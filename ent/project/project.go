@@ -19,6 +19,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeOwner holds the string denoting the owner edge name in mutations.
 	EdgeOwner = "owner"
+	// EdgePages holds the string denoting the pages edge name in mutations.
+	EdgePages = "pages"
 	// Table holds the table name of the project in the database.
 	Table = "projects"
 	// OwnerTable is the table the holds the owner relation/edge.
@@ -28,6 +30,13 @@ const (
 	OwnerInverseTable = "users"
 	// OwnerColumn is the table column denoting the owner relation/edge.
 	OwnerColumn = "user_projects"
+	// PagesTable is the table the holds the pages relation/edge.
+	PagesTable = "pages"
+	// PagesInverseTable is the table name for the Page entity.
+	// It exists in this package in order to avoid circular dependency with the "page" package.
+	PagesInverseTable = "pages"
+	// PagesColumn is the table column denoting the pages relation/edge.
+	PagesColumn = "project_pages"
 )
 
 // Columns holds all SQL columns for project fields.
