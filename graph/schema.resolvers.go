@@ -32,6 +32,10 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) 
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *mutationResolver) DeletePage(ctx context.Context, id uuid.UUID) (uuid.UUID, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {
 	return obj.QueryPages().All(ctx)
 }
