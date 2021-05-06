@@ -6,6 +6,7 @@ require (
 	entgo.io/ent v0.8.0
 	firebase.google.com/go/v4 v4.5.0
 	github.com/99designs/gqlgen v0.13.0
+	github.com/google/uuid v1.2.0
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/labstack/echo v3.3.10+incompatible

@@ -2,10 +2,14 @@
 
 package model
 
+import (
+	"github.com/google/uuid"
+)
+
 type NewPage struct {
-	ProjectID int    `json:"projectId"`
-	Name      string `json:"name"`
-	Route     string `json:"route"`
+	ProjectID uuid.UUID `json:"projectId"`
+	Name      string    `json:"name"`
+	Route     string    `json:"route"`
 }
 
 type NewProject struct {

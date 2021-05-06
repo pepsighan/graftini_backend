@@ -10,10 +10,10 @@ import (
 var (
 	// PagesColumns holds the columns for the "pages" table.
 	PagesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "route", Type: field.TypeString},
-		{Name: "project_pages", Type: field.TypeInt, Nullable: true},
+		{Name: "project_pages", Type: field.TypeUUID, Nullable: true},
 	}
 	// PagesTable holds the schema information for the "pages" table.
 	PagesTable = &schema.Table{
@@ -31,11 +31,11 @@ var (
 	}
 	// ProjectsColumns holds the columns for the "projects" table.
 	ProjectsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "user_projects", Type: field.TypeInt, Nullable: true},
+		{Name: "user_projects", Type: field.TypeUUID, Nullable: true},
 	}
 	// ProjectsTable holds the schema information for the "projects" table.
 	ProjectsTable = &schema.Table{
@@ -53,7 +53,7 @@ var (
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeUUID},
 		{Name: "firebase_uid", Type: field.TypeString, Unique: true},
 		{Name: "first_name", Type: field.TypeString, Nullable: true},
 		{Name: "last_name", Type: field.TypeString, Nullable: true},

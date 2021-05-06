@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/predicate"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
@@ -110,8 +111,8 @@ func (pq *PageQuery) FirstX(ctx context.Context) *Page {
 
 // FirstID returns the first Page ID from the query.
 // Returns a *NotFoundError when no Page ID was found.
-func (pq *PageQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PageQuery) FirstID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = pq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -123,7 +124,7 @@ func (pq *PageQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pq *PageQuery) FirstIDX(ctx context.Context) int {
+func (pq *PageQuery) FirstIDX(ctx context.Context) uuid.UUID {
 	id, err := pq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +162,8 @@ func (pq *PageQuery) OnlyX(ctx context.Context) *Page {
 // OnlyID is like Only, but returns the only Page ID in the query.
 // Returns a *NotSingularError when exactly one Page ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (pq *PageQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PageQuery) OnlyID(ctx context.Context) (id uuid.UUID, err error) {
+	var ids []uuid.UUID
 	if ids, err = pq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -178,7 +179,7 @@ func (pq *PageQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pq *PageQuery) OnlyIDX(ctx context.Context) int {
+func (pq *PageQuery) OnlyIDX(ctx context.Context) uuid.UUID {
 	id, err := pq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -204,8 +205,8 @@ func (pq *PageQuery) AllX(ctx context.Context) []*Page {
 }
 
 // IDs executes the query and returns a list of Page IDs.
-func (pq *PageQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (pq *PageQuery) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	var ids []uuid.UUID
 	if err := pq.Select(page.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -213,7 +214,7 @@ func (pq *PageQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pq *PageQuery) IDsX(ctx context.Context) []int {
+func (pq *PageQuery) IDsX(ctx context.Context) []uuid.UUID {
 	ids, err := pq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -382,8 +383,8 @@ func (pq *PageQuery) sqlAll(ctx context.Context) ([]*Page, error) {
 	}
 
 	if query := pq.withPageOf; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*Page)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Page)
 		for i := range nodes {
 			if nodes[i].project_pages == nil {
 				continue
@@ -432,7 +433,7 @@ func (pq *PageQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   page.Table,
 			Columns: page.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: page.FieldID,
 			},
 		},

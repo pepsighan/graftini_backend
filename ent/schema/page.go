@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 )
 
 // Page holds the schema definition for the Page entity.
@@ -14,6 +15,7 @@ type Page struct {
 // Fields of the Page.
 func (Page) Fields() []ent.Field {
 	return []ent.Field{
+		field.UUID("id", uuid.UUID{}).Default(uuid.New),
 		field.String("name"),
 		field.String("route"),
 	}

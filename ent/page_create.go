@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 )
@@ -32,14 +33,20 @@ func (pc *PageCreate) SetRoute(s string) *PageCreate {
 	return pc
 }
 
+// SetID sets the "id" field.
+func (pc *PageCreate) SetID(u uuid.UUID) *PageCreate {
+	pc.mutation.SetID(u)
+	return pc
+}
+
 // SetPageOfID sets the "pageOf" edge to the Project entity by ID.
-func (pc *PageCreate) SetPageOfID(id int) *PageCreate {
+func (pc *PageCreate) SetPageOfID(id uuid.UUID) *PageCreate {
 	pc.mutation.SetPageOfID(id)
 	return pc
 }
 
 // SetNillablePageOfID sets the "pageOf" edge to the Project entity by ID if the given value is not nil.
-func (pc *PageCreate) SetNillablePageOfID(id *int) *PageCreate {
+func (pc *PageCreate) SetNillablePageOfID(id *uuid.UUID) *PageCreate {
 	if id != nil {
 		pc = pc.SetPageOfID(*id)
 	}
@@ -62,6 +69,7 @@ func (pc *PageCreate) Save(ctx context.Context) (*Page, error) {
 		err  error
 		node *Page
 	)
+	pc.defaults()
 	if len(pc.hooks) == 0 {
 		if err = pc.check(); err != nil {
 			return nil, err
@@ -100,6 +108,14 @@ func (pc *PageCreate) SaveX(ctx context.Context) *Page {
 	return v
 }
 
+// defaults sets the default values of the builder before save.
+func (pc *PageCreate) defaults() {
+	if _, ok := pc.mutation.ID(); !ok {
+		v := page.DefaultID()
+		pc.mutation.SetID(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pc *PageCreate) check() error {
 	if _, ok := pc.mutation.Name(); !ok {
@@ -119,8 +135,6 @@ func (pc *PageCreate) sqlSave(ctx context.Context) (*Page, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
 	return _node, nil
 }
 
@@ -130,11 +144,15 @@ func (pc *PageCreate) createSpec() (*Page, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: page.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: page.FieldID,
 			},
 		}
 	)
+	if id, ok := pc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -160,7 +178,7 @@ func (pc *PageCreate) createSpec() (*Page, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: project.FieldID,
 				},
 			},
@@ -188,6 +206,7 @@ func (pcb *PageCreateBulk) Save(ctx context.Context) ([]*Page, error) {
 	for i := range pcb.builders {
 		func(i int, root context.Context) {
 			builder := pcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PageMutation)
 				if !ok {
@@ -213,8 +232,6 @@ func (pcb *PageCreateBulk) Save(ctx context.Context) ([]*Page, error) {
 				if err != nil {
 					return nil, err
 				}
-				id := specs[i].ID.Value.(int64)
-				nodes[i].ID = int(id)
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

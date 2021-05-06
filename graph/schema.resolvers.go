@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/auth"
 	"github.com/pepsighan/nocodepress_backend/ent"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
@@ -48,7 +49,7 @@ func (r *queryResolver) MyProjects(ctx context.Context) ([]*ent.Project, error) 
 	return user.QueryProjects().All(ctx)
 }
 
-func (r *queryResolver) MyProject(ctx context.Context, id int) (*ent.Project, error) {
+func (r *queryResolver) MyProject(ctx context.Context, id uuid.UUID) (*ent.Project, error) {
 	owner, err := auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
 	if err != nil {
 		return nil, err

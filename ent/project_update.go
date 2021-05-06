@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/predicate"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
@@ -42,13 +43,13 @@ func (pu *ProjectUpdate) SetUpdatedAt(t time.Time) *ProjectUpdate {
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (pu *ProjectUpdate) SetOwnerID(id int) *ProjectUpdate {
+func (pu *ProjectUpdate) SetOwnerID(id uuid.UUID) *ProjectUpdate {
 	pu.mutation.SetOwnerID(id)
 	return pu
 }
 
 // SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
-func (pu *ProjectUpdate) SetNillableOwnerID(id *int) *ProjectUpdate {
+func (pu *ProjectUpdate) SetNillableOwnerID(id *uuid.UUID) *ProjectUpdate {
 	if id != nil {
 		pu = pu.SetOwnerID(*id)
 	}
@@ -61,14 +62,14 @@ func (pu *ProjectUpdate) SetOwner(u *User) *ProjectUpdate {
 }
 
 // AddPageIDs adds the "pages" edge to the Page entity by IDs.
-func (pu *ProjectUpdate) AddPageIDs(ids ...int) *ProjectUpdate {
+func (pu *ProjectUpdate) AddPageIDs(ids ...uuid.UUID) *ProjectUpdate {
 	pu.mutation.AddPageIDs(ids...)
 	return pu
 }
 
 // AddPages adds the "pages" edges to the Page entity.
 func (pu *ProjectUpdate) AddPages(p ...*Page) *ProjectUpdate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -93,14 +94,14 @@ func (pu *ProjectUpdate) ClearPages() *ProjectUpdate {
 }
 
 // RemovePageIDs removes the "pages" edge to Page entities by IDs.
-func (pu *ProjectUpdate) RemovePageIDs(ids ...int) *ProjectUpdate {
+func (pu *ProjectUpdate) RemovePageIDs(ids ...uuid.UUID) *ProjectUpdate {
 	pu.mutation.RemovePageIDs(ids...)
 	return pu
 }
 
 // RemovePages removes "pages" edges to Page entities.
 func (pu *ProjectUpdate) RemovePages(p ...*Page) *ProjectUpdate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -173,7 +174,7 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   project.Table,
 			Columns: project.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: project.FieldID,
 			},
 		},
@@ -208,7 +209,7 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -224,7 +225,7 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -243,7 +244,7 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: page.FieldID,
 				},
 			},
@@ -259,7 +260,7 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: page.FieldID,
 				},
 			},
@@ -278,7 +279,7 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: page.FieldID,
 				},
 			},
@@ -320,13 +321,13 @@ func (puo *ProjectUpdateOne) SetUpdatedAt(t time.Time) *ProjectUpdateOne {
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (puo *ProjectUpdateOne) SetOwnerID(id int) *ProjectUpdateOne {
+func (puo *ProjectUpdateOne) SetOwnerID(id uuid.UUID) *ProjectUpdateOne {
 	puo.mutation.SetOwnerID(id)
 	return puo
 }
 
 // SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
-func (puo *ProjectUpdateOne) SetNillableOwnerID(id *int) *ProjectUpdateOne {
+func (puo *ProjectUpdateOne) SetNillableOwnerID(id *uuid.UUID) *ProjectUpdateOne {
 	if id != nil {
 		puo = puo.SetOwnerID(*id)
 	}
@@ -339,14 +340,14 @@ func (puo *ProjectUpdateOne) SetOwner(u *User) *ProjectUpdateOne {
 }
 
 // AddPageIDs adds the "pages" edge to the Page entity by IDs.
-func (puo *ProjectUpdateOne) AddPageIDs(ids ...int) *ProjectUpdateOne {
+func (puo *ProjectUpdateOne) AddPageIDs(ids ...uuid.UUID) *ProjectUpdateOne {
 	puo.mutation.AddPageIDs(ids...)
 	return puo
 }
 
 // AddPages adds the "pages" edges to the Page entity.
 func (puo *ProjectUpdateOne) AddPages(p ...*Page) *ProjectUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -371,14 +372,14 @@ func (puo *ProjectUpdateOne) ClearPages() *ProjectUpdateOne {
 }
 
 // RemovePageIDs removes the "pages" edge to Page entities by IDs.
-func (puo *ProjectUpdateOne) RemovePageIDs(ids ...int) *ProjectUpdateOne {
+func (puo *ProjectUpdateOne) RemovePageIDs(ids ...uuid.UUID) *ProjectUpdateOne {
 	puo.mutation.RemovePageIDs(ids...)
 	return puo
 }
 
 // RemovePages removes "pages" edges to Page entities.
 func (puo *ProjectUpdateOne) RemovePages(p ...*Page) *ProjectUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -458,7 +459,7 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 			Table:   project.Table,
 			Columns: project.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: project.FieldID,
 			},
 		},
@@ -510,7 +511,7 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -526,7 +527,7 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -545,7 +546,7 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: page.FieldID,
 				},
 			},
@@ -561,7 +562,7 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: page.FieldID,
 				},
 			},
@@ -580,7 +581,7 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: page.FieldID,
 				},
 			},

@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/predicate"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
@@ -35,11 +36,11 @@ type PageMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uuid.UUID
 	name          *string
 	route         *string
 	clearedFields map[string]struct{}
-	pageOf        *int
+	pageOf        *uuid.UUID
 	clearedpageOf bool
 	done          bool
 	oldValue      func(context.Context) (*Page, error)
@@ -66,7 +67,7 @@ func newPageMutation(c config, op Op, opts ...pageOption) *PageMutation {
 }
 
 // withPageID sets the ID field of the mutation.
-func withPageID(id int) pageOption {
+func withPageID(id uuid.UUID) pageOption {
 	return func(m *PageMutation) {
 		var (
 			err   error
@@ -116,9 +117,15 @@ func (m PageMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Page entities.
+func (m *PageMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID
 // is only available if it was provided to the builder.
-func (m *PageMutation) ID() (id int, exists bool) {
+func (m *PageMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -198,7 +205,7 @@ func (m *PageMutation) ResetRoute() {
 }
 
 // SetPageOfID sets the "pageOf" edge to the Project entity by id.
-func (m *PageMutation) SetPageOfID(id int) {
+func (m *PageMutation) SetPageOfID(id uuid.UUID) {
 	m.pageOf = &id
 }
 
@@ -213,7 +220,7 @@ func (m *PageMutation) PageOfCleared() bool {
 }
 
 // PageOfID returns the "pageOf" edge ID in the mutation.
-func (m *PageMutation) PageOfID() (id int, exists bool) {
+func (m *PageMutation) PageOfID() (id uuid.UUID, exists bool) {
 	if m.pageOf != nil {
 		return *m.pageOf, true
 	}
@@ -223,7 +230,7 @@ func (m *PageMutation) PageOfID() (id int, exists bool) {
 // PageOfIDs returns the "pageOf" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // PageOfID instead. It exists only for internal usage by the builders.
-func (m *PageMutation) PageOfIDs() (ids []int) {
+func (m *PageMutation) PageOfIDs() (ids []uuid.UUID) {
 	if id := m.pageOf; id != nil {
 		ids = append(ids, *id)
 	}
@@ -445,15 +452,15 @@ type ProjectMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *uuid.UUID
 	name          *string
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
-	owner         *int
+	owner         *uuid.UUID
 	clearedowner  bool
-	pages         map[int]struct{}
-	removedpages  map[int]struct{}
+	pages         map[uuid.UUID]struct{}
+	removedpages  map[uuid.UUID]struct{}
 	clearedpages  bool
 	done          bool
 	oldValue      func(context.Context) (*Project, error)
@@ -480,7 +487,7 @@ func newProjectMutation(c config, op Op, opts ...projectOption) *ProjectMutation
 }
 
 // withProjectID sets the ID field of the mutation.
-func withProjectID(id int) projectOption {
+func withProjectID(id uuid.UUID) projectOption {
 	return func(m *ProjectMutation) {
 		var (
 			err   error
@@ -530,9 +537,15 @@ func (m ProjectMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Project entities.
+func (m *ProjectMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID
 // is only available if it was provided to the builder.
-func (m *ProjectMutation) ID() (id int, exists bool) {
+func (m *ProjectMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -648,7 +661,7 @@ func (m *ProjectMutation) ResetUpdatedAt() {
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by id.
-func (m *ProjectMutation) SetOwnerID(id int) {
+func (m *ProjectMutation) SetOwnerID(id uuid.UUID) {
 	m.owner = &id
 }
 
@@ -663,7 +676,7 @@ func (m *ProjectMutation) OwnerCleared() bool {
 }
 
 // OwnerID returns the "owner" edge ID in the mutation.
-func (m *ProjectMutation) OwnerID() (id int, exists bool) {
+func (m *ProjectMutation) OwnerID() (id uuid.UUID, exists bool) {
 	if m.owner != nil {
 		return *m.owner, true
 	}
@@ -673,7 +686,7 @@ func (m *ProjectMutation) OwnerID() (id int, exists bool) {
 // OwnerIDs returns the "owner" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // OwnerID instead. It exists only for internal usage by the builders.
-func (m *ProjectMutation) OwnerIDs() (ids []int) {
+func (m *ProjectMutation) OwnerIDs() (ids []uuid.UUID) {
 	if id := m.owner; id != nil {
 		ids = append(ids, *id)
 	}
@@ -687,9 +700,9 @@ func (m *ProjectMutation) ResetOwner() {
 }
 
 // AddPageIDs adds the "pages" edge to the Page entity by ids.
-func (m *ProjectMutation) AddPageIDs(ids ...int) {
+func (m *ProjectMutation) AddPageIDs(ids ...uuid.UUID) {
 	if m.pages == nil {
-		m.pages = make(map[int]struct{})
+		m.pages = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.pages[ids[i]] = struct{}{}
@@ -707,9 +720,9 @@ func (m *ProjectMutation) PagesCleared() bool {
 }
 
 // RemovePageIDs removes the "pages" edge to the Page entity by IDs.
-func (m *ProjectMutation) RemovePageIDs(ids ...int) {
+func (m *ProjectMutation) RemovePageIDs(ids ...uuid.UUID) {
 	if m.removedpages == nil {
-		m.removedpages = make(map[int]struct{})
+		m.removedpages = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.removedpages[ids[i]] = struct{}{}
@@ -717,7 +730,7 @@ func (m *ProjectMutation) RemovePageIDs(ids ...int) {
 }
 
 // RemovedPages returns the removed IDs of the "pages" edge to the Page entity.
-func (m *ProjectMutation) RemovedPagesIDs() (ids []int) {
+func (m *ProjectMutation) RemovedPagesIDs() (ids []uuid.UUID) {
 	for id := range m.removedpages {
 		ids = append(ids, id)
 	}
@@ -725,7 +738,7 @@ func (m *ProjectMutation) RemovedPagesIDs() (ids []int) {
 }
 
 // PagesIDs returns the "pages" edge IDs in the mutation.
-func (m *ProjectMutation) PagesIDs() (ids []int) {
+func (m *ProjectMutation) PagesIDs() (ids []uuid.UUID) {
 	for id := range m.pages {
 		ids = append(ids, id)
 	}
@@ -991,7 +1004,7 @@ type UserMutation struct {
 	config
 	op              Op
 	typ             string
-	id              *int
+	id              *uuid.UUID
 	firebase_uid    *string
 	first_name      *string
 	last_name       *string
@@ -999,8 +1012,8 @@ type UserMutation struct {
 	created_at      *time.Time
 	updated_at      *time.Time
 	clearedFields   map[string]struct{}
-	projects        map[int]struct{}
-	removedprojects map[int]struct{}
+	projects        map[uuid.UUID]struct{}
+	removedprojects map[uuid.UUID]struct{}
 	clearedprojects bool
 	done            bool
 	oldValue        func(context.Context) (*User, error)
@@ -1027,7 +1040,7 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 }
 
 // withUserID sets the ID field of the mutation.
-func withUserID(id int) userOption {
+func withUserID(id uuid.UUID) userOption {
 	return func(m *UserMutation) {
 		var (
 			err   error
@@ -1077,9 +1090,15 @@ func (m UserMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of User entities.
+func (m *UserMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID
 // is only available if it was provided to the builder.
-func (m *UserMutation) ID() (id int, exists bool) {
+func (m *UserMutation) ID() (id uuid.UUID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1329,9 +1348,9 @@ func (m *UserMutation) ResetUpdatedAt() {
 }
 
 // AddProjectIDs adds the "projects" edge to the Project entity by ids.
-func (m *UserMutation) AddProjectIDs(ids ...int) {
+func (m *UserMutation) AddProjectIDs(ids ...uuid.UUID) {
 	if m.projects == nil {
-		m.projects = make(map[int]struct{})
+		m.projects = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.projects[ids[i]] = struct{}{}
@@ -1349,9 +1368,9 @@ func (m *UserMutation) ProjectsCleared() bool {
 }
 
 // RemoveProjectIDs removes the "projects" edge to the Project entity by IDs.
-func (m *UserMutation) RemoveProjectIDs(ids ...int) {
+func (m *UserMutation) RemoveProjectIDs(ids ...uuid.UUID) {
 	if m.removedprojects == nil {
-		m.removedprojects = make(map[int]struct{})
+		m.removedprojects = make(map[uuid.UUID]struct{})
 	}
 	for i := range ids {
 		m.removedprojects[ids[i]] = struct{}{}
@@ -1359,7 +1378,7 @@ func (m *UserMutation) RemoveProjectIDs(ids ...int) {
 }
 
 // RemovedProjects returns the removed IDs of the "projects" edge to the Project entity.
-func (m *UserMutation) RemovedProjectsIDs() (ids []int) {
+func (m *UserMutation) RemovedProjectsIDs() (ids []uuid.UUID) {
 	for id := range m.removedprojects {
 		ids = append(ids, id)
 	}
@@ -1367,7 +1386,7 @@ func (m *UserMutation) RemovedProjectsIDs() (ids []int) {
 }
 
 // ProjectsIDs returns the "projects" edge IDs in the mutation.
-func (m *UserMutation) ProjectsIDs() (ids []int) {
+func (m *UserMutation) ProjectsIDs() (ids []uuid.UUID) {
 	for id := range m.projects {
 		ids = append(ids, id)
 	}

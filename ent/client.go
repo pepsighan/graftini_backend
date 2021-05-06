@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent/migrate"
 
 	"github.com/pepsighan/nocodepress_backend/ent/page"
@@ -176,7 +177,7 @@ func (c *PageClient) UpdateOne(pa *Page) *PageUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PageClient) UpdateOneID(id int) *PageUpdateOne {
+func (c *PageClient) UpdateOneID(id uuid.UUID) *PageUpdateOne {
 	mutation := newPageMutation(c.config, OpUpdateOne, withPageID(id))
 	return &PageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -193,7 +194,7 @@ func (c *PageClient) DeleteOne(pa *Page) *PageDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *PageClient) DeleteOneID(id int) *PageDeleteOne {
+func (c *PageClient) DeleteOneID(id uuid.UUID) *PageDeleteOne {
 	builder := c.Delete().Where(page.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -208,12 +209,12 @@ func (c *PageClient) Query() *PageQuery {
 }
 
 // Get returns a Page entity by its id.
-func (c *PageClient) Get(ctx context.Context, id int) (*Page, error) {
+func (c *PageClient) Get(ctx context.Context, id uuid.UUID) (*Page, error) {
 	return c.Query().Where(page.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PageClient) GetX(ctx context.Context, id int) *Page {
+func (c *PageClient) GetX(ctx context.Context, id uuid.UUID) *Page {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -282,7 +283,7 @@ func (c *ProjectClient) UpdateOne(pr *Project) *ProjectUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ProjectClient) UpdateOneID(id int) *ProjectUpdateOne {
+func (c *ProjectClient) UpdateOneID(id uuid.UUID) *ProjectUpdateOne {
 	mutation := newProjectMutation(c.config, OpUpdateOne, withProjectID(id))
 	return &ProjectUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -299,7 +300,7 @@ func (c *ProjectClient) DeleteOne(pr *Project) *ProjectDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *ProjectClient) DeleteOneID(id int) *ProjectDeleteOne {
+func (c *ProjectClient) DeleteOneID(id uuid.UUID) *ProjectDeleteOne {
 	builder := c.Delete().Where(project.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -314,12 +315,12 @@ func (c *ProjectClient) Query() *ProjectQuery {
 }
 
 // Get returns a Project entity by its id.
-func (c *ProjectClient) Get(ctx context.Context, id int) (*Project, error) {
+func (c *ProjectClient) Get(ctx context.Context, id uuid.UUID) (*Project, error) {
 	return c.Query().Where(project.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ProjectClient) GetX(ctx context.Context, id int) *Project {
+func (c *ProjectClient) GetX(ctx context.Context, id uuid.UUID) *Project {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -404,7 +405,7 @@ func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *UserClient) UpdateOneID(id int) *UserUpdateOne {
+func (c *UserClient) UpdateOneID(id uuid.UUID) *UserUpdateOne {
 	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
 	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -421,7 +422,7 @@ func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *UserClient) DeleteOneID(id int) *UserDeleteOne {
+func (c *UserClient) DeleteOneID(id uuid.UUID) *UserDeleteOne {
 	builder := c.Delete().Where(user.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -436,12 +437,12 @@ func (c *UserClient) Query() *UserQuery {
 }
 
 // Get returns a User entity by its id.
-func (c *UserClient) Get(ctx context.Context, id int) (*User, error) {
+func (c *UserClient) Get(ctx context.Context, id uuid.UUID) (*User, error) {
 	return c.Query().Where(user.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *UserClient) GetX(ctx context.Context, id int) *User {
+func (c *UserClient) GetX(ctx context.Context, id uuid.UUID) *User {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

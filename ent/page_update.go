@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/predicate"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
@@ -40,13 +41,13 @@ func (pu *PageUpdate) SetRoute(s string) *PageUpdate {
 }
 
 // SetPageOfID sets the "pageOf" edge to the Project entity by ID.
-func (pu *PageUpdate) SetPageOfID(id int) *PageUpdate {
+func (pu *PageUpdate) SetPageOfID(id uuid.UUID) *PageUpdate {
 	pu.mutation.SetPageOfID(id)
 	return pu
 }
 
 // SetNillablePageOfID sets the "pageOf" edge to the Project entity by ID if the given value is not nil.
-func (pu *PageUpdate) SetNillablePageOfID(id *int) *PageUpdate {
+func (pu *PageUpdate) SetNillablePageOfID(id *uuid.UUID) *PageUpdate {
 	if id != nil {
 		pu = pu.SetPageOfID(*id)
 	}
@@ -126,7 +127,7 @@ func (pu *PageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   page.Table,
 			Columns: page.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: page.FieldID,
 			},
 		},
@@ -161,7 +162,7 @@ func (pu *PageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: project.FieldID,
 				},
 			},
@@ -177,7 +178,7 @@ func (pu *PageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: project.FieldID,
 				},
 			},
@@ -219,13 +220,13 @@ func (puo *PageUpdateOne) SetRoute(s string) *PageUpdateOne {
 }
 
 // SetPageOfID sets the "pageOf" edge to the Project entity by ID.
-func (puo *PageUpdateOne) SetPageOfID(id int) *PageUpdateOne {
+func (puo *PageUpdateOne) SetPageOfID(id uuid.UUID) *PageUpdateOne {
 	puo.mutation.SetPageOfID(id)
 	return puo
 }
 
 // SetNillablePageOfID sets the "pageOf" edge to the Project entity by ID if the given value is not nil.
-func (puo *PageUpdateOne) SetNillablePageOfID(id *int) *PageUpdateOne {
+func (puo *PageUpdateOne) SetNillablePageOfID(id *uuid.UUID) *PageUpdateOne {
 	if id != nil {
 		puo = puo.SetPageOfID(*id)
 	}
@@ -312,7 +313,7 @@ func (puo *PageUpdateOne) sqlSave(ctx context.Context) (_node *Page, err error) 
 			Table:   page.Table,
 			Columns: page.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: page.FieldID,
 			},
 		},
@@ -364,7 +365,7 @@ func (puo *PageUpdateOne) sqlSave(ctx context.Context) (_node *Page, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: project.FieldID,
 				},
 			},
@@ -380,7 +381,7 @@ func (puo *PageUpdateOne) sqlSave(ctx context.Context) (_node *Page, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: project.FieldID,
 				},
 			},

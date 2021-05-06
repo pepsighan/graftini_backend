@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 )
@@ -15,7 +16,7 @@ import (
 type Page struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Route holds the value of the "route" field.
@@ -23,7 +24,7 @@ type Page struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PageQuery when eager-loading is set.
 	Edges         PageEdges `json:"edges"`
-	project_pages *int
+	project_pages *uuid.UUID
 }
 
 // PageEdges holds the relations/edges for other nodes in the graph.
@@ -54,12 +55,12 @@ func (*Page) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case page.FieldID:
-			values[i] = new(sql.NullInt64)
 		case page.FieldName, page.FieldRoute:
 			values[i] = new(sql.NullString)
+		case page.FieldID:
+			values[i] = new(uuid.UUID)
 		case page.ForeignKeys[0]: // project_pages
-			values[i] = new(sql.NullInt64)
+			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Page", columns[i])
 		}
@@ -76,11 +77,11 @@ func (pa *Page) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case page.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				pa.ID = *value
 			}
-			pa.ID = int(value.Int64)
 		case page.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -94,11 +95,10 @@ func (pa *Page) assignValues(columns []string, values []interface{}) error {
 				pa.Route = value.String
 			}
 		case page.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field project_pages", value)
-			} else if value.Valid {
-				pa.project_pages = new(int)
-				*pa.project_pages = int(value.Int64)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field project_pages", values[i])
+			} else if value != nil {
+				pa.project_pages = value
 			}
 		}
 	}

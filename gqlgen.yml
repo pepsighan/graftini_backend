@@ -44,11 +44,9 @@ autobind:
 # your liking
 models:
   ID:
-    model:
-      - github.com/99designs/gqlgen/graphql.Int
+    model: github.com/pepsighan/nocodepress_backend/gqlgen.UUID
   Int:
-    model:
-      - github.com/99designs/gqlgen/graphql.Int
+    model: github.com/99designs/gqlgen/graphql.Int
   User:
     model: github.com/pepsighan/nocodepress_backend/ent.User
   Project:

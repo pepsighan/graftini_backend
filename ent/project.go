@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 	"github.com/pepsighan/nocodepress_backend/ent/user"
 )
@@ -16,7 +17,7 @@ import (
 type Project struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -26,7 +27,7 @@ type Project struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ProjectQuery when eager-loading is set.
 	Edges         ProjectEdges `json:"edges"`
-	user_projects *int
+	user_projects *uuid.UUID
 }
 
 // ProjectEdges holds the relations/edges for other nodes in the graph.
@@ -68,14 +69,14 @@ func (*Project) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case project.FieldID:
-			values[i] = new(sql.NullInt64)
 		case project.FieldName:
 			values[i] = new(sql.NullString)
 		case project.FieldCreatedAt, project.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case project.FieldID:
+			values[i] = new(uuid.UUID)
 		case project.ForeignKeys[0]: // user_projects
-			values[i] = new(sql.NullInt64)
+			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Project", columns[i])
 		}
@@ -92,11 +93,11 @@ func (pr *Project) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case project.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				pr.ID = *value
 			}
-			pr.ID = int(value.Int64)
 		case project.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -116,11 +117,10 @@ func (pr *Project) assignValues(columns []string, values []interface{}) error {
 				pr.UpdatedAt = value.Time
 			}
 		case project.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_projects", value)
-			} else if value.Valid {
-				pr.user_projects = new(int)
-				*pr.user_projects = int(value.Int64)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field user_projects", values[i])
+			} else if value != nil {
+				pr.user_projects = value
 			}
 		}
 	}

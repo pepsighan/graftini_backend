@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 	"github.com/pepsighan/nocodepress_backend/ent/user"
@@ -56,14 +57,20 @@ func (pc *ProjectCreate) SetNillableUpdatedAt(t *time.Time) *ProjectCreate {
 	return pc
 }
 
+// SetID sets the "id" field.
+func (pc *ProjectCreate) SetID(u uuid.UUID) *ProjectCreate {
+	pc.mutation.SetID(u)
+	return pc
+}
+
 // SetOwnerID sets the "owner" edge to the User entity by ID.
-func (pc *ProjectCreate) SetOwnerID(id int) *ProjectCreate {
+func (pc *ProjectCreate) SetOwnerID(id uuid.UUID) *ProjectCreate {
 	pc.mutation.SetOwnerID(id)
 	return pc
 }
 
 // SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
-func (pc *ProjectCreate) SetNillableOwnerID(id *int) *ProjectCreate {
+func (pc *ProjectCreate) SetNillableOwnerID(id *uuid.UUID) *ProjectCreate {
 	if id != nil {
 		pc = pc.SetOwnerID(*id)
 	}
@@ -76,14 +83,14 @@ func (pc *ProjectCreate) SetOwner(u *User) *ProjectCreate {
 }
 
 // AddPageIDs adds the "pages" edge to the Page entity by IDs.
-func (pc *ProjectCreate) AddPageIDs(ids ...int) *ProjectCreate {
+func (pc *ProjectCreate) AddPageIDs(ids ...uuid.UUID) *ProjectCreate {
 	pc.mutation.AddPageIDs(ids...)
 	return pc
 }
 
 // AddPages adds the "pages" edges to the Page entity.
 func (pc *ProjectCreate) AddPages(p ...*Page) *ProjectCreate {
-	ids := make([]int, len(p))
+	ids := make([]uuid.UUID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -150,6 +157,10 @@ func (pc *ProjectCreate) defaults() {
 		v := project.DefaultUpdatedAt()
 		pc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := pc.mutation.ID(); !ok {
+		v := project.DefaultID()
+		pc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -174,8 +185,6 @@ func (pc *ProjectCreate) sqlSave(ctx context.Context) (*Project, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
 	return _node, nil
 }
 
@@ -185,11 +194,15 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: project.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: project.FieldID,
 			},
 		}
 	)
+	if id, ok := pc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -223,7 +236,7 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: user.FieldID,
 				},
 			},
@@ -243,7 +256,7 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeUUID,
 					Column: page.FieldID,
 				},
 			},
@@ -296,8 +309,6 @@ func (pcb *ProjectCreateBulk) Save(ctx context.Context) ([]*Project, error) {
 				if err != nil {
 					return nil, err
 				}
-				id := specs[i].ID.Value.(int64)
-				nodes[i].ID = int(id)
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {
