@@ -29,7 +29,21 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 }
 
 func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error) {
-	panic(fmt.Errorf("not implemented"))
+	user, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	project, err := user.QueryProjects().Where(project.IDEQ(input.ProjectID)).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Ent.Page.Create().
+		SetName(input.Name).
+		SetRoute(input.Route).
+		SetPageOf(project).
+		Save(ctx)
 }
 
 func (r *mutationResolver) DeletePage(ctx context.Context, id uuid.UUID) (uuid.UUID, error) {
