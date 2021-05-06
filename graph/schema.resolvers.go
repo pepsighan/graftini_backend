@@ -26,7 +26,7 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 }
 
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {
-	panic(fmt.Errorf("not implemented"))
+	return obj.QueryPages().All(ctx)
 }
 
 func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {
