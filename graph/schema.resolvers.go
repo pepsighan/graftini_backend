@@ -5,11 +5,11 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/auth"
 	"github.com/pepsighan/nocodepress_backend/ent"
+	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 	"github.com/pepsighan/nocodepress_backend/ent/user"
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
@@ -34,7 +34,7 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) 
 		return nil, err
 	}
 
-	project, err := user.QueryProjects().Where(project.IDEQ(input.ProjectID)).First(ctx)
+	prj, err := user.QueryProjects().Where(project.IDEQ(input.ProjectID)).First(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -42,12 +42,32 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) 
 	return r.Ent.Page.Create().
 		SetName(input.Name).
 		SetRoute(input.Route).
-		SetPageOf(project).
+		SetPageOf(prj).
 		Save(ctx)
 }
 
-func (r *mutationResolver) DeletePage(ctx context.Context, id uuid.UUID) (uuid.UUID, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error) {
+	user, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	prj, err := user.QueryProjects().Where(project.IDEQ(projectID)).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	pg, err := prj.QueryPages().Where(page.IDEQ(pageID)).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.Ent.Page.DeleteOne(pg).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return pg, nil
 }
 
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {

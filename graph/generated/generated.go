@@ -50,7 +50,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreatePage    func(childComplexity int, input model.NewPage) int
 		CreateProject func(childComplexity int, input model.NewProject) int
-		DeletePage    func(childComplexity int, id uuid.UUID) int
+		DeletePage    func(childComplexity int, projectID uuid.UUID, pageID uuid.UUID) int
 	}
 
 	Page struct {
@@ -83,7 +83,7 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateProject(ctx context.Context, input model.NewProject) (*ent.Project, error)
 	CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error)
-	DeletePage(ctx context.Context, id uuid.UUID) (uuid.UUID, error)
+	DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error)
 }
 type ProjectResolver interface {
 	Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error)
@@ -143,7 +143,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeletePage(childComplexity, args["id"].(uuid.UUID)), true
+		return e.complexity.Mutation.DeletePage(childComplexity, args["projectId"].(uuid.UUID), args["pageId"].(uuid.UUID)), true
 
 	case "Page.id":
 		if e.complexity.Page.ID == nil {
@@ -351,7 +351,7 @@ input NewPage {
 type Mutation {
   createProject(input: NewProject!): Project!
   createPage(input: NewPage!): Page!
-  deletePage(id: ID!): ID!
+  deletePage(projectId: ID!, pageId: ID!): Page!
 }
 `, BuiltIn: false},
 }
@@ -395,14 +395,23 @@ func (ec *executionContext) field_Mutation_deletePage_args(ctx context.Context, 
 	var err error
 	args := map[string]interface{}{}
 	var arg0 uuid.UUID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["projectId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
 		arg0, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["projectId"] = arg0
+	var arg1 uuid.UUID
+	if tmp, ok := rawArgs["pageId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageId"))
+		arg1, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pageId"] = arg1
 	return args, nil
 }
 
@@ -583,7 +592,7 @@ func (ec *executionContext) _Mutation_deletePage(ctx context.Context, field grap
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeletePage(rctx, args["id"].(uuid.UUID))
+		return ec.resolvers.Mutation().DeletePage(rctx, args["projectId"].(uuid.UUID), args["pageId"].(uuid.UUID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -595,9 +604,9 @@ func (ec *executionContext) _Mutation_deletePage(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(uuid.UUID)
+	res := resTmp.(*ent.Page)
 	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+	return ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Page_id(ctx context.Context, field graphql.CollectedField, obj *ent.Page) (ret graphql.Marshaler) {

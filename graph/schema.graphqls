@@ -37,5 +37,5 @@ input NewPage {
 type Mutation {
   createProject(input: NewProject!): Project!
   createPage(input: NewPage!): Page!
-  deletePage(id: ID!): ID!
+  deletePage(projectId: ID!, pageId: ID!): Page!
 }
