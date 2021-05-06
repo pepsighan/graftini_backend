@@ -28,6 +28,13 @@ input NewProject {
   name: String!
 }
 
+input NewPage {
+  projectId: ID!
+  name: String!
+  route: String!
+}
+
 type Mutation {
   createProject(input: NewProject!): Project!
+  createPage(input: NewPage!): Page!
 }

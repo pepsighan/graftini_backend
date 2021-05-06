@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/pepsighan/nocodepress_backend/auth"
 	"github.com/pepsighan/nocodepress_backend/ent"
@@ -24,6 +25,10 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 		SetName(input.Name).
 		SetOwner(user).
 		Save(ctx)
+}
+
+func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {

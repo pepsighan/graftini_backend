@@ -2,6 +2,12 @@
 
 package model
 
+type NewPage struct {
+	ProjectID int    `json:"projectId"`
+	Name      string `json:"name"`
+	Route     string `json:"route"`
+}
+
 type NewProject struct {
 	Name string `json:"name"`
 }
