@@ -9,11 +9,19 @@ type User {
 type Project {
   id: ID!
   name: String!
+  pages: [Page!]!
+}
+
+type Page {
+  id: ID!
+  name: String!
+  route: String!
 }
 
 type Query {
   me: User
   myProjects: [Project!]!
+  myProject(id: ID!): Project!
 }
 
 input NewProject {
