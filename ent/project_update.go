@@ -36,6 +36,26 @@ func (pu *ProjectUpdate) SetName(s string) *ProjectUpdate {
 	return pu
 }
 
+// SetGraphqlEndpoint sets the "graphql_endpoint" field.
+func (pu *ProjectUpdate) SetGraphqlEndpoint(s string) *ProjectUpdate {
+	pu.mutation.SetGraphqlEndpoint(s)
+	return pu
+}
+
+// SetNillableGraphqlEndpoint sets the "graphql_endpoint" field if the given value is not nil.
+func (pu *ProjectUpdate) SetNillableGraphqlEndpoint(s *string) *ProjectUpdate {
+	if s != nil {
+		pu.SetGraphqlEndpoint(*s)
+	}
+	return pu
+}
+
+// ClearGraphqlEndpoint clears the value of the "graphql_endpoint" field.
+func (pu *ProjectUpdate) ClearGraphqlEndpoint() *ProjectUpdate {
+	pu.mutation.ClearGraphqlEndpoint()
+	return pu
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (pu *ProjectUpdate) SetUpdatedAt(t time.Time) *ProjectUpdate {
 	pu.mutation.SetUpdatedAt(t)
@@ -193,6 +213,19 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: project.FieldName,
 		})
 	}
+	if value, ok := pu.mutation.GraphqlEndpoint(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: project.FieldGraphqlEndpoint,
+		})
+	}
+	if pu.mutation.GraphqlEndpointCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: project.FieldGraphqlEndpoint,
+		})
+	}
 	if value, ok := pu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -311,6 +344,26 @@ type ProjectUpdateOne struct {
 // SetName sets the "name" field.
 func (puo *ProjectUpdateOne) SetName(s string) *ProjectUpdateOne {
 	puo.mutation.SetName(s)
+	return puo
+}
+
+// SetGraphqlEndpoint sets the "graphql_endpoint" field.
+func (puo *ProjectUpdateOne) SetGraphqlEndpoint(s string) *ProjectUpdateOne {
+	puo.mutation.SetGraphqlEndpoint(s)
+	return puo
+}
+
+// SetNillableGraphqlEndpoint sets the "graphql_endpoint" field if the given value is not nil.
+func (puo *ProjectUpdateOne) SetNillableGraphqlEndpoint(s *string) *ProjectUpdateOne {
+	if s != nil {
+		puo.SetGraphqlEndpoint(*s)
+	}
+	return puo
+}
+
+// ClearGraphqlEndpoint clears the value of the "graphql_endpoint" field.
+func (puo *ProjectUpdateOne) ClearGraphqlEndpoint() *ProjectUpdateOne {
+	puo.mutation.ClearGraphqlEndpoint()
 	return puo
 }
 
@@ -493,6 +546,19 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 			Type:   field.TypeString,
 			Value:  value,
 			Column: project.FieldName,
+		})
+	}
+	if value, ok := puo.mutation.GraphqlEndpoint(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: project.FieldGraphqlEndpoint,
+		})
+	}
+	if puo.mutation.GraphqlEndpointCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: project.FieldGraphqlEndpoint,
 		})
 	}
 	if value, ok := puo.mutation.UpdatedAt(); ok {

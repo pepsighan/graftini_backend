@@ -101,6 +101,13 @@ func Name(v string) predicate.Project {
 	})
 }
 
+// GraphqlEndpoint applies equality check predicate on the "graphql_endpoint" field. It's identical to GraphqlEndpointEQ.
+func GraphqlEndpoint(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGraphqlEndpoint), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
@@ -223,6 +230,131 @@ func NameEqualFold(v string) predicate.Project {
 func NameContainsFold(v string) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldName), v))
+	})
+}
+
+// GraphqlEndpointEQ applies the EQ predicate on the "graphql_endpoint" field.
+func GraphqlEndpointEQ(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGraphqlEndpoint), v))
+	})
+}
+
+// GraphqlEndpointNEQ applies the NEQ predicate on the "graphql_endpoint" field.
+func GraphqlEndpointNEQ(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldGraphqlEndpoint), v))
+	})
+}
+
+// GraphqlEndpointIn applies the In predicate on the "graphql_endpoint" field.
+func GraphqlEndpointIn(vs ...string) predicate.Project {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Project(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldGraphqlEndpoint), v...))
+	})
+}
+
+// GraphqlEndpointNotIn applies the NotIn predicate on the "graphql_endpoint" field.
+func GraphqlEndpointNotIn(vs ...string) predicate.Project {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Project(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldGraphqlEndpoint), v...))
+	})
+}
+
+// GraphqlEndpointGT applies the GT predicate on the "graphql_endpoint" field.
+func GraphqlEndpointGT(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldGraphqlEndpoint), v))
+	})
+}
+
+// GraphqlEndpointGTE applies the GTE predicate on the "graphql_endpoint" field.
+func GraphqlEndpointGTE(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldGraphqlEndpoint), v))
+	})
+}
+
+// GraphqlEndpointLT applies the LT predicate on the "graphql_endpoint" field.
+func GraphqlEndpointLT(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldGraphqlEndpoint), v))
+	})
+}
+
+// GraphqlEndpointLTE applies the LTE predicate on the "graphql_endpoint" field.
+func GraphqlEndpointLTE(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldGraphqlEndpoint), v))
+	})
+}
+
+// GraphqlEndpointContains applies the Contains predicate on the "graphql_endpoint" field.
+func GraphqlEndpointContains(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldGraphqlEndpoint), v))
+	})
+}
+
+// GraphqlEndpointHasPrefix applies the HasPrefix predicate on the "graphql_endpoint" field.
+func GraphqlEndpointHasPrefix(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldGraphqlEndpoint), v))
+	})
+}
+
+// GraphqlEndpointHasSuffix applies the HasSuffix predicate on the "graphql_endpoint" field.
+func GraphqlEndpointHasSuffix(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldGraphqlEndpoint), v))
+	})
+}
+
+// GraphqlEndpointIsNil applies the IsNil predicate on the "graphql_endpoint" field.
+func GraphqlEndpointIsNil() predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldGraphqlEndpoint)))
+	})
+}
+
+// GraphqlEndpointNotNil applies the NotNil predicate on the "graphql_endpoint" field.
+func GraphqlEndpointNotNil() predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldGraphqlEndpoint)))
+	})
+}
+
+// GraphqlEndpointEqualFold applies the EqualFold predicate on the "graphql_endpoint" field.
+func GraphqlEndpointEqualFold(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldGraphqlEndpoint), v))
+	})
+}
+
+// GraphqlEndpointContainsFold applies the ContainsFold predicate on the "graphql_endpoint" field.
+func GraphqlEndpointContainsFold(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldGraphqlEndpoint), v))
 	})
 }
 

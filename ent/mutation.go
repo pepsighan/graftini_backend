@@ -450,21 +450,22 @@ func (m *PageMutation) ResetEdge(name string) error {
 // ProjectMutation represents an operation that mutates the Project nodes in the graph.
 type ProjectMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	name          *string
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	owner         *uuid.UUID
-	clearedowner  bool
-	pages         map[uuid.UUID]struct{}
-	removedpages  map[uuid.UUID]struct{}
-	clearedpages  bool
-	done          bool
-	oldValue      func(context.Context) (*Project, error)
-	predicates    []predicate.Project
+	op               Op
+	typ              string
+	id               *uuid.UUID
+	name             *string
+	graphql_endpoint *string
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	owner            *uuid.UUID
+	clearedowner     bool
+	pages            map[uuid.UUID]struct{}
+	removedpages     map[uuid.UUID]struct{}
+	clearedpages     bool
+	done             bool
+	oldValue         func(context.Context) (*Project, error)
+	predicates       []predicate.Project
 }
 
 var _ ent.Mutation = (*ProjectMutation)(nil)
@@ -586,6 +587,55 @@ func (m *ProjectMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *ProjectMutation) ResetName() {
 	m.name = nil
+}
+
+// SetGraphqlEndpoint sets the "graphql_endpoint" field.
+func (m *ProjectMutation) SetGraphqlEndpoint(s string) {
+	m.graphql_endpoint = &s
+}
+
+// GraphqlEndpoint returns the value of the "graphql_endpoint" field in the mutation.
+func (m *ProjectMutation) GraphqlEndpoint() (r string, exists bool) {
+	v := m.graphql_endpoint
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGraphqlEndpoint returns the old "graphql_endpoint" field's value of the Project entity.
+// If the Project object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectMutation) OldGraphqlEndpoint(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldGraphqlEndpoint is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldGraphqlEndpoint requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGraphqlEndpoint: %w", err)
+	}
+	return oldValue.GraphqlEndpoint, nil
+}
+
+// ClearGraphqlEndpoint clears the value of the "graphql_endpoint" field.
+func (m *ProjectMutation) ClearGraphqlEndpoint() {
+	m.graphql_endpoint = nil
+	m.clearedFields[project.FieldGraphqlEndpoint] = struct{}{}
+}
+
+// GraphqlEndpointCleared returns if the "graphql_endpoint" field was cleared in this mutation.
+func (m *ProjectMutation) GraphqlEndpointCleared() bool {
+	_, ok := m.clearedFields[project.FieldGraphqlEndpoint]
+	return ok
+}
+
+// ResetGraphqlEndpoint resets all changes to the "graphql_endpoint" field.
+func (m *ProjectMutation) ResetGraphqlEndpoint() {
+	m.graphql_endpoint = nil
+	delete(m.clearedFields, project.FieldGraphqlEndpoint)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -766,9 +816,12 @@ func (m *ProjectMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProjectMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.name != nil {
 		fields = append(fields, project.FieldName)
+	}
+	if m.graphql_endpoint != nil {
+		fields = append(fields, project.FieldGraphqlEndpoint)
 	}
 	if m.created_at != nil {
 		fields = append(fields, project.FieldCreatedAt)
@@ -786,6 +839,8 @@ func (m *ProjectMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case project.FieldName:
 		return m.Name()
+	case project.FieldGraphqlEndpoint:
+		return m.GraphqlEndpoint()
 	case project.FieldCreatedAt:
 		return m.CreatedAt()
 	case project.FieldUpdatedAt:
@@ -801,6 +856,8 @@ func (m *ProjectMutation) OldField(ctx context.Context, name string) (ent.Value,
 	switch name {
 	case project.FieldName:
 		return m.OldName(ctx)
+	case project.FieldGraphqlEndpoint:
+		return m.OldGraphqlEndpoint(ctx)
 	case project.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case project.FieldUpdatedAt:
@@ -820,6 +877,13 @@ func (m *ProjectMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case project.FieldGraphqlEndpoint:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGraphqlEndpoint(v)
 		return nil
 	case project.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -864,7 +928,11 @@ func (m *ProjectMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ProjectMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(project.FieldGraphqlEndpoint) {
+		fields = append(fields, project.FieldGraphqlEndpoint)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -877,6 +945,11 @@ func (m *ProjectMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ProjectMutation) ClearField(name string) error {
+	switch name {
+	case project.FieldGraphqlEndpoint:
+		m.ClearGraphqlEndpoint()
+		return nil
+	}
 	return fmt.Errorf("unknown Project nullable field %s", name)
 }
 
@@ -886,6 +959,9 @@ func (m *ProjectMutation) ResetField(name string) error {
 	switch name {
 	case project.FieldName:
 		m.ResetName()
+		return nil
+	case project.FieldGraphqlEndpoint:
+		m.ResetGraphqlEndpoint()
 		return nil
 	case project.FieldCreatedAt:
 		m.ResetCreatedAt()

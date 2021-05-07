@@ -29,6 +29,20 @@ func (pc *ProjectCreate) SetName(s string) *ProjectCreate {
 	return pc
 }
 
+// SetGraphqlEndpoint sets the "graphql_endpoint" field.
+func (pc *ProjectCreate) SetGraphqlEndpoint(s string) *ProjectCreate {
+	pc.mutation.SetGraphqlEndpoint(s)
+	return pc
+}
+
+// SetNillableGraphqlEndpoint sets the "graphql_endpoint" field if the given value is not nil.
+func (pc *ProjectCreate) SetNillableGraphqlEndpoint(s *string) *ProjectCreate {
+	if s != nil {
+		pc.SetGraphqlEndpoint(*s)
+	}
+	return pc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (pc *ProjectCreate) SetCreatedAt(t time.Time) *ProjectCreate {
 	pc.mutation.SetCreatedAt(t)
@@ -210,6 +224,14 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 			Column: project.FieldName,
 		})
 		_node.Name = value
+	}
+	if value, ok := pc.mutation.GraphqlEndpoint(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: project.FieldGraphqlEndpoint,
+		})
+		_node.GraphqlEndpoint = &value
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
