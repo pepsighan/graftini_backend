@@ -8,13 +8,13 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/pepsighan/nocodepress_backend/auth"
 	"github.com/pepsighan/nocodepress_backend/ent"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 	"github.com/pepsighan/nocodepress_backend/ent/user"
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 	"github.com/pepsighan/nocodepress_backend/graph/model"
+	"github.com/pepsighan/nocodepress_backend/internal/auth"
 	"github.com/pepsighan/nocodepress_backend/internal/db"
 )
 

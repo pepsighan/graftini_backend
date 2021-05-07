@@ -14,8 +14,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent"
-	"github.com/pepsighan/nocodepress_backend/gqlgen"
 	"github.com/pepsighan/nocodepress_backend/graph/model"
+	"github.com/pepsighan/nocodepress_backend/internal/gqlgen"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
