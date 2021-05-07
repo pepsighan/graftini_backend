@@ -15,6 +15,7 @@ import (
 	"github.com/pepsighan/nocodepress_backend/ent/user"
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 	"github.com/pepsighan/nocodepress_backend/graph/model"
+	"github.com/pepsighan/nocodepress_backend/internal/db"
 )
 
 func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewProject) (*ent.Project, error) {
@@ -23,16 +24,25 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 		return nil, err
 	}
 
-	defaultPage, err := r.Ent.Page.Create().SetName("Default").SetRoute("/").Save(ctx)
-	if err != nil {
-		return nil, err
-	}
+	var project *ent.Project
 
-	return r.Ent.Project.Create().
-		SetName(input.Name).
-		SetOwner(user).
-		AddPages(defaultPage).
-		Save(ctx)
+	// Do not create a page if project fails.
+	err = db.WithTx(ctx, r.Ent, func(tx *ent.Tx) error {
+		defaultPage, err := r.Ent.Page.Create().SetName("Default").SetRoute("/").Save(ctx)
+		if err != nil {
+			return err
+		}
+
+		project, err = r.Ent.Project.Create().
+			SetName(input.Name).
+			SetOwner(user).
+			AddPages(defaultPage).
+			Save(ctx)
+
+		return err
+	})
+
+	return project, err
 }
 
 func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error) {
