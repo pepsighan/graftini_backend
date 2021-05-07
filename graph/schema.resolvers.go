@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/auth"
@@ -55,6 +56,15 @@ func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, 
 	prj, err := user.QueryProjects().Where(project.IDEQ(projectID)).First(ctx)
 	if err != nil {
 		return nil, err
+	}
+
+	pgCount, err := prj.QueryPages().Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if pgCount == 1 {
+		return nil, fmt.Errorf("cannot delete the only page")
 	}
 
 	pg, err := prj.QueryPages().Where(page.IDEQ(pageID)).First(ctx)
