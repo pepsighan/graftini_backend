@@ -23,9 +23,15 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 		return nil, err
 	}
 
+	defaultPage, err := r.Ent.Page.Create().SetName("Default").SetRoute("/").Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	return r.Ent.Project.Create().
 		SetName(input.Name).
 		SetOwner(user).
+		AddPages(defaultPage).
 		Save(ctx)
 }
 
