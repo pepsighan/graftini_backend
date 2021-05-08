@@ -17,15 +17,12 @@ import (
 )
 
 func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewProject) (*ent.Project, error) {
-	user, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
-	if err != nil {
-		return nil, err
-	}
+	user := auth.RequiredAuthenticatedUser(ctx)
 
 	var project *ent.Project
 
 	// Do not create a page if project fails.
-	err = db.WithTx(ctx, r.Ent, func(tx *ent.Tx) error {
+	err := db.WithTx(ctx, r.Ent, func(tx *ent.Tx) error {
 		defaultPage, err := r.Ent.Page.Create().SetName("Default").SetRoute("/").Save(ctx)
 		if err != nil {
 			return err
@@ -44,10 +41,7 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 }
 
 func (r *mutationResolver) UpdateProject(ctx context.Context, input model.UpdateProject) (*ent.Project, error) {
-	owner, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
-	if err != nil {
-		return nil, err
-	}
+	owner := auth.RequiredAuthenticatedUser(ctx)
 
 	prj, err := r.Ent.Project.Query().
 		ByIDAndOwnedBy(input.ID, owner.ID).
@@ -68,10 +62,7 @@ func (r *mutationResolver) UpdateProject(ctx context.Context, input model.Update
 }
 
 func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error) {
-	user, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
-	if err != nil {
-		return nil, err
-	}
+	user := auth.RequiredAuthenticatedUser(ctx)
 
 	prj, err := r.Ent.Project.Query().
 		ByIDAndOwnedBy(input.ProjectID, user.ID).
@@ -88,10 +79,7 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) 
 }
 
 func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error) {
-	user, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
-	if err != nil {
-		return nil, err
-	}
+	user := auth.RequiredAuthenticatedUser(ctx)
 
 	prj, err := r.Ent.Project.Query().
 		ByIDAndOwnedBy(projectID, user.ID).
@@ -128,23 +116,16 @@ func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.P
 
 func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {
 	// This will return nil if there is no logged in user.
-	return auth.UserFromContext(ctx, r.Ent, r.FirebaseAuth)
+	return auth.GetUserFromBearerAuthInContext(ctx, r.Ent, r.FirebaseAuth)
 }
 
 func (r *queryResolver) MyProjects(ctx context.Context) ([]*ent.Project, error) {
-	user, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
-	if err != nil {
-		return nil, err
-	}
-
+	user := auth.RequiredAuthenticatedUser(ctx)
 	return user.QueryProjects().All(ctx)
 }
 
 func (r *queryResolver) MyProject(ctx context.Context, id uuid.UUID) (*ent.Project, error) {
-	owner, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
-	if err != nil {
-		return nil, err
-	}
+	owner := auth.RequiredAuthenticatedUser(ctx)
 
 	return r.Ent.Project.Query().
 		ByIDAndOwnedBy(id, owner.ID).

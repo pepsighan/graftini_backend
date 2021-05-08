@@ -13,9 +13,13 @@ import (
 func NewDirective(entClient *ent.Client, firebaseAuth *auth.Client) generated.DirectiveRoot {
 	return generated.DirectiveRoot{
 		IsAuthenticated: func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error) {
-			user, err := iauth.RequireUserFromContext(ctx, entClient, firebaseAuth)
+			user, err := iauth.GetUserFromBearerAuthInContext(ctx, entClient, firebaseAuth)
 			if err != nil {
 				return nil, err
+			}
+
+			if user == nil {
+				return nil, iauth.ErrUnauthorizedAccess
 			}
 
 			return next(iauth.WithAuthUser(ctx, user))

@@ -19,9 +19,9 @@ type AuthContext struct {
 	token string
 }
 
-// User gets the user if a valid authentication header is present in the request. If there is no token in the
-// request then it deems to be an unauthenticated request. If there is it treats the request likewise.
-func (a *AuthContext) User(ctx context.Context, entClient *ent.Client, firebaseAuth *auth.Client) (*ent.User, error) {
+// user gets the user if a valid authentication header is present in the request. If there is no token in the
+// request then it deems it to be an unauthenticated request. If there is it treats the request likewise.
+func (a *AuthContext) user(ctx context.Context, entClient *ent.Client, firebaseAuth *auth.Client) (*ent.User, error) {
 	if a.token == "" {
 		// There is no user in the request. If there is no user for the user, do nothing.
 		return nil, nil
@@ -64,33 +64,27 @@ func (a *AuthContext) User(ctx context.Context, entClient *ent.Client, firebaseA
 	return user, nil
 }
 
-// UserFromContext gets user from the context. The user may be nil if no authorized header is sent.
-func UserFromContext(ctx context.Context, entClient *ent.Client, firebaseAuth *auth.Client) (*ent.User, error) {
+// GetUserFromBearerAuthInContext gets user from the context by using bearer auth. The user may be nil if no authorized header is sent.
+// This can be used in any query be it @isAuthenicated or not.
+func GetUserFromBearerAuthInContext(ctx context.Context, entClient *ent.Client, firebaseAuth *auth.Client) (*ent.User, error) {
 	authContext, _ := ctx.Value(authContextKey).(*AuthContext)
 	if authContext == nil {
 		// This normally won't happen because the auth context is set in the context.
 		return nil, nil
 	}
 
-	return authContext.User(ctx, entClient, firebaseAuth)
+	return authContext.user(ctx, entClient, firebaseAuth)
 }
 
-// RequireUserFromContext gets user from the context. If the user is not present, it return unauthenticated error.
-func RequireUserFromContext(ctx context.Context, entClient *ent.Client, firebaseAuth *auth.Client) (*ent.User, error) {
-	user, err := UserFromContext(ctx, entClient, firebaseAuth)
-	if err != nil {
-		return nil, err
-	}
-
-	if user == nil {
-		return nil, ErrUnauthorizedAccess
-	}
-
-	return user, nil
+// RequiredAuthenticatedUser gets user from the context of an @isAuthenticated query or mutation. It will panic if it found
+// no user. So keep in mind to use it only within @isAuthenticated query or mutation. For other situations, use
+// [GetUserFromBearerAuthInContext].
+func RequiredAuthenticatedUser(ctx context.Context) *ent.User {
+	return ctx.Value(authUserContextKey).(*ent.User)
 }
 
-// WithBearerAuth middleware extract the authorization bearer header into a struct that can be used
-// later on as needed.
+// WithBearerAuth extracts the authorization bearer header into the context that can be used later
+// on as needed.
 func WithBearerAuth(c echo.Context) context.Context {
 	ctx := c.Request().Context()
 
