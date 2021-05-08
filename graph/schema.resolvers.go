@@ -10,8 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
-	"github.com/pepsighan/nocodepress_backend/ent/project"
-	"github.com/pepsighan/nocodepress_backend/ent/user"
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 	"github.com/pepsighan/nocodepress_backend/graph/model"
 	"github.com/pepsighan/nocodepress_backend/internal/auth"
@@ -75,7 +73,9 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) 
 		return nil, err
 	}
 
-	prj, err := user.QueryProjects().Where(project.IDEQ(input.ProjectID)).First(ctx)
+	prj, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(input.ProjectID, user.ID).
+		First(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,9 @@ func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, 
 		return nil, err
 	}
 
-	prj, err := user.QueryProjects().Where(project.IDEQ(projectID)).First(ctx)
+	prj, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(projectID, user.ID).
+		First(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -145,10 +147,7 @@ func (r *queryResolver) MyProject(ctx context.Context, id uuid.UUID) (*ent.Proje
 	}
 
 	return r.Ent.Project.Query().
-		Where(project.And(
-			project.IDEQ(id),
-			project.HasOwnerWith(user.IDEQ(owner.ID)),
-		)).
+		ByIDAndOwnedBy(id, owner.ID).
 		First(ctx)
 }
 
