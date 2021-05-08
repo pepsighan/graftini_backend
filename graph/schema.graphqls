@@ -32,6 +32,7 @@ type Page {
   id: ID!
   name: String!
   route: String!
+  markup: String!
 }
 
 type GraphQLQuery {
