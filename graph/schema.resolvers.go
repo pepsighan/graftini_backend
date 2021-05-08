@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent"
+	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 	"github.com/pepsighan/nocodepress_backend/graph/model"
@@ -145,6 +146,23 @@ func (r *mutationResolver) CreateQuery(ctx context.Context, input model.NewGraph
 		SetGqlAst(input.GqlAst).
 		SetQueryOf(pg).
 		Save(ctx)
+}
+
+func (r *mutationResolver) DeleteQuery(ctx context.Context, projectID uuid.UUID, queryID uuid.UUID) (*ent.GraphQLQuery, error) {
+	user := auth.RequiredAuthenticatedUser(ctx)
+
+	pg, err := r.Ent.Project.Query().ByIDAndOwnedBy(projectID, user.ID).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := pg.QueryQueries().Where(graphqlquery.IDEQ(queryID)).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.Ent.GraphQLQuery.DeleteOne(query).Exec(ctx)
+	return query, err
 }
 
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {

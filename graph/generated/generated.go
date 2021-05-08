@@ -60,6 +60,7 @@ type ComplexityRoot struct {
 		CreateProject    func(childComplexity int, input model.NewProject) int
 		CreateQuery      func(childComplexity int, input model.NewGraphQLQuery) int
 		DeletePage       func(childComplexity int, projectID uuid.UUID, pageID uuid.UUID) int
+		DeleteQuery      func(childComplexity int, projectID uuid.UUID, queryID uuid.UUID) int
 		UpdatePageMarkup func(childComplexity int, input model.UpdatePageMarkup) int
 		UpdateProject    func(childComplexity int, input model.UpdateProject) int
 	}
@@ -101,6 +102,7 @@ type MutationResolver interface {
 	UpdatePageMarkup(ctx context.Context, input model.UpdatePageMarkup) (*ent.Page, error)
 	DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error)
 	CreateQuery(ctx context.Context, input model.NewGraphQLQuery) (*ent.GraphQLQuery, error)
+	DeleteQuery(ctx context.Context, projectID uuid.UUID, queryID uuid.UUID) (*ent.GraphQLQuery, error)
 }
 type ProjectResolver interface {
 	Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error)
@@ -195,6 +197,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeletePage(childComplexity, args["projectId"].(uuid.UUID), args["pageId"].(uuid.UUID)), true
+
+	case "Mutation.deleteQuery":
+		if e.complexity.Mutation.DeleteQuery == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteQuery_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteQuery(childComplexity, args["projectId"].(uuid.UUID), args["queryId"].(uuid.UUID)), true
 
 	case "Mutation.updatePageMarkup":
 		if e.complexity.Mutation.UpdatePageMarkup == nil {
@@ -527,6 +541,10 @@ type Mutation {
   Create a new query for a given project.
   """
   createQuery(input: NewGraphQLQuery!): GraphQLQuery! @isAuthenticated
+  """
+  Delete a query from a project.
+  """
+  deleteQuery(projectId: ID!, queryId: ID!): GraphQLQuery! @isAuthenticated
 }
 `, BuiltIn: false},
 }
@@ -602,6 +620,30 @@ func (ec *executionContext) field_Mutation_deletePage_args(ctx context.Context, 
 		}
 	}
 	args["pageId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteQuery_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 uuid.UUID
+	if tmp, ok := rawArgs["projectId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+		arg0, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["projectId"] = arg0
+	var arg1 uuid.UUID
+	if tmp, ok := rawArgs["queryId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("queryId"))
+		arg1, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["queryId"] = arg1
 	return args, nil
 }
 
@@ -1145,6 +1187,68 @@ func (ec *executionContext) _Mutation_createQuery(ctx context.Context, field gra
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().CreateQuery(rctx, args["input"].(model.NewGraphQLQuery))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.GraphQLQuery); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.GraphQLQuery`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.GraphQLQuery)
+	fc.Result = res
+	return ec.marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQuery(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteQuery(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteQuery_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DeleteQuery(rctx, args["projectId"].(uuid.UUID), args["queryId"].(uuid.UUID))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
@@ -3219,6 +3323,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "createQuery":
 			out.Values[i] = ec._Mutation_createQuery(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteQuery":
+			out.Values[i] = ec._Mutation_deleteQuery(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

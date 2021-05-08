@@ -117,4 +117,8 @@ type Mutation {
   Create a new query for a given project.
   """
   createQuery(input: NewGraphQLQuery!): GraphQLQuery! @isAuthenticated
+  """
+  Delete a query from a project.
+  """
+  deleteQuery(projectId: ID!, queryId: ID!): GraphQLQuery! @isAuthenticated
 }
