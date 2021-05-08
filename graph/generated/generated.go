@@ -49,6 +49,12 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	GraphQLQuery struct {
+		GqlAst       func(childComplexity int) int
+		ID           func(childComplexity int) int
+		VariableName func(childComplexity int) int
+	}
+
 	Mutation struct {
 		CreatePage    func(childComplexity int, input model.NewPage) int
 		CreateProject func(childComplexity int, input model.NewProject) int
@@ -67,6 +73,7 @@ type ComplexityRoot struct {
 		ID              func(childComplexity int) int
 		Name            func(childComplexity int) int
 		Pages           func(childComplexity int) int
+		Queries         func(childComplexity int) int
 	}
 
 	Query struct {
@@ -92,6 +99,7 @@ type MutationResolver interface {
 }
 type ProjectResolver interface {
 	Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error)
+	Queries(ctx context.Context, obj *ent.Project) ([]*ent.GraphQLQuery, error)
 }
 type QueryResolver interface {
 	Me(ctx context.Context) (*ent.User, error)
@@ -113,6 +121,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "GraphQLQuery.gqlAst":
+		if e.complexity.GraphQLQuery.GqlAst == nil {
+			break
+		}
+
+		return e.complexity.GraphQLQuery.GqlAst(childComplexity), true
+
+	case "GraphQLQuery.id":
+		if e.complexity.GraphQLQuery.ID == nil {
+			break
+		}
+
+		return e.complexity.GraphQLQuery.ID(childComplexity), true
+
+	case "GraphQLQuery.variableName":
+		if e.complexity.GraphQLQuery.VariableName == nil {
+			break
+		}
+
+		return e.complexity.GraphQLQuery.VariableName(childComplexity), true
 
 	case "Mutation.createPage":
 		if e.complexity.Mutation.CreatePage == nil {
@@ -210,6 +239,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Project.Pages(childComplexity), true
+
+	case "Project.queries":
+		if e.complexity.Project.Queries == nil {
+			break
+		}
+
+		return e.complexity.Project.Queries(childComplexity), true
 
 	case "Query.me":
 		if e.complexity.Query.Me == nil {
@@ -363,12 +399,19 @@ type Project {
   name: String!
   graphqlEndpoint: String
   pages: [Page!]!
+  queries: [GraphQLQuery!]!
 }
 
 type Page {
   id: ID!
   name: String!
   route: String!
+}
+
+type GraphQLQuery {
+  id: ID!
+  variableName: String!
+  gqlAst: String!
 }
 
 type Query {
@@ -572,6 +615,111 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _GraphQLQuery_id(ctx context.Context, field graphql.CollectedField, obj *ent.GraphQLQuery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GraphQLQuery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uuid.UUID)
+	fc.Result = res
+	return ec.marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GraphQLQuery_variableName(ctx context.Context, field graphql.CollectedField, obj *ent.GraphQLQuery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GraphQLQuery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.VariableName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GraphQLQuery_gqlAst(ctx context.Context, field graphql.CollectedField, obj *ent.GraphQLQuery) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GraphQLQuery",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GqlAst, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Mutation_createProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
@@ -1061,6 +1209,41 @@ func (ec *executionContext) _Project_pages(ctx context.Context, field graphql.Co
 	res := resTmp.([]*ent.Page)
 	fc.Result = res
 	return ec.marshalNPage2ᚕᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPageᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_queries(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Project().Queries(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.GraphQLQuery)
+	fc.Result = res
+	return ec.marshalNGraphQLQuery2ᚕᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQueryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_me(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2639,6 +2822,43 @@ func (ec *executionContext) unmarshalInputUpdateProject(ctx context.Context, obj
 
 // region    **************************** object.gotpl ****************************
 
+var graphQLQueryImplementors = []string{"GraphQLQuery"}
+
+func (ec *executionContext) _GraphQLQuery(ctx context.Context, sel ast.SelectionSet, obj *ent.GraphQLQuery) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, graphQLQueryImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GraphQLQuery")
+		case "id":
+			out.Values[i] = ec._GraphQLQuery_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "variableName":
+			out.Values[i] = ec._GraphQLQuery_variableName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "gqlAst":
+			out.Values[i] = ec._GraphQLQuery_gqlAst(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -2754,6 +2974,20 @@ func (ec *executionContext) _Project(ctx context.Context, sel ast.SelectionSet, 
 					}
 				}()
 				res = ec._Project_pages(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "queries":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Project_queries(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -3138,6 +3372,53 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNGraphQLQuery2ᚕᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQueryᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.GraphQLQuery) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQuery(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQuery(ctx context.Context, sel ast.SelectionSet, v *ent.GraphQLQuery) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._GraphQLQuery(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx context.Context, v interface{}) (uuid.UUID, error) {

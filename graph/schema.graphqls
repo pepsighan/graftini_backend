@@ -25,12 +25,19 @@ type Project {
   name: String!
   graphqlEndpoint: String
   pages: [Page!]!
+  queries: [GraphQLQuery!]!
 }
 
 type Page {
   id: ID!
   name: String!
   route: String!
+}
+
+type GraphQLQuery {
+  id: ID!
+  variableName: String!
+  gqlAst: String!
 }
 
 type Query {

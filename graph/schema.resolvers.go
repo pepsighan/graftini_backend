@@ -114,6 +114,10 @@ func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.P
 	return obj.QueryPages().All(ctx)
 }
 
+func (r *projectResolver) Queries(ctx context.Context, obj *ent.Project) ([]*ent.GraphQLQuery, error) {
+	return obj.QueryQueries().All(ctx)
+}
+
 func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {
 	// This will return nil if there is no logged in user.
 	return auth.GetUserFromBearerAuthInContext(ctx, r.Ent, r.FirebaseAuth)
