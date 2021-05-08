@@ -40,6 +40,20 @@ func (pu *PageUpdate) SetRoute(s string) *PageUpdate {
 	return pu
 }
 
+// SetMarkup sets the "markup" field.
+func (pu *PageUpdate) SetMarkup(s string) *PageUpdate {
+	pu.mutation.SetMarkup(s)
+	return pu
+}
+
+// SetNillableMarkup sets the "markup" field if the given value is not nil.
+func (pu *PageUpdate) SetNillableMarkup(s *string) *PageUpdate {
+	if s != nil {
+		pu.SetMarkup(*s)
+	}
+	return pu
+}
+
 // SetPageOfID sets the "pageOf" edge to the Project entity by ID.
 func (pu *PageUpdate) SetPageOfID(id uuid.UUID) *PageUpdate {
 	pu.mutation.SetPageOfID(id)
@@ -77,12 +91,18 @@ func (pu *PageUpdate) Save(ctx context.Context) (int, error) {
 		affected int
 	)
 	if len(pu.hooks) == 0 {
+		if err = pu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = pu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*PageMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = pu.check(); err != nil {
+				return 0, err
 			}
 			pu.mutation = mutation
 			affected, err = pu.sqlSave(ctx)
@@ -121,6 +141,16 @@ func (pu *PageUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (pu *PageUpdate) check() error {
+	if v, ok := pu.mutation.Markup(); ok {
+		if err := page.MarkupValidator(v); err != nil {
+			return &ValidationError{Name: "markup", err: fmt.Errorf("ent: validator failed for field \"markup\": %w", err)}
+		}
+	}
+	return nil
+}
+
 func (pu *PageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -151,6 +181,13 @@ func (pu *PageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: page.FieldRoute,
+		})
+	}
+	if value, ok := pu.mutation.Markup(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: page.FieldMarkup,
 		})
 	}
 	if pu.mutation.PageOfCleared() {
@@ -219,6 +256,20 @@ func (puo *PageUpdateOne) SetRoute(s string) *PageUpdateOne {
 	return puo
 }
 
+// SetMarkup sets the "markup" field.
+func (puo *PageUpdateOne) SetMarkup(s string) *PageUpdateOne {
+	puo.mutation.SetMarkup(s)
+	return puo
+}
+
+// SetNillableMarkup sets the "markup" field if the given value is not nil.
+func (puo *PageUpdateOne) SetNillableMarkup(s *string) *PageUpdateOne {
+	if s != nil {
+		puo.SetMarkup(*s)
+	}
+	return puo
+}
+
 // SetPageOfID sets the "pageOf" edge to the Project entity by ID.
 func (puo *PageUpdateOne) SetPageOfID(id uuid.UUID) *PageUpdateOne {
 	puo.mutation.SetPageOfID(id)
@@ -263,12 +314,18 @@ func (puo *PageUpdateOne) Save(ctx context.Context) (*Page, error) {
 		node *Page
 	)
 	if len(puo.hooks) == 0 {
+		if err = puo.check(); err != nil {
+			return nil, err
+		}
 		node, err = puo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*PageMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = puo.check(); err != nil {
+				return nil, err
 			}
 			puo.mutation = mutation
 			node, err = puo.sqlSave(ctx)
@@ -305,6 +362,16 @@ func (puo *PageUpdateOne) ExecX(ctx context.Context) {
 	if err := puo.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (puo *PageUpdateOne) check() error {
+	if v, ok := puo.mutation.Markup(); ok {
+		if err := page.MarkupValidator(v); err != nil {
+			return &ValidationError{Name: "markup", err: fmt.Errorf("ent: validator failed for field \"markup\": %w", err)}
+		}
+	}
+	return nil
 }
 
 func (puo *PageUpdateOne) sqlSave(ctx context.Context) (_node *Page, err error) {
@@ -354,6 +421,13 @@ func (puo *PageUpdateOne) sqlSave(ctx context.Context) (_node *Page, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: page.FieldRoute,
+		})
+	}
+	if value, ok := puo.mutation.Markup(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: page.FieldMarkup,
 		})
 	}
 	if puo.mutation.PageOfCleared() {

@@ -21,6 +21,8 @@ type Page struct {
 	Name string `json:"name,omitempty"`
 	// Route holds the value of the "route" field.
 	Route string `json:"route,omitempty"`
+	// Markup holds the value of the "markup" field.
+	Markup string `json:"markup,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PageQuery when eager-loading is set.
 	Edges         PageEdges `json:"edges"`
@@ -55,7 +57,7 @@ func (*Page) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case page.FieldName, page.FieldRoute:
+		case page.FieldName, page.FieldRoute, page.FieldMarkup:
 			values[i] = new(sql.NullString)
 		case page.FieldID:
 			values[i] = new(uuid.UUID)
@@ -93,6 +95,12 @@ func (pa *Page) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field route", values[i])
 			} else if value.Valid {
 				pa.Route = value.String
+			}
+		case page.FieldMarkup:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field markup", values[i])
+			} else if value.Valid {
+				pa.Markup = value.String
 			}
 		case page.ForeignKeys[0]:
 			if value, ok := values[i].(*uuid.UUID); !ok {
@@ -137,6 +145,8 @@ func (pa *Page) String() string {
 	builder.WriteString(pa.Name)
 	builder.WriteString(", route=")
 	builder.WriteString(pa.Route)
+	builder.WriteString(", markup=")
+	builder.WriteString(pa.Markup)
 	builder.WriteByte(')')
 	return builder.String()
 }

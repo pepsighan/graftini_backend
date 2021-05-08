@@ -106,6 +106,13 @@ func Route(v string) predicate.Page {
 	})
 }
 
+// Markup applies equality check predicate on the "markup" field. It's identical to MarkupEQ.
+func Markup(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldMarkup), v))
+	})
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
@@ -325,6 +332,117 @@ func RouteEqualFold(v string) predicate.Page {
 func RouteContainsFold(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldRoute), v))
+	})
+}
+
+// MarkupEQ applies the EQ predicate on the "markup" field.
+func MarkupEQ(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldMarkup), v))
+	})
+}
+
+// MarkupNEQ applies the NEQ predicate on the "markup" field.
+func MarkupNEQ(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldMarkup), v))
+	})
+}
+
+// MarkupIn applies the In predicate on the "markup" field.
+func MarkupIn(vs ...string) predicate.Page {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Page(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldMarkup), v...))
+	})
+}
+
+// MarkupNotIn applies the NotIn predicate on the "markup" field.
+func MarkupNotIn(vs ...string) predicate.Page {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Page(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldMarkup), v...))
+	})
+}
+
+// MarkupGT applies the GT predicate on the "markup" field.
+func MarkupGT(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldMarkup), v))
+	})
+}
+
+// MarkupGTE applies the GTE predicate on the "markup" field.
+func MarkupGTE(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldMarkup), v))
+	})
+}
+
+// MarkupLT applies the LT predicate on the "markup" field.
+func MarkupLT(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldMarkup), v))
+	})
+}
+
+// MarkupLTE applies the LTE predicate on the "markup" field.
+func MarkupLTE(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldMarkup), v))
+	})
+}
+
+// MarkupContains applies the Contains predicate on the "markup" field.
+func MarkupContains(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldMarkup), v))
+	})
+}
+
+// MarkupHasPrefix applies the HasPrefix predicate on the "markup" field.
+func MarkupHasPrefix(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldMarkup), v))
+	})
+}
+
+// MarkupHasSuffix applies the HasSuffix predicate on the "markup" field.
+func MarkupHasSuffix(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldMarkup), v))
+	})
+}
+
+// MarkupEqualFold applies the EqualFold predicate on the "markup" field.
+func MarkupEqualFold(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldMarkup), v))
+	})
+}
+
+// MarkupContainsFold applies the ContainsFold predicate on the "markup" field.
+func MarkupContainsFold(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldMarkup), v))
 	})
 }
 

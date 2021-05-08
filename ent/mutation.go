@@ -565,6 +565,7 @@ type PageMutation struct {
 	id            *uuid.UUID
 	name          *string
 	route         *string
+	markup        *string
 	clearedFields map[string]struct{}
 	pageOf        *uuid.UUID
 	clearedpageOf bool
@@ -730,6 +731,42 @@ func (m *PageMutation) ResetRoute() {
 	m.route = nil
 }
 
+// SetMarkup sets the "markup" field.
+func (m *PageMutation) SetMarkup(s string) {
+	m.markup = &s
+}
+
+// Markup returns the value of the "markup" field in the mutation.
+func (m *PageMutation) Markup() (r string, exists bool) {
+	v := m.markup
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMarkup returns the old "markup" field's value of the Page entity.
+// If the Page object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PageMutation) OldMarkup(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldMarkup is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldMarkup requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMarkup: %w", err)
+	}
+	return oldValue.Markup, nil
+}
+
+// ResetMarkup resets all changes to the "markup" field.
+func (m *PageMutation) ResetMarkup() {
+	m.markup = nil
+}
+
 // SetPageOfID sets the "pageOf" edge to the Project entity by id.
 func (m *PageMutation) SetPageOfID(id uuid.UUID) {
 	m.pageOf = &id
@@ -783,12 +820,15 @@ func (m *PageMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PageMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 3)
 	if m.name != nil {
 		fields = append(fields, page.FieldName)
 	}
 	if m.route != nil {
 		fields = append(fields, page.FieldRoute)
+	}
+	if m.markup != nil {
+		fields = append(fields, page.FieldMarkup)
 	}
 	return fields
 }
@@ -802,6 +842,8 @@ func (m *PageMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case page.FieldRoute:
 		return m.Route()
+	case page.FieldMarkup:
+		return m.Markup()
 	}
 	return nil, false
 }
@@ -815,6 +857,8 @@ func (m *PageMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case page.FieldRoute:
 		return m.OldRoute(ctx)
+	case page.FieldMarkup:
+		return m.OldMarkup(ctx)
 	}
 	return nil, fmt.Errorf("unknown Page field %s", name)
 }
@@ -837,6 +881,13 @@ func (m *PageMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRoute(v)
+		return nil
+	case page.FieldMarkup:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMarkup(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Page field %s", name)
@@ -892,6 +943,9 @@ func (m *PageMutation) ResetField(name string) error {
 		return nil
 	case page.FieldRoute:
 		m.ResetRoute()
+		return nil
+	case page.FieldMarkup:
+		m.ResetMarkup()
 		return nil
 	}
 	return fmt.Errorf("unknown Page field %s", name)

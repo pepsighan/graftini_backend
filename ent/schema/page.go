@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"encoding/json"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -18,6 +20,14 @@ func (Page) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
 		field.String("name"),
 		field.String("route"),
+		// This is where the design of the page would be stored in a serialized format.
+		field.String("markup").
+			Default(defaultMarkup()).
+			Validate(func(s string) error {
+				var markup Markup
+				// It is valid only if it can be read into the Markup schema.
+				return json.Unmarshal([]byte(s), &markup)
+			}),
 	}
 }
 

@@ -15,6 +15,8 @@ const (
 	FieldName = "name"
 	// FieldRoute holds the string denoting the route field in the database.
 	FieldRoute = "route"
+	// FieldMarkup holds the string denoting the markup field in the database.
+	FieldMarkup = "markup"
 	// EdgePageOf holds the string denoting the pageof edge name in mutations.
 	EdgePageOf = "pageOf"
 	// Table holds the table name of the page in the database.
@@ -33,6 +35,7 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldRoute,
+	FieldMarkup,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "pages"
@@ -57,6 +60,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultMarkup holds the default value on creation for the "markup" field.
+	DefaultMarkup string
+	// MarkupValidator is a validator for the "markup" field. It is called by the builders before save.
+	MarkupValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

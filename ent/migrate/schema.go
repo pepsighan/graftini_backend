@@ -36,6 +36,7 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "route", Type: field.TypeString},
+		{Name: "markup", Type: field.TypeString, Default: "{\"ROOT\":{\"id\":\"ROOT\",\"component\":\"Root\",\"props\":{\"backgroundColor\":{\"a\":1,\"b\":255,\"g\":255,\"r\":255}},\"isCanvas\":true,\"childrenNodes\":null}}"},
 		{Name: "project_pages", Type: field.TypeUUID, Nullable: true},
 	}
 	// PagesTable holds the schema information for the "pages" table.
@@ -46,7 +47,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "pages_projects_pages",
-				Columns:    []*schema.Column{PagesColumns[3]},
+				Columns:    []*schema.Column{PagesColumns[4]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

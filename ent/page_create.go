@@ -33,6 +33,20 @@ func (pc *PageCreate) SetRoute(s string) *PageCreate {
 	return pc
 }
 
+// SetMarkup sets the "markup" field.
+func (pc *PageCreate) SetMarkup(s string) *PageCreate {
+	pc.mutation.SetMarkup(s)
+	return pc
+}
+
+// SetNillableMarkup sets the "markup" field if the given value is not nil.
+func (pc *PageCreate) SetNillableMarkup(s *string) *PageCreate {
+	if s != nil {
+		pc.SetMarkup(*s)
+	}
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *PageCreate) SetID(u uuid.UUID) *PageCreate {
 	pc.mutation.SetID(u)
@@ -110,6 +124,10 @@ func (pc *PageCreate) SaveX(ctx context.Context) *Page {
 
 // defaults sets the default values of the builder before save.
 func (pc *PageCreate) defaults() {
+	if _, ok := pc.mutation.Markup(); !ok {
+		v := page.DefaultMarkup
+		pc.mutation.SetMarkup(v)
+	}
 	if _, ok := pc.mutation.ID(); !ok {
 		v := page.DefaultID()
 		pc.mutation.SetID(v)
@@ -123,6 +141,14 @@ func (pc *PageCreate) check() error {
 	}
 	if _, ok := pc.mutation.Route(); !ok {
 		return &ValidationError{Name: "route", err: errors.New("ent: missing required field \"route\"")}
+	}
+	if _, ok := pc.mutation.Markup(); !ok {
+		return &ValidationError{Name: "markup", err: errors.New("ent: missing required field \"markup\"")}
+	}
+	if v, ok := pc.mutation.Markup(); ok {
+		if err := page.MarkupValidator(v); err != nil {
+			return &ValidationError{Name: "markup", err: fmt.Errorf("ent: validator failed for field \"markup\": %w", err)}
+		}
 	}
 	return nil
 }
@@ -168,6 +194,14 @@ func (pc *PageCreate) createSpec() (*Page, *sqlgraph.CreateSpec) {
 			Column: page.FieldRoute,
 		})
 		_node.Route = value
+	}
+	if value, ok := pc.mutation.Markup(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: page.FieldMarkup,
+		})
+		_node.Markup = value
 	}
 	if nodes := pc.mutation.PageOfIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
