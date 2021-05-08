@@ -42,11 +42,11 @@ type Query {
   """
   Lists all the projects of the logged in user.
   """
-  myProjects: [Project!]!
+  myProjects: [Project!]! @isAuthenticated
   """
   Gets the project by ID for the logged in user.
   """
-  myProject(id: ID!): Project!
+  myProject(id: ID!): Project! @isAuthenticated
 }
 
 # --------------------------------------
@@ -74,19 +74,19 @@ type Mutation {
   Creates a new project for the logged in user. It will also create a default page
   with the project.
   """
-  createProject(input: NewProject!): Project!
+  createProject(input: NewProject!): Project! @isAuthenticated
   """
   Update the project of the logged in user.
   """
-  updateProject(input: UpdateProject!): Project!
+  updateProject(input: UpdateProject!): Project! @isAuthenticated
   """
   Create a page on an existing project for the logged in user.
   """
-  createPage(input: NewPage!): Page!
+  createPage(input: NewPage!): Page! @isAuthenticated
   """
   Delete a page on an existing project for the logged in user. It does not
   however delete if it is the last page of the project. In that case, it
   will throw error.
   """
-  deletePage(projectId: ID!, pageId: ID!): Page!
+  deletePage(projectId: ID!, pageId: ID!): Page! @isAuthenticated
 }

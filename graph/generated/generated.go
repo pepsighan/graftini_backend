@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -339,6 +340,10 @@ var sources = []*ast.Source{
 # Directives are written below.
 # --------------------------------------
 
+"""
+This directive only allows request to pass through if it is authenticated. Also, it inserts
+the authenticated user into the request context.
+"""
 directive @isAuthenticated on FIELD_DEFINITION
 
 # --------------------------------------
@@ -375,11 +380,11 @@ type Query {
   """
   Lists all the projects of the logged in user.
   """
-  myProjects: [Project!]!
+  myProjects: [Project!]! @isAuthenticated
   """
   Gets the project by ID for the logged in user.
   """
-  myProject(id: ID!): Project!
+  myProject(id: ID!): Project! @isAuthenticated
 }
 
 # --------------------------------------
@@ -407,21 +412,21 @@ type Mutation {
   Creates a new project for the logged in user. It will also create a default page
   with the project.
   """
-  createProject(input: NewProject!): Project!
+  createProject(input: NewProject!): Project! @isAuthenticated
   """
   Update the project of the logged in user.
   """
-  updateProject(input: UpdateProject!): Project!
+  updateProject(input: UpdateProject!): Project! @isAuthenticated
   """
   Create a page on an existing project for the logged in user.
   """
-  createPage(input: NewPage!): Page!
+  createPage(input: NewPage!): Page! @isAuthenticated
   """
   Delete a page on an existing project for the logged in user. It does not
   however delete if it is the last page of the project. In that case, it
   will throw error.
   """
-  deletePage(projectId: ID!, pageId: ID!): Page!
+  deletePage(projectId: ID!, pageId: ID!): Page! @isAuthenticated
 }
 `, BuiltIn: false},
 }
@@ -592,8 +597,28 @@ func (ec *executionContext) _Mutation_createProject(ctx context.Context, field g
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateProject(rctx, args["input"].(model.NewProject))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreateProject(rctx, args["input"].(model.NewProject))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.Project); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Project`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -634,8 +659,28 @@ func (ec *executionContext) _Mutation_updateProject(ctx context.Context, field g
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateProject(rctx, args["input"].(model.UpdateProject))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UpdateProject(rctx, args["input"].(model.UpdateProject))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.Project); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Project`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -676,8 +721,28 @@ func (ec *executionContext) _Mutation_createPage(ctx context.Context, field grap
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreatePage(rctx, args["input"].(model.NewPage))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreatePage(rctx, args["input"].(model.NewPage))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.Page); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Page`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -718,8 +783,28 @@ func (ec *executionContext) _Mutation_deletePage(ctx context.Context, field grap
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeletePage(rctx, args["projectId"].(uuid.UUID), args["pageId"].(uuid.UUID))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DeletePage(rctx, args["projectId"].(uuid.UUID), args["pageId"].(uuid.UUID))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.Page); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Page`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1027,8 +1112,28 @@ func (ec *executionContext) _Query_myProjects(ctx context.Context, field graphql
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().MyProjects(rctx)
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().MyProjects(rctx)
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.([]*ent.Project); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/pepsighan/nocodepress_backend/ent.Project`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1069,8 +1174,28 @@ func (ec *executionContext) _Query_myProject(ctx context.Context, field graphql.
 	}
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().MyProject(rctx, args["id"].(uuid.UUID))
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().MyProject(rctx, args["id"].(uuid.UUID))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.Project); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Project`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
