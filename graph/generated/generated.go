@@ -56,10 +56,11 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreatePage    func(childComplexity int, input model.NewPage) int
-		CreateProject func(childComplexity int, input model.NewProject) int
-		DeletePage    func(childComplexity int, projectID uuid.UUID, pageID uuid.UUID) int
-		UpdateProject func(childComplexity int, input model.UpdateProject) int
+		CreatePage       func(childComplexity int, input model.NewPage) int
+		CreateProject    func(childComplexity int, input model.NewProject) int
+		DeletePage       func(childComplexity int, projectID uuid.UUID, pageID uuid.UUID) int
+		UpdatePageMarkup func(childComplexity int, input model.UpdatePageMarkup) int
+		UpdateProject    func(childComplexity int, input model.UpdateProject) int
 	}
 
 	Page struct {
@@ -96,6 +97,7 @@ type MutationResolver interface {
 	CreateProject(ctx context.Context, input model.NewProject) (*ent.Project, error)
 	UpdateProject(ctx context.Context, input model.UpdateProject) (*ent.Project, error)
 	CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error)
+	UpdatePageMarkup(ctx context.Context, input model.UpdatePageMarkup) (*ent.Page, error)
 	DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error)
 }
 type ProjectResolver interface {
@@ -179,6 +181,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeletePage(childComplexity, args["projectId"].(uuid.UUID), args["pageId"].(uuid.UUID)), true
+
+	case "Mutation.updatePageMarkup":
+		if e.complexity.Mutation.UpdatePageMarkup == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updatePageMarkup_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdatePageMarkup(childComplexity, args["input"].(model.UpdatePageMarkup)), true
 
 	case "Mutation.updateProject":
 		if e.complexity.Mutation.UpdateProject == nil {
@@ -459,6 +473,12 @@ input NewPage {
   route: String!
 }
 
+input UpdatePageMarkup {
+  projectId: ID!
+  pageId: ID!
+  markup: String!
+}
+
 type Mutation {
   """
   Creates a new project for the logged in user. It will also create a default page
@@ -473,6 +493,10 @@ type Mutation {
   Create a page on an existing project for the logged in user.
   """
   createPage(input: NewPage!): Page! @isAuthenticated
+  """
+  Update the markup in a given page.
+  """
+  updatePageMarkup(input: UpdatePageMarkup!): Page! @isAuthenticated
   """
   Delete a page on an existing project for the logged in user. It does not
   however delete if it is the last page of the project. In that case, it
@@ -539,6 +563,21 @@ func (ec *executionContext) field_Mutation_deletePage_args(ctx context.Context, 
 		}
 	}
 	args["pageId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updatePageMarkup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdatePageMarkup
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdatePageMarkup2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐUpdatePageMarkup(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -881,6 +920,68 @@ func (ec *executionContext) _Mutation_createPage(ctx context.Context, field grap
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().CreatePage(rctx, args["input"].(model.NewPage))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.Page); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Page`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Page)
+	fc.Result = res
+	return ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPage(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updatePageMarkup(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updatePageMarkup_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().UpdatePageMarkup(rctx, args["input"].(model.UpdatePageMarkup))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
@@ -2822,6 +2923,42 @@ func (ec *executionContext) unmarshalInputNewProject(ctx context.Context, obj in
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdatePageMarkup(ctx context.Context, obj interface{}) (model.UpdatePageMarkup, error) {
+	var it model.UpdatePageMarkup
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "projectId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+			it.ProjectID, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "pageId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pageId"))
+			it.PageID, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "markup":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("markup"))
+			it.Markup, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateProject(ctx context.Context, obj interface{}) (model.UpdateProject, error) {
 	var it model.UpdateProject
 	var asMap = obj.(map[string]interface{})
@@ -2930,6 +3067,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "createPage":
 			out.Values[i] = ec._Mutation_createPage(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updatePageMarkup":
+			out.Values[i] = ec._Mutation_updatePageMarkup(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3610,6 +3752,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNUpdatePageMarkup2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐUpdatePageMarkup(ctx context.Context, v interface{}) (model.UpdatePageMarkup, error) {
+	res, err := ec.unmarshalInputUpdatePageMarkup(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNUpdateProject2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐUpdateProject(ctx context.Context, v interface{}) (model.UpdateProject, error) {

@@ -16,6 +16,12 @@ type NewProject struct {
 	Name string `json:"name"`
 }
 
+type UpdatePageMarkup struct {
+	ProjectID uuid.UUID `json:"projectId"`
+	PageID    uuid.UUID `json:"pageId"`
+	Markup    string    `json:"markup"`
+}
+
 type UpdateProject struct {
 	ID              uuid.UUID `json:"id"`
 	Name            string    `json:"name"`

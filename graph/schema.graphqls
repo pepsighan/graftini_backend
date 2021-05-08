@@ -77,6 +77,12 @@ input NewPage {
   route: String!
 }
 
+input UpdatePageMarkup {
+  projectId: ID!
+  pageId: ID!
+  markup: String!
+}
+
 type Mutation {
   """
   Creates a new project for the logged in user. It will also create a default page
@@ -91,6 +97,10 @@ type Mutation {
   Create a page on an existing project for the logged in user.
   """
   createPage(input: NewPage!): Page! @isAuthenticated
+  """
+  Update the markup in a given page.
+  """
+  updatePageMarkup(input: UpdatePageMarkup!): Page! @isAuthenticated
   """
   Delete a page on an existing project for the logged in user. It does not
   however delete if it is the last page of the project. In that case, it

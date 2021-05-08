@@ -78,6 +78,28 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) 
 		Save(ctx)
 }
 
+func (r *mutationResolver) UpdatePageMarkup(ctx context.Context, input model.UpdatePageMarkup) (*ent.Page, error) {
+	user := auth.RequiredAuthenticatedUser(ctx)
+
+	prj, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(input.ProjectID, user.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	pg, err := prj.QueryPages().
+		Where(page.IDEQ(input.PageID)).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return pg.Update().
+		SetMarkup(input.Markup).
+		Save(ctx)
+}
+
 func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 
