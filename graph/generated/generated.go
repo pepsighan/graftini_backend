@@ -44,6 +44,7 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
+	IsAuthenticated func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -335,6 +336,12 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "graph/schema.graphqls", Input: `# --------------------------------------
+# Directives are written below.
+# --------------------------------------
+
+directive @isAuthenticated on FIELD_DEFINITION
+
+# --------------------------------------
 # Queries are written below.
 # --------------------------------------
 

@@ -1,4 +1,14 @@
 # --------------------------------------
+# Directives are written below.
+# --------------------------------------
+
+"""
+This directive only allows request to pass through if it is authenticated. Also, it inserts
+the authenticated user into the request context.
+"""
+directive @isAuthenticated on FIELD_DEFINITION
+
+# --------------------------------------
 # Queries are written below.
 # --------------------------------------
 

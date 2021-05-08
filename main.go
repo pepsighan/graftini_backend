@@ -37,9 +37,12 @@ func firebaseAuth() *authFirebase.Client {
 }
 
 func graphqlHandler(client *ent.Client) echo.HandlerFunc {
-	h := handler.NewDefaultServer(generated.NewExecutableSchema(
-		generated.Config{Resolvers: graph.NewResolver(client, firebaseAuth())},
-	))
+	firebaseClient := firebaseAuth()
+
+	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
+		Resolvers:  graph.NewResolver(client, firebaseClient),
+		Directives: graph.NewDirective(client, firebaseClient),
+	}))
 
 	return func(c echo.Context) error {
 		ctx := auth.WithBearerAuth(c)

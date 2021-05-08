@@ -107,6 +107,12 @@ func WithBearerAuth(c echo.Context) context.Context {
 	return context.WithValue(ctx, authContextKey, &AuthContext{c, splits[1]})
 }
 
+// WithAuthUser adds the user to the context and returns a new one.
+func WithAuthUser(ctx context.Context, user *ent.User) context.Context {
+	return context.WithValue(ctx, authUserContextKey, user)
+}
+
 type contextKey string
 
 const authContextKey contextKey = "authContext"
+const authUserContextKey contextKey = "authUserContext"
