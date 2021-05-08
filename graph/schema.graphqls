@@ -24,8 +24,18 @@ type Page {
 }
 
 type Query {
+  """
+  The currently logged in user if the request is authenticated. It will return
+  null if not authenticated.
+  """
   me: User
+  """
+  Lists all the projects of the logged in user.
+  """
   myProjects: [Project!]!
+  """
+  Gets the project by ID for the logged in user.
+  """
   myProject(id: ID!): Project!
 }
 
@@ -50,8 +60,23 @@ input NewPage {
 }
 
 type Mutation {
+  """
+  Creates a new project for the logged in user. It will also create a default page
+  with the project.
+  """
   createProject(input: NewProject!): Project!
+  """
+  Update the project of the logged in user.
+  """
   updateProject(input: UpdateProject!): Project!
+  """
+  Create a page on an existing project for the logged in user.
+  """
   createPage(input: NewPage!): Page!
+  """
+  Delete a page on an existing project for the logged in user. It does not
+  however delete if it is the last page of the project. In that case, it
+  will throw error.
+  """
   deletePage(projectId: ID!, pageId: ID!): Page!
 }
