@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/predicate"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
@@ -26,10 +27,535 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypePage    = "Page"
-	TypeProject = "Project"
-	TypeUser    = "User"
+	TypeGraphQLQuery = "GraphQLQuery"
+	TypePage         = "Page"
+	TypeProject      = "Project"
+	TypeUser         = "User"
 )
+
+// GraphQLQueryMutation represents an operation that mutates the GraphQLQuery nodes in the graph.
+type GraphQLQueryMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *uuid.UUID
+	variableName   *string
+	gqlAst         *string
+	created_at     *time.Time
+	updated_at     *time.Time
+	clearedFields  map[string]struct{}
+	queryOf        *uuid.UUID
+	clearedqueryOf bool
+	done           bool
+	oldValue       func(context.Context) (*GraphQLQuery, error)
+	predicates     []predicate.GraphQLQuery
+}
+
+var _ ent.Mutation = (*GraphQLQueryMutation)(nil)
+
+// graphqlqueryOption allows management of the mutation configuration using functional options.
+type graphqlqueryOption func(*GraphQLQueryMutation)
+
+// newGraphQLQueryMutation creates new mutation for the GraphQLQuery entity.
+func newGraphQLQueryMutation(c config, op Op, opts ...graphqlqueryOption) *GraphQLQueryMutation {
+	m := &GraphQLQueryMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeGraphQLQuery,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withGraphQLQueryID sets the ID field of the mutation.
+func withGraphQLQueryID(id uuid.UUID) graphqlqueryOption {
+	return func(m *GraphQLQueryMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *GraphQLQuery
+		)
+		m.oldValue = func(ctx context.Context) (*GraphQLQuery, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().GraphQLQuery.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withGraphQLQuery sets the old GraphQLQuery of the mutation.
+func withGraphQLQuery(node *GraphQLQuery) graphqlqueryOption {
+	return func(m *GraphQLQueryMutation) {
+		m.oldValue = func(context.Context) (*GraphQLQuery, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m GraphQLQueryMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m GraphQLQueryMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of GraphQLQuery entities.
+func (m *GraphQLQueryMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID
+// is only available if it was provided to the builder.
+func (m *GraphQLQueryMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetVariableName sets the "variableName" field.
+func (m *GraphQLQueryMutation) SetVariableName(s string) {
+	m.variableName = &s
+}
+
+// VariableName returns the value of the "variableName" field in the mutation.
+func (m *GraphQLQueryMutation) VariableName() (r string, exists bool) {
+	v := m.variableName
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVariableName returns the old "variableName" field's value of the GraphQLQuery entity.
+// If the GraphQLQuery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GraphQLQueryMutation) OldVariableName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldVariableName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldVariableName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVariableName: %w", err)
+	}
+	return oldValue.VariableName, nil
+}
+
+// ResetVariableName resets all changes to the "variableName" field.
+func (m *GraphQLQueryMutation) ResetVariableName() {
+	m.variableName = nil
+}
+
+// SetGqlAst sets the "gqlAst" field.
+func (m *GraphQLQueryMutation) SetGqlAst(s string) {
+	m.gqlAst = &s
+}
+
+// GqlAst returns the value of the "gqlAst" field in the mutation.
+func (m *GraphQLQueryMutation) GqlAst() (r string, exists bool) {
+	v := m.gqlAst
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGqlAst returns the old "gqlAst" field's value of the GraphQLQuery entity.
+// If the GraphQLQuery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GraphQLQueryMutation) OldGqlAst(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldGqlAst is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldGqlAst requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGqlAst: %w", err)
+	}
+	return oldValue.GqlAst, nil
+}
+
+// ResetGqlAst resets all changes to the "gqlAst" field.
+func (m *GraphQLQueryMutation) ResetGqlAst() {
+	m.gqlAst = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *GraphQLQueryMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *GraphQLQueryMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the GraphQLQuery entity.
+// If the GraphQLQuery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GraphQLQueryMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *GraphQLQueryMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *GraphQLQueryMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *GraphQLQueryMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the GraphQLQuery entity.
+// If the GraphQLQuery object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GraphQLQueryMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *GraphQLQueryMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetQueryOfID sets the "queryOf" edge to the Project entity by id.
+func (m *GraphQLQueryMutation) SetQueryOfID(id uuid.UUID) {
+	m.queryOf = &id
+}
+
+// ClearQueryOf clears the "queryOf" edge to the Project entity.
+func (m *GraphQLQueryMutation) ClearQueryOf() {
+	m.clearedqueryOf = true
+}
+
+// QueryOfCleared reports if the "queryOf" edge to the Project entity was cleared.
+func (m *GraphQLQueryMutation) QueryOfCleared() bool {
+	return m.clearedqueryOf
+}
+
+// QueryOfID returns the "queryOf" edge ID in the mutation.
+func (m *GraphQLQueryMutation) QueryOfID() (id uuid.UUID, exists bool) {
+	if m.queryOf != nil {
+		return *m.queryOf, true
+	}
+	return
+}
+
+// QueryOfIDs returns the "queryOf" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// QueryOfID instead. It exists only for internal usage by the builders.
+func (m *GraphQLQueryMutation) QueryOfIDs() (ids []uuid.UUID) {
+	if id := m.queryOf; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetQueryOf resets all changes to the "queryOf" edge.
+func (m *GraphQLQueryMutation) ResetQueryOf() {
+	m.queryOf = nil
+	m.clearedqueryOf = false
+}
+
+// Op returns the operation name.
+func (m *GraphQLQueryMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (GraphQLQuery).
+func (m *GraphQLQueryMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *GraphQLQueryMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.variableName != nil {
+		fields = append(fields, graphqlquery.FieldVariableName)
+	}
+	if m.gqlAst != nil {
+		fields = append(fields, graphqlquery.FieldGqlAst)
+	}
+	if m.created_at != nil {
+		fields = append(fields, graphqlquery.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, graphqlquery.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *GraphQLQueryMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case graphqlquery.FieldVariableName:
+		return m.VariableName()
+	case graphqlquery.FieldGqlAst:
+		return m.GqlAst()
+	case graphqlquery.FieldCreatedAt:
+		return m.CreatedAt()
+	case graphqlquery.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *GraphQLQueryMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case graphqlquery.FieldVariableName:
+		return m.OldVariableName(ctx)
+	case graphqlquery.FieldGqlAst:
+		return m.OldGqlAst(ctx)
+	case graphqlquery.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case graphqlquery.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown GraphQLQuery field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *GraphQLQueryMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case graphqlquery.FieldVariableName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVariableName(v)
+		return nil
+	case graphqlquery.FieldGqlAst:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGqlAst(v)
+		return nil
+	case graphqlquery.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case graphqlquery.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown GraphQLQuery field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *GraphQLQueryMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *GraphQLQueryMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *GraphQLQueryMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown GraphQLQuery numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *GraphQLQueryMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *GraphQLQueryMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *GraphQLQueryMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown GraphQLQuery nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *GraphQLQueryMutation) ResetField(name string) error {
+	switch name {
+	case graphqlquery.FieldVariableName:
+		m.ResetVariableName()
+		return nil
+	case graphqlquery.FieldGqlAst:
+		m.ResetGqlAst()
+		return nil
+	case graphqlquery.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case graphqlquery.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown GraphQLQuery field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *GraphQLQueryMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.queryOf != nil {
+		edges = append(edges, graphqlquery.EdgeQueryOf)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *GraphQLQueryMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case graphqlquery.EdgeQueryOf:
+		if id := m.queryOf; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *GraphQLQueryMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *GraphQLQueryMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *GraphQLQueryMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedqueryOf {
+		edges = append(edges, graphqlquery.EdgeQueryOf)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *GraphQLQueryMutation) EdgeCleared(name string) bool {
+	switch name {
+	case graphqlquery.EdgeQueryOf:
+		return m.clearedqueryOf
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *GraphQLQueryMutation) ClearEdge(name string) error {
+	switch name {
+	case graphqlquery.EdgeQueryOf:
+		m.ClearQueryOf()
+		return nil
+	}
+	return fmt.Errorf("unknown GraphQLQuery unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *GraphQLQueryMutation) ResetEdge(name string) error {
+	switch name {
+	case graphqlquery.EdgeQueryOf:
+		m.ResetQueryOf()
+		return nil
+	}
+	return fmt.Errorf("unknown GraphQLQuery edge %s", name)
+}
 
 // PageMutation represents an operation that mutates the Page nodes in the graph.
 type PageMutation struct {
@@ -463,6 +989,9 @@ type ProjectMutation struct {
 	pages            map[uuid.UUID]struct{}
 	removedpages     map[uuid.UUID]struct{}
 	clearedpages     bool
+	queries          map[uuid.UUID]struct{}
+	removedqueries   map[uuid.UUID]struct{}
+	clearedqueries   bool
 	done             bool
 	oldValue         func(context.Context) (*Project, error)
 	predicates       []predicate.Project
@@ -802,6 +1331,59 @@ func (m *ProjectMutation) ResetPages() {
 	m.removedpages = nil
 }
 
+// AddQueryIDs adds the "queries" edge to the GraphQLQuery entity by ids.
+func (m *ProjectMutation) AddQueryIDs(ids ...uuid.UUID) {
+	if m.queries == nil {
+		m.queries = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.queries[ids[i]] = struct{}{}
+	}
+}
+
+// ClearQueries clears the "queries" edge to the GraphQLQuery entity.
+func (m *ProjectMutation) ClearQueries() {
+	m.clearedqueries = true
+}
+
+// QueriesCleared reports if the "queries" edge to the GraphQLQuery entity was cleared.
+func (m *ProjectMutation) QueriesCleared() bool {
+	return m.clearedqueries
+}
+
+// RemoveQueryIDs removes the "queries" edge to the GraphQLQuery entity by IDs.
+func (m *ProjectMutation) RemoveQueryIDs(ids ...uuid.UUID) {
+	if m.removedqueries == nil {
+		m.removedqueries = make(map[uuid.UUID]struct{})
+	}
+	for i := range ids {
+		m.removedqueries[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedQueries returns the removed IDs of the "queries" edge to the GraphQLQuery entity.
+func (m *ProjectMutation) RemovedQueriesIDs() (ids []uuid.UUID) {
+	for id := range m.removedqueries {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// QueriesIDs returns the "queries" edge IDs in the mutation.
+func (m *ProjectMutation) QueriesIDs() (ids []uuid.UUID) {
+	for id := range m.queries {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetQueries resets all changes to the "queries" edge.
+func (m *ProjectMutation) ResetQueries() {
+	m.queries = nil
+	m.clearedqueries = false
+	m.removedqueries = nil
+}
+
 // Op returns the operation name.
 func (m *ProjectMutation) Op() Op {
 	return m.op
@@ -975,12 +1557,15 @@ func (m *ProjectMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ProjectMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.owner != nil {
 		edges = append(edges, project.EdgeOwner)
 	}
 	if m.pages != nil {
 		edges = append(edges, project.EdgePages)
+	}
+	if m.queries != nil {
+		edges = append(edges, project.EdgeQueries)
 	}
 	return edges
 }
@@ -999,15 +1584,24 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeQueries:
+		ids := make([]ent.Value, 0, len(m.queries))
+		for id := range m.queries {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ProjectMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedpages != nil {
 		edges = append(edges, project.EdgePages)
+	}
+	if m.removedqueries != nil {
+		edges = append(edges, project.EdgeQueries)
 	}
 	return edges
 }
@@ -1022,18 +1616,27 @@ func (m *ProjectMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeQueries:
+		ids := make([]ent.Value, 0, len(m.removedqueries))
+		for id := range m.removedqueries {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ProjectMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedowner {
 		edges = append(edges, project.EdgeOwner)
 	}
 	if m.clearedpages {
 		edges = append(edges, project.EdgePages)
+	}
+	if m.clearedqueries {
+		edges = append(edges, project.EdgeQueries)
 	}
 	return edges
 }
@@ -1046,6 +1649,8 @@ func (m *ProjectMutation) EdgeCleared(name string) bool {
 		return m.clearedowner
 	case project.EdgePages:
 		return m.clearedpages
+	case project.EdgeQueries:
+		return m.clearedqueries
 	}
 	return false
 }
@@ -1070,6 +1675,9 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 		return nil
 	case project.EdgePages:
 		m.ResetPages()
+		return nil
+	case project.EdgeQueries:
+		m.ResetQueries()
 		return nil
 	}
 	return fmt.Errorf("unknown Project edge %s", name)

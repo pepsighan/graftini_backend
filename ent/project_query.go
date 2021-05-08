@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/predicate"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
@@ -29,9 +30,10 @@ type ProjectQuery struct {
 	fields     []string
 	predicates []predicate.Project
 	// eager-loading edges.
-	withOwner *UserQuery
-	withPages *PageQuery
-	withFKs   bool
+	withOwner   *UserQuery
+	withPages   *PageQuery
+	withQueries *GraphQLQueryQuery
+	withFKs     bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -105,6 +107,28 @@ func (pq *ProjectQuery) QueryPages() *PageQuery {
 			sqlgraph.From(project.Table, project.FieldID, selector),
 			sqlgraph.To(page.Table, page.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, project.PagesTable, project.PagesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryQueries chains the current query on the "queries" edge.
+func (pq *ProjectQuery) QueryQueries() *GraphQLQueryQuery {
+	query := &GraphQLQueryQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, selector),
+			sqlgraph.To(graphqlquery.Table, graphqlquery.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.QueriesTable, project.QueriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -288,13 +312,14 @@ func (pq *ProjectQuery) Clone() *ProjectQuery {
 		return nil
 	}
 	return &ProjectQuery{
-		config:     pq.config,
-		limit:      pq.limit,
-		offset:     pq.offset,
-		order:      append([]OrderFunc{}, pq.order...),
-		predicates: append([]predicate.Project{}, pq.predicates...),
-		withOwner:  pq.withOwner.Clone(),
-		withPages:  pq.withPages.Clone(),
+		config:      pq.config,
+		limit:       pq.limit,
+		offset:      pq.offset,
+		order:       append([]OrderFunc{}, pq.order...),
+		predicates:  append([]predicate.Project{}, pq.predicates...),
+		withOwner:   pq.withOwner.Clone(),
+		withPages:   pq.withPages.Clone(),
+		withQueries: pq.withQueries.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -320,6 +345,17 @@ func (pq *ProjectQuery) WithPages(opts ...func(*PageQuery)) *ProjectQuery {
 		opt(query)
 	}
 	pq.withPages = query
+	return pq
+}
+
+// WithQueries tells the query-builder to eager-load the nodes that are connected to
+// the "queries" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *ProjectQuery) WithQueries(opts ...func(*GraphQLQueryQuery)) *ProjectQuery {
+	query := &GraphQLQueryQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withQueries = query
 	return pq
 }
 
@@ -389,9 +425,10 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 		nodes       = []*Project{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			pq.withOwner != nil,
 			pq.withPages != nil,
+			pq.withQueries != nil,
 		}
 	)
 	if pq.withOwner != nil {
@@ -475,6 +512,35 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "project_pages" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Pages = append(node.Edges.Pages, n)
+		}
+	}
+
+	if query := pq.withQueries; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uuid.UUID]*Project)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Queries = []*GraphQLQuery{}
+		}
+		query.withFKs = true
+		query.Where(predicate.GraphQLQuery(func(s *sql.Selector) {
+			s.Where(sql.InValues(project.QueriesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.project_queries
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "project_queries" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "project_queries" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Queries = append(node.Edges.Queries, n)
 		}
 	}
 

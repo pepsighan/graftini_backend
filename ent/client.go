@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent/migrate"
 
+	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 	"github.com/pepsighan/nocodepress_backend/ent/user"
@@ -24,6 +25,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// GraphQLQuery is the client for interacting with the GraphQLQuery builders.
+	GraphQLQuery *GraphQLQueryClient
 	// Page is the client for interacting with the Page builders.
 	Page *PageClient
 	// Project is the client for interacting with the Project builders.
@@ -43,6 +46,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.GraphQLQuery = NewGraphQLQueryClient(c.config)
 	c.Page = NewPageClient(c.config)
 	c.Project = NewProjectClient(c.config)
 	c.User = NewUserClient(c.config)
@@ -77,11 +81,12 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Page:    NewPageClient(cfg),
-		Project: NewProjectClient(cfg),
-		User:    NewUserClient(cfg),
+		ctx:          ctx,
+		config:       cfg,
+		GraphQLQuery: NewGraphQLQueryClient(cfg),
+		Page:         NewPageClient(cfg),
+		Project:      NewProjectClient(cfg),
+		User:         NewUserClient(cfg),
 	}, nil
 }
 
@@ -99,17 +104,18 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:  cfg,
-		Page:    NewPageClient(cfg),
-		Project: NewProjectClient(cfg),
-		User:    NewUserClient(cfg),
+		config:       cfg,
+		GraphQLQuery: NewGraphQLQueryClient(cfg),
+		Page:         NewPageClient(cfg),
+		Project:      NewProjectClient(cfg),
+		User:         NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Page.
+//		GraphQLQuery.
 //		Query().
 //		Count(ctx)
 //
@@ -132,9 +138,116 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.GraphQLQuery.Use(hooks...)
 	c.Page.Use(hooks...)
 	c.Project.Use(hooks...)
 	c.User.Use(hooks...)
+}
+
+// GraphQLQueryClient is a client for the GraphQLQuery schema.
+type GraphQLQueryClient struct {
+	config
+}
+
+// NewGraphQLQueryClient returns a client for the GraphQLQuery from the given config.
+func NewGraphQLQueryClient(c config) *GraphQLQueryClient {
+	return &GraphQLQueryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `graphqlquery.Hooks(f(g(h())))`.
+func (c *GraphQLQueryClient) Use(hooks ...Hook) {
+	c.hooks.GraphQLQuery = append(c.hooks.GraphQLQuery, hooks...)
+}
+
+// Create returns a create builder for GraphQLQuery.
+func (c *GraphQLQueryClient) Create() *GraphQLQueryCreate {
+	mutation := newGraphQLQueryMutation(c.config, OpCreate)
+	return &GraphQLQueryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of GraphQLQuery entities.
+func (c *GraphQLQueryClient) CreateBulk(builders ...*GraphQLQueryCreate) *GraphQLQueryCreateBulk {
+	return &GraphQLQueryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for GraphQLQuery.
+func (c *GraphQLQueryClient) Update() *GraphQLQueryUpdate {
+	mutation := newGraphQLQueryMutation(c.config, OpUpdate)
+	return &GraphQLQueryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *GraphQLQueryClient) UpdateOne(gqq *GraphQLQuery) *GraphQLQueryUpdateOne {
+	mutation := newGraphQLQueryMutation(c.config, OpUpdateOne, withGraphQLQuery(gqq))
+	return &GraphQLQueryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *GraphQLQueryClient) UpdateOneID(id uuid.UUID) *GraphQLQueryUpdateOne {
+	mutation := newGraphQLQueryMutation(c.config, OpUpdateOne, withGraphQLQueryID(id))
+	return &GraphQLQueryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for GraphQLQuery.
+func (c *GraphQLQueryClient) Delete() *GraphQLQueryDelete {
+	mutation := newGraphQLQueryMutation(c.config, OpDelete)
+	return &GraphQLQueryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *GraphQLQueryClient) DeleteOne(gqq *GraphQLQuery) *GraphQLQueryDeleteOne {
+	return c.DeleteOneID(gqq.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *GraphQLQueryClient) DeleteOneID(id uuid.UUID) *GraphQLQueryDeleteOne {
+	builder := c.Delete().Where(graphqlquery.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &GraphQLQueryDeleteOne{builder}
+}
+
+// Query returns a query builder for GraphQLQuery.
+func (c *GraphQLQueryClient) Query() *GraphQLQueryQuery {
+	return &GraphQLQueryQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a GraphQLQuery entity by its id.
+func (c *GraphQLQueryClient) Get(ctx context.Context, id uuid.UUID) (*GraphQLQuery, error) {
+	return c.Query().Where(graphqlquery.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *GraphQLQueryClient) GetX(ctx context.Context, id uuid.UUID) *GraphQLQuery {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryQueryOf queries the queryOf edge of a GraphQLQuery.
+func (c *GraphQLQueryClient) QueryQueryOf(gqq *GraphQLQuery) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := gqq.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(graphqlquery.Table, graphqlquery.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, graphqlquery.QueryOfTable, graphqlquery.QueryOfColumn),
+		)
+		fromV = sqlgraph.Neighbors(gqq.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *GraphQLQueryClient) Hooks() []Hook {
+	return c.hooks.GraphQLQuery
 }
 
 // PageClient is a client for the Page schema.
@@ -353,6 +466,22 @@ func (c *ProjectClient) QueryPages(pr *Project) *PageQuery {
 			sqlgraph.From(project.Table, project.FieldID, id),
 			sqlgraph.To(page.Table, page.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, project.PagesTable, project.PagesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryQueries queries the queries edge of a Project.
+func (c *ProjectClient) QueryQueries(pr *Project) *GraphQLQueryQuery {
+	query := &GraphQLQueryQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(graphqlquery.Table, graphqlquery.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.QueriesTable, project.QueriesColumn),
 		)
 		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
 		return fromV, nil

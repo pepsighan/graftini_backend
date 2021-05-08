@@ -25,6 +25,8 @@ const (
 	EdgeOwner = "owner"
 	// EdgePages holds the string denoting the pages edge name in mutations.
 	EdgePages = "pages"
+	// EdgeQueries holds the string denoting the queries edge name in mutations.
+	EdgeQueries = "queries"
 	// Table holds the table name of the project in the database.
 	Table = "projects"
 	// OwnerTable is the table the holds the owner relation/edge.
@@ -41,6 +43,13 @@ const (
 	PagesInverseTable = "pages"
 	// PagesColumn is the table column denoting the pages relation/edge.
 	PagesColumn = "project_pages"
+	// QueriesTable is the table the holds the queries relation/edge.
+	QueriesTable = "graph_ql_queries"
+	// QueriesInverseTable is the table name for the GraphQLQuery entity.
+	// It exists in this package in order to avoid circular dependency with the "graphqlquery" package.
+	QueriesInverseTable = "graph_ql_queries"
+	// QueriesColumn is the table column denoting the queries relation/edge.
+	QueriesColumn = "project_queries"
 )
 
 // Columns holds all SQL columns for project fields.

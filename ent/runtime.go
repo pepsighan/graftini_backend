@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 	"github.com/pepsighan/nocodepress_backend/ent/schema"
@@ -16,6 +17,22 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	graphqlqueryFields := schema.GraphQLQuery{}.Fields()
+	_ = graphqlqueryFields
+	// graphqlqueryDescCreatedAt is the schema descriptor for created_at field.
+	graphqlqueryDescCreatedAt := graphqlqueryFields[3].Descriptor()
+	// graphqlquery.DefaultCreatedAt holds the default value on creation for the created_at field.
+	graphqlquery.DefaultCreatedAt = graphqlqueryDescCreatedAt.Default.(func() time.Time)
+	// graphqlqueryDescUpdatedAt is the schema descriptor for updated_at field.
+	graphqlqueryDescUpdatedAt := graphqlqueryFields[4].Descriptor()
+	// graphqlquery.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	graphqlquery.DefaultUpdatedAt = graphqlqueryDescUpdatedAt.Default.(func() time.Time)
+	// graphqlquery.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	graphqlquery.UpdateDefaultUpdatedAt = graphqlqueryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// graphqlqueryDescID is the schema descriptor for id field.
+	graphqlqueryDescID := graphqlqueryFields[0].Descriptor()
+	// graphqlquery.DefaultID holds the default value on creation for the id field.
+	graphqlquery.DefaultID = graphqlqueryDescID.Default.(func() uuid.UUID)
 	pageFields := schema.Page{}.Fields()
 	_ = pageFields
 	// pageDescID is the schema descriptor for id field.

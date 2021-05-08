@@ -566,6 +566,34 @@ func HasPagesWith(preds ...predicate.Page) predicate.Project {
 	})
 }
 
+// HasQueries applies the HasEdge predicate on the "queries" edge.
+func HasQueries() predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(QueriesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, QueriesTable, QueriesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasQueriesWith applies the HasEdge predicate on the "queries" edge with a given conditions (other predicates).
+func HasQueriesWith(preds ...predicate.GraphQLQuery) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(QueriesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, QueriesTable, QueriesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Project) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {

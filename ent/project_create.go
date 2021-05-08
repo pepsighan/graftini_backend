@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 	"github.com/pepsighan/nocodepress_backend/ent/user"
@@ -109,6 +110,21 @@ func (pc *ProjectCreate) AddPages(p ...*Page) *ProjectCreate {
 		ids[i] = p[i].ID
 	}
 	return pc.AddPageIDs(ids...)
+}
+
+// AddQueryIDs adds the "queries" edge to the GraphQLQuery entity by IDs.
+func (pc *ProjectCreate) AddQueryIDs(ids ...uuid.UUID) *ProjectCreate {
+	pc.mutation.AddQueryIDs(ids...)
+	return pc
+}
+
+// AddQueries adds the "queries" edges to the GraphQLQuery entity.
+func (pc *ProjectCreate) AddQueries(g ...*GraphQLQuery) *ProjectCreate {
+	ids := make([]uuid.UUID, len(g))
+	for i := range g {
+		ids[i] = g[i].ID
+	}
+	return pc.AddQueryIDs(ids...)
 }
 
 // Mutation returns the ProjectMutation object of the builder.
@@ -280,6 +296,25 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: page.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.QueriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.QueriesTable,
+			Columns: []string{project.QueriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: graphqlquery.FieldID,
 				},
 			},
 		}
