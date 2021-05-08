@@ -58,6 +58,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreatePage       func(childComplexity int, input model.NewPage) int
 		CreateProject    func(childComplexity int, input model.NewProject) int
+		CreateQuery      func(childComplexity int, input model.NewGraphQLQuery) int
 		DeletePage       func(childComplexity int, projectID uuid.UUID, pageID uuid.UUID) int
 		UpdatePageMarkup func(childComplexity int, input model.UpdatePageMarkup) int
 		UpdateProject    func(childComplexity int, input model.UpdateProject) int
@@ -99,6 +100,7 @@ type MutationResolver interface {
 	CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error)
 	UpdatePageMarkup(ctx context.Context, input model.UpdatePageMarkup) (*ent.Page, error)
 	DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error)
+	CreateQuery(ctx context.Context, input model.NewGraphQLQuery) (*ent.GraphQLQuery, error)
 }
 type ProjectResolver interface {
 	Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error)
@@ -169,6 +171,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateProject(childComplexity, args["input"].(model.NewProject)), true
+
+	case "Mutation.createQuery":
+		if e.complexity.Mutation.CreateQuery == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createQuery_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateQuery(childComplexity, args["input"].(model.NewGraphQLQuery)), true
 
 	case "Mutation.deletePage":
 		if e.complexity.Mutation.DeletePage == nil {
@@ -479,6 +493,12 @@ input UpdatePageMarkup {
   markup: String!
 }
 
+input NewGraphQLQuery {
+  projectId: ID!
+  variableName: String!
+  gqlAst: String!
+}
+
 type Mutation {
   """
   Creates a new project for the logged in user. It will also create a default page
@@ -503,6 +523,10 @@ type Mutation {
   will throw error.
   """
   deletePage(projectId: ID!, pageId: ID!): Page! @isAuthenticated
+  """
+  Create a new query for a given project.
+  """
+  createQuery(input: NewGraphQLQuery!): GraphQLQuery! @isAuthenticated
 }
 `, BuiltIn: false},
 }
@@ -534,6 +558,21 @@ func (ec *executionContext) field_Mutation_createProject_args(ctx context.Contex
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewProject2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐNewProject(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createQuery_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.NewGraphQLQuery
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNNewGraphQLQuery2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐNewGraphQLQuery(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1077,6 +1116,68 @@ func (ec *executionContext) _Mutation_deletePage(ctx context.Context, field grap
 	res := resTmp.(*ent.Page)
 	fc.Result = res
 	return ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPage(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createQuery(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createQuery_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().CreateQuery(rctx, args["input"].(model.NewGraphQLQuery))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.GraphQLQuery); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.GraphQLQuery`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.GraphQLQuery)
+	fc.Result = res
+	return ec.marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQuery(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Page_id(ctx context.Context, field graphql.CollectedField, obj *ent.Page) (ret graphql.Marshaler) {
@@ -2867,6 +2968,42 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputNewGraphQLQuery(ctx context.Context, obj interface{}) (model.NewGraphQLQuery, error) {
+	var it model.NewGraphQLQuery
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "projectId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+			it.ProjectID, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "variableName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("variableName"))
+			it.VariableName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "gqlAst":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("gqlAst"))
+			it.GqlAst, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewPage(ctx context.Context, obj interface{}) (model.NewPage, error) {
 	var it model.NewPage
 	var asMap = obj.(map[string]interface{})
@@ -3077,6 +3214,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deletePage":
 			out.Values[i] = ec._Mutation_deletePage(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createQuery":
+			out.Values[i] = ec._Mutation_createQuery(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3565,6 +3707,10 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNGraphQLQuery2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQuery(ctx context.Context, sel ast.SelectionSet, v ent.GraphQLQuery) graphql.Marshaler {
+	return ec._GraphQLQuery(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNGraphQLQuery2ᚕᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQueryᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.GraphQLQuery) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -3625,6 +3771,11 @@ func (ec *executionContext) marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx c
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNNewGraphQLQuery2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐNewGraphQLQuery(ctx context.Context, v interface{}) (model.NewGraphQLQuery, error) {
+	res, err := ec.unmarshalInputNewGraphQLQuery(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNNewPage2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐNewPage(ctx context.Context, v interface{}) (model.NewPage, error) {

@@ -132,6 +132,21 @@ func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, 
 	return pg, nil
 }
 
+func (r *mutationResolver) CreateQuery(ctx context.Context, input model.NewGraphQLQuery) (*ent.GraphQLQuery, error) {
+	user := auth.RequiredAuthenticatedUser(ctx)
+
+	pg, err := r.Ent.Project.Query().ByIDAndOwnedBy(input.ProjectID, user.ID).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Ent.GraphQLQuery.Create().
+		SetVariableName(input.VariableName).
+		SetGqlAst(input.GqlAst).
+		SetQueryOf(pg).
+		Save(ctx)
+}
+
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {
 	return obj.QueryPages().All(ctx)
 }

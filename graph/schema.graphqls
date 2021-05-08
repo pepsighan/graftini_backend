@@ -83,6 +83,12 @@ input UpdatePageMarkup {
   markup: String!
 }
 
+input NewGraphQLQuery {
+  projectId: ID!
+  variableName: String!
+  gqlAst: String!
+}
+
 type Mutation {
   """
   Creates a new project for the logged in user. It will also create a default page
@@ -107,4 +113,8 @@ type Mutation {
   will throw error.
   """
   deletePage(projectId: ID!, pageId: ID!): Page! @isAuthenticated
+  """
+  Create a new query for a given project.
+  """
+  createQuery(input: NewGraphQLQuery!): GraphQLQuery! @isAuthenticated
 }
