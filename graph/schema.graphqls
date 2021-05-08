@@ -1,3 +1,7 @@
+# --------------------------------------
+# Queries are written below.
+# --------------------------------------
+
 type User {
   id: ID!
   firebaseUID: String!
@@ -9,6 +13,7 @@ type User {
 type Project {
   id: ID!
   name: String!
+  graphqlEndpoint: String
   pages: [Page!]!
 }
 
@@ -24,8 +29,18 @@ type Query {
   myProject(id: ID!): Project!
 }
 
+# --------------------------------------
+# Mutations are written below.
+# --------------------------------------
+
 input NewProject {
   name: String!
+}
+
+input UpdateProject {
+  id: ID!
+  name: String!
+  graphqlEndpoint: String
 }
 
 input NewPage {
@@ -36,6 +51,7 @@ input NewPage {
 
 type Mutation {
   createProject(input: NewProject!): Project!
+  updateProject(input: UpdateProject!): Project!
   createPage(input: NewPage!): Page!
   deletePage(projectId: ID!, pageId: ID!): Page!
 }

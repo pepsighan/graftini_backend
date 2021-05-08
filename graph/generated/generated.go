@@ -51,6 +51,7 @@ type ComplexityRoot struct {
 		CreatePage    func(childComplexity int, input model.NewPage) int
 		CreateProject func(childComplexity int, input model.NewProject) int
 		DeletePage    func(childComplexity int, projectID uuid.UUID, pageID uuid.UUID) int
+		UpdateProject func(childComplexity int, input model.UpdateProject) int
 	}
 
 	Page struct {
@@ -60,9 +61,10 @@ type ComplexityRoot struct {
 	}
 
 	Project struct {
-		ID    func(childComplexity int) int
-		Name  func(childComplexity int) int
-		Pages func(childComplexity int) int
+		GraphqlEndpoint func(childComplexity int) int
+		ID              func(childComplexity int) int
+		Name            func(childComplexity int) int
+		Pages           func(childComplexity int) int
 	}
 
 	Query struct {
@@ -82,6 +84,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateProject(ctx context.Context, input model.NewProject) (*ent.Project, error)
+	UpdateProject(ctx context.Context, input model.UpdateProject) (*ent.Project, error)
 	CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error)
 	DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error)
 }
@@ -145,6 +148,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeletePage(childComplexity, args["projectId"].(uuid.UUID), args["pageId"].(uuid.UUID)), true
 
+	case "Mutation.updateProject":
+		if e.complexity.Mutation.UpdateProject == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateProject_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateProject(childComplexity, args["input"].(model.UpdateProject)), true
+
 	case "Page.id":
 		if e.complexity.Page.ID == nil {
 			break
@@ -165,6 +180,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Page.Route(childComplexity), true
+
+	case "Project.graphqlEndpoint":
+		if e.complexity.Project.GraphqlEndpoint == nil {
+			break
+		}
+
+		return e.complexity.Project.GraphqlEndpoint(childComplexity), true
 
 	case "Project.id":
 		if e.complexity.Project.ID == nil {
@@ -312,7 +334,11 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "graph/schema.graphqls", Input: `type User {
+	{Name: "graph/schema.graphqls", Input: `# --------------------------------------
+# Queries are written below.
+# --------------------------------------
+
+type User {
   id: ID!
   firebaseUID: String!
   firstName: String
@@ -323,6 +349,7 @@ var sources = []*ast.Source{
 type Project {
   id: ID!
   name: String!
+  graphqlEndpoint: String
   pages: [Page!]!
 }
 
@@ -338,8 +365,18 @@ type Query {
   myProject(id: ID!): Project!
 }
 
+# --------------------------------------
+# Mutations are written below.
+# --------------------------------------
+
 input NewProject {
   name: String!
+}
+
+input UpdateProject {
+  id: ID!
+  name: String!
+  graphqlEndpoint: String
 }
 
 input NewPage {
@@ -350,6 +387,7 @@ input NewPage {
 
 type Mutation {
   createProject(input: NewProject!): Project!
+  updateProject(input: UpdateProject!): Project!
   createPage(input: NewPage!): Page!
   deletePage(projectId: ID!, pageId: ID!): Page!
 }
@@ -412,6 +450,21 @@ func (ec *executionContext) field_Mutation_deletePage_args(ctx context.Context, 
 		}
 	}
 	args["pageId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateProject_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateProject
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateProject2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐUpdateProject(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -509,6 +562,48 @@ func (ec *executionContext) _Mutation_createProject(ctx context.Context, field g
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CreateProject(rctx, args["input"].(model.NewProject))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Project)
+	fc.Result = res
+	return ec.marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐProject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateProject_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateProject(rctx, args["input"].(model.UpdateProject))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -782,6 +877,38 @@ func (ec *executionContext) _Project_name(ctx context.Context, field graphql.Col
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_graphqlEndpoint(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.GraphqlEndpoint, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Project_pages(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
@@ -2311,6 +2438,42 @@ func (ec *executionContext) unmarshalInputNewProject(ctx context.Context, obj in
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateProject(ctx context.Context, obj interface{}) (model.UpdateProject, error) {
+	var it model.UpdateProject
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "graphqlEndpoint":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("graphqlEndpoint"))
+			it.GraphqlEndpoint, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -2336,6 +2499,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "createProject":
 			out.Values[i] = ec._Mutation_createProject(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateProject":
+			out.Values[i] = ec._Mutation_updateProject(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -2418,6 +2586,8 @@ func (ec *executionContext) _Project(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "graphqlEndpoint":
+			out.Values[i] = ec._Project_graphqlEndpoint(ctx, field, obj)
 		case "pages":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -2953,6 +3123,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNUpdateProject2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐUpdateProject(ctx context.Context, v interface{}) (model.UpdateProject, error) {
+	res, err := ec.unmarshalInputUpdateProject(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

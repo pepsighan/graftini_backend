@@ -15,3 +15,9 @@ type NewPage struct {
 type NewProject struct {
 	Name string `json:"name"`
 }
+
+type UpdateProject struct {
+	ID              uuid.UUID `json:"id"`
+	Name            string    `json:"name"`
+	GraphqlEndpoint *string   `json:"graphqlEndpoint"`
+}

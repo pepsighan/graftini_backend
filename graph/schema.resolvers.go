@@ -45,6 +45,30 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 	return project, err
 }
 
+func (r *mutationResolver) UpdateProject(ctx context.Context, input model.UpdateProject) (*ent.Project, error) {
+	owner, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
+	if err != nil {
+		return nil, err
+	}
+
+	prj, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(input.ID, owner.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = prj.Update().
+		SetName(input.Name).
+		SetNillableGraphqlEndpoint(input.GraphqlEndpoint).
+		Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
 func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error) {
 	user, err := auth.RequireUserFromContext(ctx, r.Ent, r.FirebaseAuth)
 	if err != nil {
