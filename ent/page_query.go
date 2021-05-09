@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/pepsighan/nocodepress_backend/ent/page"
-	"github.com/pepsighan/nocodepress_backend/ent/predicate"
-	"github.com/pepsighan/nocodepress_backend/ent/project"
+	"github.com/pepsighan/graftini_backend/ent/page"
+	"github.com/pepsighan/graftini_backend/ent/predicate"
+	"github.com/pepsighan/graftini_backend/ent/project"
 )
 
 // PageQuery is the builder for querying Page entities.

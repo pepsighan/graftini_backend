@@ -5,8 +5,8 @@ package ent
 
 import (
 	"github.com/google/uuid"
-	"github.com/pepsighan/nocodepress_backend/ent/project"
-	"github.com/pepsighan/nocodepress_backend/ent/user"
+	"github.com/pepsighan/graftini_backend/ent/project"
+	"github.com/pepsighan/graftini_backend/ent/user"
 )
 
 // ByIDAndOwnedBy filters the projects by ID as well has who owns it.

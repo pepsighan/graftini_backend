@@ -5,9 +5,9 @@ import (
 
 	"firebase.google.com/go/v4/auth"
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/pepsighan/nocodepress_backend/ent"
-	"github.com/pepsighan/nocodepress_backend/graph/generated"
-	iauth "github.com/pepsighan/nocodepress_backend/internal/auth"
+	"github.com/pepsighan/graftini_backend/ent"
+	"github.com/pepsighan/graftini_backend/graph/generated"
+	iauth "github.com/pepsighan/graftini_backend/internal/auth"
 )
 
 func NewDirective(entClient *ent.Client, firebaseAuth *auth.Client) generated.DirectiveRoot {

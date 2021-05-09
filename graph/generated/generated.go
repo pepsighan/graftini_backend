@@ -14,9 +14,9 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/google/uuid"
-	"github.com/pepsighan/nocodepress_backend/ent"
-	"github.com/pepsighan/nocodepress_backend/graph/model"
-	"github.com/pepsighan/nocodepress_backend/internal/gqlgen"
+	"github.com/pepsighan/graftini_backend/ent"
+	"github.com/pepsighan/graftini_backend/graph/model"
+	"github.com/pepsighan/graftini_backend/internal/gqlgen"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -560,7 +560,7 @@ func (ec *executionContext) field_Mutation_createPage_args(ctx context.Context, 
 	var arg0 model.NewPage
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewPage2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐNewPage(ctx, tmp)
+		arg0, err = ec.unmarshalNNewPage2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐNewPage(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -575,7 +575,7 @@ func (ec *executionContext) field_Mutation_createProject_args(ctx context.Contex
 	var arg0 model.NewProject
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewProject2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐNewProject(ctx, tmp)
+		arg0, err = ec.unmarshalNNewProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐNewProject(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -590,7 +590,7 @@ func (ec *executionContext) field_Mutation_createQuery_args(ctx context.Context,
 	var arg0 model.NewGraphQLQuery
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewGraphQLQuery2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐNewGraphQLQuery(ctx, tmp)
+		arg0, err = ec.unmarshalNNewGraphQLQuery2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐNewGraphQLQuery(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -653,7 +653,7 @@ func (ec *executionContext) field_Mutation_updatePageMarkup_args(ctx context.Con
 	var arg0 model.UpdatePageMarkup
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdatePageMarkup2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐUpdatePageMarkup(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdatePageMarkup2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐUpdatePageMarkup(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -668,7 +668,7 @@ func (ec *executionContext) field_Mutation_updateProject_args(ctx context.Contex
 	var arg0 model.UpdateProject
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateProject2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐUpdateProject(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐUpdateProject(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -895,7 +895,7 @@ func (ec *executionContext) _Mutation_createProject(ctx context.Context, field g
 		if data, ok := tmp.(*ent.Project); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Project`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/graftini_backend/ent.Project`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -909,7 +909,7 @@ func (ec *executionContext) _Mutation_createProject(ctx context.Context, field g
 	}
 	res := resTmp.(*ent.Project)
 	fc.Result = res
-	return ec.marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐProject(ctx, field.Selections, res)
+	return ec.marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐProject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_updateProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -957,7 +957,7 @@ func (ec *executionContext) _Mutation_updateProject(ctx context.Context, field g
 		if data, ok := tmp.(*ent.Project); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Project`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/graftini_backend/ent.Project`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -971,7 +971,7 @@ func (ec *executionContext) _Mutation_updateProject(ctx context.Context, field g
 	}
 	res := resTmp.(*ent.Project)
 	fc.Result = res
-	return ec.marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐProject(ctx, field.Selections, res)
+	return ec.marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐProject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createPage(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1019,7 +1019,7 @@ func (ec *executionContext) _Mutation_createPage(ctx context.Context, field grap
 		if data, ok := tmp.(*ent.Page); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Page`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/graftini_backend/ent.Page`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1033,7 +1033,7 @@ func (ec *executionContext) _Mutation_createPage(ctx context.Context, field grap
 	}
 	res := resTmp.(*ent.Page)
 	fc.Result = res
-	return ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPage(ctx, field.Selections, res)
+	return ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐPage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_updatePageMarkup(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1081,7 +1081,7 @@ func (ec *executionContext) _Mutation_updatePageMarkup(ctx context.Context, fiel
 		if data, ok := tmp.(*ent.Page); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Page`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/graftini_backend/ent.Page`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1095,7 +1095,7 @@ func (ec *executionContext) _Mutation_updatePageMarkup(ctx context.Context, fiel
 	}
 	res := resTmp.(*ent.Page)
 	fc.Result = res
-	return ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPage(ctx, field.Selections, res)
+	return ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐPage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_deletePage(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1143,7 +1143,7 @@ func (ec *executionContext) _Mutation_deletePage(ctx context.Context, field grap
 		if data, ok := tmp.(*ent.Page); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Page`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/graftini_backend/ent.Page`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1157,7 +1157,7 @@ func (ec *executionContext) _Mutation_deletePage(ctx context.Context, field grap
 	}
 	res := resTmp.(*ent.Page)
 	fc.Result = res
-	return ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPage(ctx, field.Selections, res)
+	return ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐPage(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createQuery(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1205,7 +1205,7 @@ func (ec *executionContext) _Mutation_createQuery(ctx context.Context, field gra
 		if data, ok := tmp.(*ent.GraphQLQuery); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.GraphQLQuery`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/graftini_backend/ent.GraphQLQuery`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1219,7 +1219,7 @@ func (ec *executionContext) _Mutation_createQuery(ctx context.Context, field gra
 	}
 	res := resTmp.(*ent.GraphQLQuery)
 	fc.Result = res
-	return ec.marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQuery(ctx, field.Selections, res)
+	return ec.marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐGraphQLQuery(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_deleteQuery(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1267,7 +1267,7 @@ func (ec *executionContext) _Mutation_deleteQuery(ctx context.Context, field gra
 		if data, ok := tmp.(*ent.GraphQLQuery); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.GraphQLQuery`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/graftini_backend/ent.GraphQLQuery`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1281,7 +1281,7 @@ func (ec *executionContext) _Mutation_deleteQuery(ctx context.Context, field gra
 	}
 	res := resTmp.(*ent.GraphQLQuery)
 	fc.Result = res
-	return ec.marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQuery(ctx, field.Selections, res)
+	return ec.marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐGraphQLQuery(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Page_id(ctx context.Context, field graphql.CollectedField, obj *ent.Page) (ret graphql.Marshaler) {
@@ -1558,7 +1558,7 @@ func (ec *executionContext) _Project_pages(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.([]*ent.Page)
 	fc.Result = res
-	return ec.marshalNPage2ᚕᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPageᚄ(ctx, field.Selections, res)
+	return ec.marshalNPage2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐPageᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Project_queries(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
@@ -1593,7 +1593,7 @@ func (ec *executionContext) _Project_queries(ctx context.Context, field graphql.
 	}
 	res := resTmp.([]*ent.GraphQLQuery)
 	fc.Result = res
-	return ec.marshalNGraphQLQuery2ᚕᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQueryᚄ(ctx, field.Selections, res)
+	return ec.marshalNGraphQLQuery2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐGraphQLQueryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_me(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1625,7 +1625,7 @@ func (ec *executionContext) _Query_me(ctx context.Context, field graphql.Collect
 	}
 	res := resTmp.(*ent.User)
 	fc.Result = res
-	return ec.marshalOUser2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐUser(ctx, field.Selections, res)
+	return ec.marshalOUser2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_myProjects(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1666,7 +1666,7 @@ func (ec *executionContext) _Query_myProjects(ctx context.Context, field graphql
 		if data, ok := tmp.([]*ent.Project); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/pepsighan/nocodepress_backend/ent.Project`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/pepsighan/graftini_backend/ent.Project`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1680,7 +1680,7 @@ func (ec *executionContext) _Query_myProjects(ctx context.Context, field graphql
 	}
 	res := resTmp.([]*ent.Project)
 	fc.Result = res
-	return ec.marshalNProject2ᚕᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐProjectᚄ(ctx, field.Selections, res)
+	return ec.marshalNProject2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐProjectᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_myProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1728,7 +1728,7 @@ func (ec *executionContext) _Query_myProject(ctx context.Context, field graphql.
 		if data, ok := tmp.(*ent.Project); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/nocodepress_backend/ent.Project`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/graftini_backend/ent.Project`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1742,7 +1742,7 @@ func (ec *executionContext) _Query_myProject(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*ent.Project)
 	fc.Result = res
-	return ec.marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐProject(ctx, field.Selections, res)
+	return ec.marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐProject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3816,11 +3816,11 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNGraphQLQuery2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQuery(ctx context.Context, sel ast.SelectionSet, v ent.GraphQLQuery) graphql.Marshaler {
+func (ec *executionContext) marshalNGraphQLQuery2githubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐGraphQLQuery(ctx context.Context, sel ast.SelectionSet, v ent.GraphQLQuery) graphql.Marshaler {
 	return ec._GraphQLQuery(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNGraphQLQuery2ᚕᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQueryᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.GraphQLQuery) graphql.Marshaler {
+func (ec *executionContext) marshalNGraphQLQuery2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐGraphQLQueryᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.GraphQLQuery) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3844,7 +3844,7 @@ func (ec *executionContext) marshalNGraphQLQuery2ᚕᚖgithubᚗcomᚋpepsighan�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQuery(ctx, sel, v[i])
+			ret[i] = ec.marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐGraphQLQuery(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3857,7 +3857,7 @@ func (ec *executionContext) marshalNGraphQLQuery2ᚕᚖgithubᚗcomᚋpepsighan�
 	return ret
 }
 
-func (ec *executionContext) marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐGraphQLQuery(ctx context.Context, sel ast.SelectionSet, v *ent.GraphQLQuery) graphql.Marshaler {
+func (ec *executionContext) marshalNGraphQLQuery2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐGraphQLQuery(ctx context.Context, sel ast.SelectionSet, v *ent.GraphQLQuery) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -3882,26 +3882,26 @@ func (ec *executionContext) marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx c
 	return res
 }
 
-func (ec *executionContext) unmarshalNNewGraphQLQuery2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐNewGraphQLQuery(ctx context.Context, v interface{}) (model.NewGraphQLQuery, error) {
+func (ec *executionContext) unmarshalNNewGraphQLQuery2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐNewGraphQLQuery(ctx context.Context, v interface{}) (model.NewGraphQLQuery, error) {
 	res, err := ec.unmarshalInputNewGraphQLQuery(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNNewPage2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐNewPage(ctx context.Context, v interface{}) (model.NewPage, error) {
+func (ec *executionContext) unmarshalNNewPage2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐNewPage(ctx context.Context, v interface{}) (model.NewPage, error) {
 	res, err := ec.unmarshalInputNewPage(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNNewProject2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐNewProject(ctx context.Context, v interface{}) (model.NewProject, error) {
+func (ec *executionContext) unmarshalNNewProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐNewProject(ctx context.Context, v interface{}) (model.NewProject, error) {
 	res, err := ec.unmarshalInputNewProject(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNPage2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPage(ctx context.Context, sel ast.SelectionSet, v ent.Page) graphql.Marshaler {
+func (ec *executionContext) marshalNPage2githubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐPage(ctx context.Context, sel ast.SelectionSet, v ent.Page) graphql.Marshaler {
 	return ec._Page(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNPage2ᚕᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPageᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Page) graphql.Marshaler {
+func (ec *executionContext) marshalNPage2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐPageᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Page) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3925,7 +3925,7 @@ func (ec *executionContext) marshalNPage2ᚕᚖgithubᚗcomᚋpepsighanᚋnocode
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPage(ctx, sel, v[i])
+			ret[i] = ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐPage(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3938,7 +3938,7 @@ func (ec *executionContext) marshalNPage2ᚕᚖgithubᚗcomᚋpepsighanᚋnocode
 	return ret
 }
 
-func (ec *executionContext) marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐPage(ctx context.Context, sel ast.SelectionSet, v *ent.Page) graphql.Marshaler {
+func (ec *executionContext) marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐPage(ctx context.Context, sel ast.SelectionSet, v *ent.Page) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -3948,11 +3948,11 @@ func (ec *executionContext) marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋnocodepre
 	return ec._Page(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNProject2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐProject(ctx context.Context, sel ast.SelectionSet, v ent.Project) graphql.Marshaler {
+func (ec *executionContext) marshalNProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐProject(ctx context.Context, sel ast.SelectionSet, v ent.Project) graphql.Marshaler {
 	return ec._Project(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNProject2ᚕᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐProjectᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Project) graphql.Marshaler {
+func (ec *executionContext) marshalNProject2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐProjectᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Project) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -3976,7 +3976,7 @@ func (ec *executionContext) marshalNProject2ᚕᚖgithubᚗcomᚋpepsighanᚋnoc
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐProject(ctx, sel, v[i])
+			ret[i] = ec.marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐProject(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -3989,7 +3989,7 @@ func (ec *executionContext) marshalNProject2ᚕᚖgithubᚗcomᚋpepsighanᚋnoc
 	return ret
 }
 
-func (ec *executionContext) marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐProject(ctx context.Context, sel ast.SelectionSet, v *ent.Project) graphql.Marshaler {
+func (ec *executionContext) marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐProject(ctx context.Context, sel ast.SelectionSet, v *ent.Project) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -4014,12 +4014,12 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalNUpdatePageMarkup2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐUpdatePageMarkup(ctx context.Context, v interface{}) (model.UpdatePageMarkup, error) {
+func (ec *executionContext) unmarshalNUpdatePageMarkup2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐUpdatePageMarkup(ctx context.Context, v interface{}) (model.UpdatePageMarkup, error) {
 	res, err := ec.unmarshalInputUpdatePageMarkup(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNUpdateProject2githubᚗcomᚋpepsighanᚋnocodepress_backendᚋgraphᚋmodelᚐUpdateProject(ctx context.Context, v interface{}) (model.UpdateProject, error) {
+func (ec *executionContext) unmarshalNUpdateProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐUpdateProject(ctx context.Context, v interface{}) (model.UpdateProject, error) {
 	res, err := ec.unmarshalInputUpdateProject(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -4301,7 +4301,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return graphql.MarshalString(*v)
 }
 
-func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋpepsighanᚋnocodepress_backendᚋentᚐUser(ctx context.Context, sel ast.SelectionSet, v *ent.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐUser(ctx context.Context, sel ast.SelectionSet, v *ent.User) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

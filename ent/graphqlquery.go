@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
-	"github.com/pepsighan/nocodepress_backend/ent/project"
+	"github.com/pepsighan/graftini_backend/ent/graphqlquery"
+	"github.com/pepsighan/graftini_backend/ent/project"
 )
 
 // GraphQLQuery is the model entity for the GraphQLQuery schema.

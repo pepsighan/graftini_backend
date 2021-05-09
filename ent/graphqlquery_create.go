@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
-	"github.com/pepsighan/nocodepress_backend/ent/project"
+	"github.com/pepsighan/graftini_backend/ent/graphqlquery"
+	"github.com/pepsighan/graftini_backend/ent/project"
 )
 
 // GraphQLQueryCreate is the builder for creating a GraphQLQuery entity.

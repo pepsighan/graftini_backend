@@ -35,7 +35,7 @@ resolver:
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-  - "github.com/pepsighan/nocodepress_backend/graph/model"
+  - "github.com/pepsighan/graftini_backend/graph/model"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -44,14 +44,14 @@ autobind:
 # your liking
 models:
   ID:
-    model: github.com/pepsighan/nocodepress_backend/internal/gqlgen.UUID
+    model: github.com/pepsighan/graftini_backend/internal/gqlgen.UUID
   Int:
     model: github.com/99designs/gqlgen/graphql.Int
   User:
-    model: github.com/pepsighan/nocodepress_backend/ent.User
+    model: github.com/pepsighan/graftini_backend/ent.User
   Project:
-    model: github.com/pepsighan/nocodepress_backend/ent.Project
+    model: github.com/pepsighan/graftini_backend/ent.Project
   Page:
-    model: github.com/pepsighan/nocodepress_backend/ent.Page
+    model: github.com/pepsighan/graftini_backend/ent.Page
   GraphQLQuery:
-    model: github.com/pepsighan/nocodepress_backend/ent.GraphQLQuery
+    model: github.com/pepsighan/graftini_backend/ent.GraphQLQuery

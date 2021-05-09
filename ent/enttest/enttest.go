@@ -5,9 +5,9 @@ package enttest
 import (
 	"context"
 
-	"github.com/pepsighan/nocodepress_backend/ent"
+	"github.com/pepsighan/graftini_backend/ent"
 	// required by schema hooks.
-	_ "github.com/pepsighan/nocodepress_backend/ent/runtime"
+	_ "github.com/pepsighan/graftini_backend/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
 )

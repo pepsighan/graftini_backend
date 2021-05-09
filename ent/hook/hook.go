@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/pepsighan/nocodepress_backend/ent"
+	"github.com/pepsighan/graftini_backend/ent"
 )
 
 // The GraphQLQueryFunc type is an adapter to allow the use of ordinary

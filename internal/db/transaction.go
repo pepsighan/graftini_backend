@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 
-	"github.com/pepsighan/nocodepress_backend/ent"
+	"github.com/pepsighan/graftini_backend/ent"
 	"github.com/pkg/errors"
 )
 

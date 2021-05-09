@@ -9,8 +9,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/pepsighan/nocodepress_backend/ent/predicate"
-	"github.com/pepsighan/nocodepress_backend/ent/project"
+	"github.com/pepsighan/graftini_backend/ent/predicate"
+	"github.com/pepsighan/graftini_backend/ent/project"
 )
 
 // ProjectDelete is the builder for deleting a Project entity.

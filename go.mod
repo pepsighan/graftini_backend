@@ -1,4 +1,4 @@
-module github.com/pepsighan/nocodepress_backend
+module github.com/pepsighan/graftini_backend
 
 go 1.16
 

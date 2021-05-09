@@ -10,10 +10,10 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
-	"github.com/pepsighan/nocodepress_backend/ent/page"
-	"github.com/pepsighan/nocodepress_backend/ent/project"
-	"github.com/pepsighan/nocodepress_backend/ent/user"
+	"github.com/pepsighan/graftini_backend/ent/graphqlquery"
+	"github.com/pepsighan/graftini_backend/ent/page"
+	"github.com/pepsighan/graftini_backend/ent/project"
+	"github.com/pepsighan/graftini_backend/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.

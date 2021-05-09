@@ -2,7 +2,7 @@ package graph
 
 import (
 	"firebase.google.com/go/v4/auth"
-	"github.com/pepsighan/nocodepress_backend/ent"
+	"github.com/pepsighan/graftini_backend/ent"
 )
 
 //go:generate go run github.com/99designs/gqlgen

@@ -8,8 +8,8 @@ import (
 
 	"firebase.google.com/go/v4/auth"
 	"github.com/labstack/echo"
-	"github.com/pepsighan/nocodepress_backend/ent"
-	"github.com/pepsighan/nocodepress_backend/ent/user"
+	"github.com/pepsighan/graftini_backend/ent"
+	"github.com/pepsighan/graftini_backend/ent/user"
 )
 
 var ErrUnauthorizedAccess = errors.New("unauthorized access")

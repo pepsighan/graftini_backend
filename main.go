@@ -14,10 +14,10 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	_ "github.com/lib/pq"
-	"github.com/pepsighan/nocodepress_backend/ent"
-	"github.com/pepsighan/nocodepress_backend/graph"
-	"github.com/pepsighan/nocodepress_backend/graph/generated"
-	"github.com/pepsighan/nocodepress_backend/internal/auth"
+	"github.com/pepsighan/graftini_backend/ent"
+	"github.com/pepsighan/graftini_backend/graph"
+	"github.com/pepsighan/graftini_backend/graph/generated"
+	"github.com/pepsighan/graftini_backend/internal/auth"
 )
 
 func firebaseAuth() *authFirebase.Client {

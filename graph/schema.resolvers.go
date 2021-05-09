@@ -8,16 +8,16 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/pepsighan/nocodepress_backend/ent"
-	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
-	"github.com/pepsighan/nocodepress_backend/ent/page"
-	"github.com/pepsighan/nocodepress_backend/graph/generated"
-	"github.com/pepsighan/nocodepress_backend/graph/model"
-	"github.com/pepsighan/nocodepress_backend/internal/auth"
-	"github.com/pepsighan/nocodepress_backend/internal/db"
+	"github.com/pepsighan/graftini_backend/ent"
+	"github.com/pepsighan/graftini_backend/ent/graphqlquery"
+	"github.com/pepsighan/graftini_backend/ent/page"
+	generated1 "github.com/pepsighan/graftini_backend/graph/generated"
+	model1 "github.com/pepsighan/graftini_backend/graph/model"
+	"github.com/pepsighan/graftini_backend/internal/auth"
+	"github.com/pepsighan/graftini_backend/internal/db"
 )
 
-func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewProject) (*ent.Project, error) {
+func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewProject) (*ent.Project, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 
 	var project *ent.Project
@@ -41,7 +41,7 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model.NewPro
 	return project, err
 }
 
-func (r *mutationResolver) UpdateProject(ctx context.Context, input model.UpdateProject) (*ent.Project, error) {
+func (r *mutationResolver) UpdateProject(ctx context.Context, input model1.UpdateProject) (*ent.Project, error) {
 	owner := auth.RequiredAuthenticatedUser(ctx)
 
 	prj, err := r.Ent.Project.Query().
@@ -62,7 +62,7 @@ func (r *mutationResolver) UpdateProject(ctx context.Context, input model.Update
 	return nil, nil
 }
 
-func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error) {
+func (r *mutationResolver) CreatePage(ctx context.Context, input model1.NewPage) (*ent.Page, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 
 	prj, err := r.Ent.Project.Query().
@@ -79,7 +79,7 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) 
 		Save(ctx)
 }
 
-func (r *mutationResolver) UpdatePageMarkup(ctx context.Context, input model.UpdatePageMarkup) (*ent.Page, error) {
+func (r *mutationResolver) UpdatePageMarkup(ctx context.Context, input model1.UpdatePageMarkup) (*ent.Page, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 
 	prj, err := r.Ent.Project.Query().
@@ -136,7 +136,7 @@ func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, 
 	return pg, nil
 }
 
-func (r *mutationResolver) CreateQuery(ctx context.Context, input model.NewGraphQLQuery) (*ent.GraphQLQuery, error) {
+func (r *mutationResolver) CreateQuery(ctx context.Context, input model1.NewGraphQLQuery) (*ent.GraphQLQuery, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 
 	pg, err := r.Ent.Project.Query().
@@ -198,14 +198,14 @@ func (r *queryResolver) MyProject(ctx context.Context, id uuid.UUID) (*ent.Proje
 		First(ctx)
 }
 
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+// Mutation returns generated1.MutationResolver implementation.
+func (r *Resolver) Mutation() generated1.MutationResolver { return &mutationResolver{r} }
 
-// Project returns generated.ProjectResolver implementation.
-func (r *Resolver) Project() generated.ProjectResolver { return &projectResolver{r} }
+// Project returns generated1.ProjectResolver implementation.
+func (r *Resolver) Project() generated1.ProjectResolver { return &projectResolver{r} }
 
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+// Query returns generated1.QueryResolver implementation.
+func (r *Resolver) Query() generated1.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type projectResolver struct{ *Resolver }

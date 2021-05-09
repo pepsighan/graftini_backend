@@ -9,8 +9,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
-	"github.com/pepsighan/nocodepress_backend/ent/page"
-	"github.com/pepsighan/nocodepress_backend/ent/project"
+	"github.com/pepsighan/graftini_backend/ent/page"
+	"github.com/pepsighan/graftini_backend/ent/project"
 )
 
 // Page is the model entity for the Page schema.
