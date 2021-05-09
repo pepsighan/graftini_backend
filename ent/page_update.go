@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -54,6 +55,12 @@ func (pu *PageUpdate) SetNillableMarkup(s *string) *PageUpdate {
 	return pu
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (pu *PageUpdate) SetUpdatedAt(t time.Time) *PageUpdate {
+	pu.mutation.SetUpdatedAt(t)
+	return pu
+}
+
 // SetPageOfID sets the "pageOf" edge to the Project entity by ID.
 func (pu *PageUpdate) SetPageOfID(id uuid.UUID) *PageUpdate {
 	pu.mutation.SetPageOfID(id)
@@ -90,6 +97,7 @@ func (pu *PageUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	pu.defaults()
 	if len(pu.hooks) == 0 {
 		if err = pu.check(); err != nil {
 			return 0, err
@@ -141,6 +149,14 @@ func (pu *PageUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (pu *PageUpdate) defaults() {
+	if _, ok := pu.mutation.UpdatedAt(); !ok {
+		v := page.UpdateDefaultUpdatedAt()
+		pu.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (pu *PageUpdate) check() error {
 	if v, ok := pu.mutation.Markup(); ok {
@@ -188,6 +204,13 @@ func (pu *PageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: page.FieldMarkup,
+		})
+	}
+	if value, ok := pu.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: page.FieldUpdatedAt,
 		})
 	}
 	if pu.mutation.PageOfCleared() {
@@ -270,6 +293,12 @@ func (puo *PageUpdateOne) SetNillableMarkup(s *string) *PageUpdateOne {
 	return puo
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (puo *PageUpdateOne) SetUpdatedAt(t time.Time) *PageUpdateOne {
+	puo.mutation.SetUpdatedAt(t)
+	return puo
+}
+
 // SetPageOfID sets the "pageOf" edge to the Project entity by ID.
 func (puo *PageUpdateOne) SetPageOfID(id uuid.UUID) *PageUpdateOne {
 	puo.mutation.SetPageOfID(id)
@@ -313,6 +342,7 @@ func (puo *PageUpdateOne) Save(ctx context.Context) (*Page, error) {
 		err  error
 		node *Page
 	)
+	puo.defaults()
 	if len(puo.hooks) == 0 {
 		if err = puo.check(); err != nil {
 			return nil, err
@@ -361,6 +391,14 @@ func (puo *PageUpdateOne) Exec(ctx context.Context) error {
 func (puo *PageUpdateOne) ExecX(ctx context.Context) {
 	if err := puo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (puo *PageUpdateOne) defaults() {
+	if _, ok := puo.mutation.UpdatedAt(); !ok {
+		v := page.UpdateDefaultUpdatedAt()
+		puo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -428,6 +466,13 @@ func (puo *PageUpdateOne) sqlSave(ctx context.Context) (_node *Page, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: page.FieldMarkup,
+		})
+	}
+	if value, ok := puo.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: page.FieldUpdatedAt,
 		})
 	}
 	if puo.mutation.PageOfCleared() {

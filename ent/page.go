@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
@@ -23,6 +24,10 @@ type Page struct {
 	Route string `json:"route,omitempty"`
 	// Markup holds the value of the "markup" field.
 	Markup string `json:"markup,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PageQuery when eager-loading is set.
 	Edges         PageEdges `json:"edges"`
@@ -59,6 +64,8 @@ func (*Page) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case page.FieldName, page.FieldRoute, page.FieldMarkup:
 			values[i] = new(sql.NullString)
+		case page.FieldCreatedAt, page.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		case page.FieldID:
 			values[i] = new(uuid.UUID)
 		case page.ForeignKeys[0]: // project_pages
@@ -101,6 +108,18 @@ func (pa *Page) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field markup", values[i])
 			} else if value.Valid {
 				pa.Markup = value.String
+			}
+		case page.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				pa.CreatedAt = value.Time
+			}
+		case page.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				pa.UpdatedAt = value.Time
 			}
 		case page.ForeignKeys[0]:
 			if value, ok := values[i].(*uuid.UUID); !ok {
@@ -147,6 +166,10 @@ func (pa *Page) String() string {
 	builder.WriteString(pa.Route)
 	builder.WriteString(", markup=")
 	builder.WriteString(pa.Markup)
+	builder.WriteString(", created_at=")
+	builder.WriteString(pa.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", updated_at=")
+	builder.WriteString(pa.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

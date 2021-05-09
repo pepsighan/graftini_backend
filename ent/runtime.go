@@ -41,6 +41,16 @@ func init() {
 	page.DefaultMarkup = pageDescMarkup.Default.(string)
 	// page.MarkupValidator is a validator for the "markup" field. It is called by the builders before save.
 	page.MarkupValidator = pageDescMarkup.Validators[0].(func(string) error)
+	// pageDescCreatedAt is the schema descriptor for created_at field.
+	pageDescCreatedAt := pageFields[4].Descriptor()
+	// page.DefaultCreatedAt holds the default value on creation for the created_at field.
+	page.DefaultCreatedAt = pageDescCreatedAt.Default.(func() time.Time)
+	// pageDescUpdatedAt is the schema descriptor for updated_at field.
+	pageDescUpdatedAt := pageFields[5].Descriptor()
+	// page.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	page.DefaultUpdatedAt = pageDescUpdatedAt.Default.(func() time.Time)
+	// page.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	page.UpdateDefaultUpdatedAt = pageDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// pageDescID is the schema descriptor for id field.
 	pageDescID := pageFields[0].Descriptor()
 	// page.DefaultID holds the default value on creation for the id field.

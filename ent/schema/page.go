@@ -2,6 +2,7 @@ package schema
 
 import (
 	"encoding/json"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
@@ -28,6 +29,8 @@ func (Page) Fields() []ent.Field {
 				// It is valid only if it can be read into the Markup schema.
 				return json.Unmarshal([]byte(s), &markup)
 			}),
+		field.Time("created_at").Default(time.Now).Immutable(),
+		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
 }
 

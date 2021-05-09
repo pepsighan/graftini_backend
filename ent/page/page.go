@@ -3,6 +3,8 @@
 package page
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -17,6 +19,10 @@ const (
 	FieldRoute = "route"
 	// FieldMarkup holds the string denoting the markup field in the database.
 	FieldMarkup = "markup"
+	// FieldCreatedAt holds the string denoting the created_at field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
+	FieldUpdatedAt = "updated_at"
 	// EdgePageOf holds the string denoting the pageof edge name in mutations.
 	EdgePageOf = "pageOf"
 	// Table holds the table name of the page in the database.
@@ -36,6 +42,8 @@ var Columns = []string{
 	FieldName,
 	FieldRoute,
 	FieldMarkup,
+	FieldCreatedAt,
+	FieldUpdatedAt,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "pages"
@@ -64,6 +72,12 @@ var (
 	DefaultMarkup string
 	// MarkupValidator is a validator for the "markup" field. It is called by the builders before save.
 	MarkupValidator func(string) error
+	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
+	DefaultCreatedAt func() time.Time
+	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
+	DefaultUpdatedAt func() time.Time
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
+	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )

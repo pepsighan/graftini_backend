@@ -566,6 +566,8 @@ type PageMutation struct {
 	name          *string
 	route         *string
 	markup        *string
+	created_at    *time.Time
+	updated_at    *time.Time
 	clearedFields map[string]struct{}
 	pageOf        *uuid.UUID
 	clearedpageOf bool
@@ -767,6 +769,78 @@ func (m *PageMutation) ResetMarkup() {
 	m.markup = nil
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (m *PageMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *PageMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Page entity.
+// If the Page object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PageMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *PageMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *PageMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *PageMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Page entity.
+// If the Page object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PageMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *PageMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
 // SetPageOfID sets the "pageOf" edge to the Project entity by id.
 func (m *PageMutation) SetPageOfID(id uuid.UUID) {
 	m.pageOf = &id
@@ -820,7 +894,7 @@ func (m *PageMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PageMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, page.FieldName)
 	}
@@ -829,6 +903,12 @@ func (m *PageMutation) Fields() []string {
 	}
 	if m.markup != nil {
 		fields = append(fields, page.FieldMarkup)
+	}
+	if m.created_at != nil {
+		fields = append(fields, page.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, page.FieldUpdatedAt)
 	}
 	return fields
 }
@@ -844,6 +924,10 @@ func (m *PageMutation) Field(name string) (ent.Value, bool) {
 		return m.Route()
 	case page.FieldMarkup:
 		return m.Markup()
+	case page.FieldCreatedAt:
+		return m.CreatedAt()
+	case page.FieldUpdatedAt:
+		return m.UpdatedAt()
 	}
 	return nil, false
 }
@@ -859,6 +943,10 @@ func (m *PageMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldRoute(ctx)
 	case page.FieldMarkup:
 		return m.OldMarkup(ctx)
+	case page.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case page.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Page field %s", name)
 }
@@ -888,6 +976,20 @@ func (m *PageMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetMarkup(v)
+		return nil
+	case page.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case page.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Page field %s", name)
@@ -946,6 +1048,12 @@ func (m *PageMutation) ResetField(name string) error {
 		return nil
 	case page.FieldMarkup:
 		m.ResetMarkup()
+		return nil
+	case page.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case page.FieldUpdatedAt:
+		m.ResetUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Page field %s", name)
