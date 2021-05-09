@@ -25,12 +25,20 @@ type Project {
   name: String!
   graphqlEndpoint: String
   pages: [Page!]!
+  queries: [GraphQLQuery!]!
 }
 
 type Page {
   id: ID!
   name: String!
   route: String!
+  markup: String!
+}
+
+type GraphQLQuery {
+  id: ID!
+  variableName: String!
+  gqlAst: String!
 }
 
 type Query {
@@ -69,6 +77,18 @@ input NewPage {
   route: String!
 }
 
+input UpdatePageMarkup {
+  projectId: ID!
+  pageId: ID!
+  markup: String!
+}
+
+input NewGraphQLQuery {
+  projectId: ID!
+  variableName: String!
+  gqlAst: String!
+}
+
 type Mutation {
   """
   Creates a new project for the logged in user. It will also create a default page
@@ -84,9 +104,21 @@ type Mutation {
   """
   createPage(input: NewPage!): Page! @isAuthenticated
   """
+  Update the markup in a given page.
+  """
+  updatePageMarkup(input: UpdatePageMarkup!): Page! @isAuthenticated
+  """
   Delete a page on an existing project for the logged in user. It does not
   however delete if it is the last page of the project. In that case, it
   will throw error.
   """
   deletePage(projectId: ID!, pageId: ID!): Page! @isAuthenticated
+  """
+  Create a new query for a given project.
+  """
+  createQuery(input: NewGraphQLQuery!): GraphQLQuery! @isAuthenticated
+  """
+  Delete a query from a project.
+  """
+  deleteQuery(projectId: ID!, queryId: ID!): GraphQLQuery! @isAuthenticated
 }

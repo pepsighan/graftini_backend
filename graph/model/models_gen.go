@@ -6,6 +6,12 @@ import (
 	"github.com/google/uuid"
 )
 
+type NewGraphQLQuery struct {
+	ProjectID    uuid.UUID `json:"projectId"`
+	VariableName string    `json:"variableName"`
+	GqlAst       string    `json:"gqlAst"`
+}
+
 type NewPage struct {
 	ProjectID uuid.UUID `json:"projectId"`
 	Name      string    `json:"name"`
@@ -14,6 +20,12 @@ type NewPage struct {
 
 type NewProject struct {
 	Name string `json:"name"`
+}
+
+type UpdatePageMarkup struct {
+	ProjectID uuid.UUID `json:"projectId"`
+	PageID    uuid.UUID `json:"pageId"`
+	Markup    string    `json:"markup"`
 }
 
 type UpdateProject struct {

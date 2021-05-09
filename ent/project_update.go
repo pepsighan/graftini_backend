@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/predicate"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
@@ -96,6 +97,21 @@ func (pu *ProjectUpdate) AddPages(p ...*Page) *ProjectUpdate {
 	return pu.AddPageIDs(ids...)
 }
 
+// AddQueryIDs adds the "queries" edge to the GraphQLQuery entity by IDs.
+func (pu *ProjectUpdate) AddQueryIDs(ids ...uuid.UUID) *ProjectUpdate {
+	pu.mutation.AddQueryIDs(ids...)
+	return pu
+}
+
+// AddQueries adds the "queries" edges to the GraphQLQuery entity.
+func (pu *ProjectUpdate) AddQueries(g ...*GraphQLQuery) *ProjectUpdate {
+	ids := make([]uuid.UUID, len(g))
+	for i := range g {
+		ids[i] = g[i].ID
+	}
+	return pu.AddQueryIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (pu *ProjectUpdate) Mutation() *ProjectMutation {
 	return pu.mutation
@@ -126,6 +142,27 @@ func (pu *ProjectUpdate) RemovePages(p ...*Page) *ProjectUpdate {
 		ids[i] = p[i].ID
 	}
 	return pu.RemovePageIDs(ids...)
+}
+
+// ClearQueries clears all "queries" edges to the GraphQLQuery entity.
+func (pu *ProjectUpdate) ClearQueries() *ProjectUpdate {
+	pu.mutation.ClearQueries()
+	return pu
+}
+
+// RemoveQueryIDs removes the "queries" edge to GraphQLQuery entities by IDs.
+func (pu *ProjectUpdate) RemoveQueryIDs(ids ...uuid.UUID) *ProjectUpdate {
+	pu.mutation.RemoveQueryIDs(ids...)
+	return pu
+}
+
+// RemoveQueries removes "queries" edges to GraphQLQuery entities.
+func (pu *ProjectUpdate) RemoveQueries(g ...*GraphQLQuery) *ProjectUpdate {
+	ids := make([]uuid.UUID, len(g))
+	for i := range g {
+		ids[i] = g[i].ID
+	}
+	return pu.RemoveQueryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -322,6 +359,60 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.QueriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.QueriesTable,
+			Columns: []string{project.QueriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: graphqlquery.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedQueriesIDs(); len(nodes) > 0 && !pu.mutation.QueriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.QueriesTable,
+			Columns: []string{project.QueriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: graphqlquery.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.QueriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.QueriesTable,
+			Columns: []string{project.QueriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: graphqlquery.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{project.Label}
@@ -407,6 +498,21 @@ func (puo *ProjectUpdateOne) AddPages(p ...*Page) *ProjectUpdateOne {
 	return puo.AddPageIDs(ids...)
 }
 
+// AddQueryIDs adds the "queries" edge to the GraphQLQuery entity by IDs.
+func (puo *ProjectUpdateOne) AddQueryIDs(ids ...uuid.UUID) *ProjectUpdateOne {
+	puo.mutation.AddQueryIDs(ids...)
+	return puo
+}
+
+// AddQueries adds the "queries" edges to the GraphQLQuery entity.
+func (puo *ProjectUpdateOne) AddQueries(g ...*GraphQLQuery) *ProjectUpdateOne {
+	ids := make([]uuid.UUID, len(g))
+	for i := range g {
+		ids[i] = g[i].ID
+	}
+	return puo.AddQueryIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (puo *ProjectUpdateOne) Mutation() *ProjectMutation {
 	return puo.mutation
@@ -437,6 +543,27 @@ func (puo *ProjectUpdateOne) RemovePages(p ...*Page) *ProjectUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return puo.RemovePageIDs(ids...)
+}
+
+// ClearQueries clears all "queries" edges to the GraphQLQuery entity.
+func (puo *ProjectUpdateOne) ClearQueries() *ProjectUpdateOne {
+	puo.mutation.ClearQueries()
+	return puo
+}
+
+// RemoveQueryIDs removes the "queries" edge to GraphQLQuery entities by IDs.
+func (puo *ProjectUpdateOne) RemoveQueryIDs(ids ...uuid.UUID) *ProjectUpdateOne {
+	puo.mutation.RemoveQueryIDs(ids...)
+	return puo
+}
+
+// RemoveQueries removes "queries" edges to GraphQLQuery entities.
+func (puo *ProjectUpdateOne) RemoveQueries(g ...*GraphQLQuery) *ProjectUpdateOne {
+	ids := make([]uuid.UUID, len(g))
+	for i := range g {
+		ids[i] = g[i].ID
+	}
+	return puo.RemoveQueryIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -649,6 +776,60 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: page.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.QueriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.QueriesTable,
+			Columns: []string{project.QueriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: graphqlquery.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedQueriesIDs(); len(nodes) > 0 && !puo.mutation.QueriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.QueriesTable,
+			Columns: []string{project.QueriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: graphqlquery.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.QueriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.QueriesTable,
+			Columns: []string{project.QueriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: graphqlquery.FieldID,
 				},
 			},
 		}

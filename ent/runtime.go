@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/ent/project"
 	"github.com/pepsighan/nocodepress_backend/ent/schema"
@@ -16,8 +17,40 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	graphqlqueryFields := schema.GraphQLQuery{}.Fields()
+	_ = graphqlqueryFields
+	// graphqlqueryDescCreatedAt is the schema descriptor for created_at field.
+	graphqlqueryDescCreatedAt := graphqlqueryFields[3].Descriptor()
+	// graphqlquery.DefaultCreatedAt holds the default value on creation for the created_at field.
+	graphqlquery.DefaultCreatedAt = graphqlqueryDescCreatedAt.Default.(func() time.Time)
+	// graphqlqueryDescUpdatedAt is the schema descriptor for updated_at field.
+	graphqlqueryDescUpdatedAt := graphqlqueryFields[4].Descriptor()
+	// graphqlquery.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	graphqlquery.DefaultUpdatedAt = graphqlqueryDescUpdatedAt.Default.(func() time.Time)
+	// graphqlquery.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	graphqlquery.UpdateDefaultUpdatedAt = graphqlqueryDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// graphqlqueryDescID is the schema descriptor for id field.
+	graphqlqueryDescID := graphqlqueryFields[0].Descriptor()
+	// graphqlquery.DefaultID holds the default value on creation for the id field.
+	graphqlquery.DefaultID = graphqlqueryDescID.Default.(func() uuid.UUID)
 	pageFields := schema.Page{}.Fields()
 	_ = pageFields
+	// pageDescMarkup is the schema descriptor for markup field.
+	pageDescMarkup := pageFields[3].Descriptor()
+	// page.DefaultMarkup holds the default value on creation for the markup field.
+	page.DefaultMarkup = pageDescMarkup.Default.(string)
+	// page.MarkupValidator is a validator for the "markup" field. It is called by the builders before save.
+	page.MarkupValidator = pageDescMarkup.Validators[0].(func(string) error)
+	// pageDescCreatedAt is the schema descriptor for created_at field.
+	pageDescCreatedAt := pageFields[4].Descriptor()
+	// page.DefaultCreatedAt holds the default value on creation for the created_at field.
+	page.DefaultCreatedAt = pageDescCreatedAt.Default.(func() time.Time)
+	// pageDescUpdatedAt is the schema descriptor for updated_at field.
+	pageDescUpdatedAt := pageFields[5].Descriptor()
+	// page.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	page.DefaultUpdatedAt = pageDescUpdatedAt.Default.(func() time.Time)
+	// page.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	page.UpdateDefaultUpdatedAt = pageDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// pageDescID is the schema descriptor for id field.
 	pageDescID := pageFields[0].Descriptor()
 	// page.DefaultID holds the default value on creation for the id field.

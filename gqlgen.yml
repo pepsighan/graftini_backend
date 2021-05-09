@@ -53,3 +53,5 @@ models:
     model: github.com/pepsighan/nocodepress_backend/ent.Project
   Page:
     model: github.com/pepsighan/nocodepress_backend/ent.Page
+  GraphQLQuery:
+    model: github.com/pepsighan/nocodepress_backend/ent.GraphQLQuery

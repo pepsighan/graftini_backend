@@ -8,11 +8,37 @@ import (
 )
 
 var (
+	// GraphQlQueriesColumns holds the columns for the "graph_ql_queries" table.
+	GraphQlQueriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "variable_name", Type: field.TypeString},
+		{Name: "gql_ast", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "project_queries", Type: field.TypeUUID, Nullable: true},
+	}
+	// GraphQlQueriesTable holds the schema information for the "graph_ql_queries" table.
+	GraphQlQueriesTable = &schema.Table{
+		Name:       "graph_ql_queries",
+		Columns:    GraphQlQueriesColumns,
+		PrimaryKey: []*schema.Column{GraphQlQueriesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "graph_ql_queries_projects_queries",
+				Columns:    []*schema.Column{GraphQlQueriesColumns[5]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// PagesColumns holds the columns for the "pages" table.
 	PagesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "route", Type: field.TypeString},
+		{Name: "markup", Type: field.TypeString, Default: "{\"ROOT\":{\"id\":\"ROOT\",\"component\":\"Root\",\"props\":{\"backgroundColor\":{\"a\":1,\"b\":255,\"g\":255,\"r\":255}},\"isCanvas\":true,\"childrenNodes\":null}}"},
+		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
+		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
 		{Name: "project_pages", Type: field.TypeUUID, Nullable: true},
 	}
 	// PagesTable holds the schema information for the "pages" table.
@@ -23,7 +49,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "pages_projects_pages",
-				Columns:    []*schema.Column{PagesColumns[3]},
+				Columns:    []*schema.Column{PagesColumns[6]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -71,6 +97,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		GraphQlQueriesTable,
 		PagesTable,
 		ProjectsTable,
 		UsersTable,
@@ -78,6 +105,7 @@ var (
 )
 
 func init() {
+	GraphQlQueriesTable.ForeignKeys[0].RefTable = ProjectsTable
 	PagesTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectsTable.ForeignKeys[0].RefTable = UsersTable
 }

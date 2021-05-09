@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -30,6 +31,48 @@ func (pc *PageCreate) SetName(s string) *PageCreate {
 // SetRoute sets the "route" field.
 func (pc *PageCreate) SetRoute(s string) *PageCreate {
 	pc.mutation.SetRoute(s)
+	return pc
+}
+
+// SetMarkup sets the "markup" field.
+func (pc *PageCreate) SetMarkup(s string) *PageCreate {
+	pc.mutation.SetMarkup(s)
+	return pc
+}
+
+// SetNillableMarkup sets the "markup" field if the given value is not nil.
+func (pc *PageCreate) SetNillableMarkup(s *string) *PageCreate {
+	if s != nil {
+		pc.SetMarkup(*s)
+	}
+	return pc
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (pc *PageCreate) SetCreatedAt(t time.Time) *PageCreate {
+	pc.mutation.SetCreatedAt(t)
+	return pc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (pc *PageCreate) SetNillableCreatedAt(t *time.Time) *PageCreate {
+	if t != nil {
+		pc.SetCreatedAt(*t)
+	}
+	return pc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (pc *PageCreate) SetUpdatedAt(t time.Time) *PageCreate {
+	pc.mutation.SetUpdatedAt(t)
+	return pc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (pc *PageCreate) SetNillableUpdatedAt(t *time.Time) *PageCreate {
+	if t != nil {
+		pc.SetUpdatedAt(*t)
+	}
 	return pc
 }
 
@@ -110,6 +153,18 @@ func (pc *PageCreate) SaveX(ctx context.Context) *Page {
 
 // defaults sets the default values of the builder before save.
 func (pc *PageCreate) defaults() {
+	if _, ok := pc.mutation.Markup(); !ok {
+		v := page.DefaultMarkup
+		pc.mutation.SetMarkup(v)
+	}
+	if _, ok := pc.mutation.CreatedAt(); !ok {
+		v := page.DefaultCreatedAt()
+		pc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		v := page.DefaultUpdatedAt()
+		pc.mutation.SetUpdatedAt(v)
+	}
 	if _, ok := pc.mutation.ID(); !ok {
 		v := page.DefaultID()
 		pc.mutation.SetID(v)
@@ -123,6 +178,20 @@ func (pc *PageCreate) check() error {
 	}
 	if _, ok := pc.mutation.Route(); !ok {
 		return &ValidationError{Name: "route", err: errors.New("ent: missing required field \"route\"")}
+	}
+	if _, ok := pc.mutation.Markup(); !ok {
+		return &ValidationError{Name: "markup", err: errors.New("ent: missing required field \"markup\"")}
+	}
+	if v, ok := pc.mutation.Markup(); ok {
+		if err := page.MarkupValidator(v); err != nil {
+			return &ValidationError{Name: "markup", err: fmt.Errorf("ent: validator failed for field \"markup\": %w", err)}
+		}
+	}
+	if _, ok := pc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
+	}
+	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New("ent: missing required field \"updated_at\"")}
 	}
 	return nil
 }
@@ -168,6 +237,30 @@ func (pc *PageCreate) createSpec() (*Page, *sqlgraph.CreateSpec) {
 			Column: page.FieldRoute,
 		})
 		_node.Route = value
+	}
+	if value, ok := pc.mutation.Markup(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: page.FieldMarkup,
+		})
+		_node.Markup = value
+	}
+	if value, ok := pc.mutation.CreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: page.FieldCreatedAt,
+		})
+		_node.CreatedAt = value
+	}
+	if value, ok := pc.mutation.UpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: page.FieldUpdatedAt,
+		})
+		_node.UpdatedAt = value
 	}
 	if nodes := pc.mutation.PageOfIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pepsighan/nocodepress_backend/ent"
+	"github.com/pepsighan/nocodepress_backend/ent/graphqlquery"
 	"github.com/pepsighan/nocodepress_backend/ent/page"
 	"github.com/pepsighan/nocodepress_backend/graph/generated"
 	"github.com/pepsighan/nocodepress_backend/graph/model"
@@ -78,6 +79,28 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model.NewPage) 
 		Save(ctx)
 }
 
+func (r *mutationResolver) UpdatePageMarkup(ctx context.Context, input model.UpdatePageMarkup) (*ent.Page, error) {
+	user := auth.RequiredAuthenticatedUser(ctx)
+
+	prj, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(input.ProjectID, user.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	pg, err := prj.QueryPages().
+		Where(page.IDEQ(input.PageID)).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return pg.Update().
+		SetMarkup(input.Markup).
+		Save(ctx)
+}
+
 func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 
@@ -88,7 +111,8 @@ func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, 
 		return nil, err
 	}
 
-	pgCount, err := prj.QueryPages().Count(ctx)
+	pgCount, err := prj.QueryPages().
+		Count(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +121,9 @@ func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, 
 		return nil, fmt.Errorf("cannot delete the only page")
 	}
 
-	pg, err := prj.QueryPages().Where(page.IDEQ(pageID)).First(ctx)
+	pg, err := prj.QueryPages().
+		Where(page.IDEQ(pageID)).
+		First(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -110,8 +136,48 @@ func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, 
 	return pg, nil
 }
 
+func (r *mutationResolver) CreateQuery(ctx context.Context, input model.NewGraphQLQuery) (*ent.GraphQLQuery, error) {
+	user := auth.RequiredAuthenticatedUser(ctx)
+
+	pg, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(input.ProjectID, user.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Ent.GraphQLQuery.Create().
+		SetVariableName(input.VariableName).
+		SetGqlAst(input.GqlAst).
+		SetQueryOf(pg).
+		Save(ctx)
+}
+
+func (r *mutationResolver) DeleteQuery(ctx context.Context, projectID uuid.UUID, queryID uuid.UUID) (*ent.GraphQLQuery, error) {
+	user := auth.RequiredAuthenticatedUser(ctx)
+
+	pg, err := r.Ent.Project.Query().ByIDAndOwnedBy(projectID, user.ID).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	query, err := pg.QueryQueries().Where(graphqlquery.IDEQ(queryID)).First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.Ent.GraphQLQuery.DeleteOne(query).Exec(ctx)
+	return query, err
+}
+
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {
-	return obj.QueryPages().All(ctx)
+	return obj.QueryPages().
+		Order(ent.Asc(page.FieldCreatedAt)).
+		All(ctx)
+}
+
+func (r *projectResolver) Queries(ctx context.Context, obj *ent.Project) ([]*ent.GraphQLQuery, error) {
+	return obj.QueryQueries().All(ctx)
 }
 
 func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {

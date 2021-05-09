@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// GraphQLQuery is the predicate function for graphqlquery builders.
+type GraphQLQuery func(*sql.Selector)
+
 // Page is the predicate function for page builders.
 type Page func(*sql.Selector)
 

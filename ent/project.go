@@ -38,9 +38,11 @@ type ProjectEdges struct {
 	Owner *User `json:"owner,omitempty"`
 	// Pages holds the value of the pages edge.
 	Pages []*Page `json:"pages,omitempty"`
+	// Queries holds the value of the queries edge.
+	Queries []*GraphQLQuery `json:"queries,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // OwnerOrErr returns the Owner value or an error if the edge
@@ -64,6 +66,15 @@ func (e ProjectEdges) PagesOrErr() ([]*Page, error) {
 		return e.Pages, nil
 	}
 	return nil, &NotLoadedError{edge: "pages"}
+}
+
+// QueriesOrErr returns the Queries value or an error if the edge
+// was not loaded in eager-loading.
+func (e ProjectEdges) QueriesOrErr() ([]*GraphQLQuery, error) {
+	if e.loadedTypes[2] {
+		return e.Queries, nil
+	}
+	return nil, &NotLoadedError{edge: "queries"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -144,6 +155,11 @@ func (pr *Project) QueryOwner() *UserQuery {
 // QueryPages queries the "pages" edge of the Project entity.
 func (pr *Project) QueryPages() *PageQuery {
 	return (&ProjectClient{config: pr.config}).QueryPages(pr)
+}
+
+// QueryQueries queries the "queries" edge of the Project entity.
+func (pr *Project) QueryQueries() *GraphQLQueryQuery {
+	return (&ProjectClient{config: pr.config}).QueryQueries(pr)
 }
 
 // Update returns a builder for updating this Project.

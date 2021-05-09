@@ -34,5 +34,6 @@ func (Project) Edges() []ent.Edge {
 			Ref("projects").
 			Unique(),
 		edge.To("pages", Page.Type),
+		edge.To("queries", GraphQLQuery.Type),
 	}
 }

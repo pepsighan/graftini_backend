@@ -9,6 +9,19 @@ import (
 	"github.com/pepsighan/nocodepress_backend/ent"
 )
 
+// The GraphQLQueryFunc type is an adapter to allow the use of ordinary
+// function as GraphQLQuery mutator.
+type GraphQLQueryFunc func(context.Context, *ent.GraphQLQueryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f GraphQLQueryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.GraphQLQueryMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GraphQLQueryMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The PageFunc type is an adapter to allow the use of ordinary
 // function as Page mutator.
 type PageFunc func(context.Context, *ent.PageMutation) (ent.Value, error)
