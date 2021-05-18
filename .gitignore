@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+/graftini_backend
 
 # Test binary, built with `go test -c`
 *.test
