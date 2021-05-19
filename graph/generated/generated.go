@@ -61,7 +61,7 @@ type ComplexityRoot struct {
 		CreateQuery      func(childComplexity int, input model.NewGraphQLQuery) int
 		DeletePage       func(childComplexity int, projectID uuid.UUID, pageID uuid.UUID) int
 		DeleteQuery      func(childComplexity int, projectID uuid.UUID, queryID uuid.UUID) int
-		UpdatePageMarkup func(childComplexity int, input model.UpdatePageMarkup) int
+		UpdatePageDesign func(childComplexity int, input model.UpdatePageDesign) int
 		UpdateProject    func(childComplexity int, input model.UpdateProject) int
 	}
 
@@ -99,7 +99,7 @@ type MutationResolver interface {
 	CreateProject(ctx context.Context, input model.NewProject) (*ent.Project, error)
 	UpdateProject(ctx context.Context, input model.UpdateProject) (*ent.Project, error)
 	CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error)
-	UpdatePageMarkup(ctx context.Context, input model.UpdatePageMarkup) (*ent.Page, error)
+	UpdatePageDesign(ctx context.Context, input model.UpdatePageDesign) (*ent.Page, error)
 	DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error)
 	CreateQuery(ctx context.Context, input model.NewGraphQLQuery) (*ent.GraphQLQuery, error)
 	DeleteQuery(ctx context.Context, projectID uuid.UUID, queryID uuid.UUID) (*ent.GraphQLQuery, error)
@@ -210,17 +210,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteQuery(childComplexity, args["projectId"].(uuid.UUID), args["queryId"].(uuid.UUID)), true
 
-	case "Mutation.updatePageMarkup":
-		if e.complexity.Mutation.UpdatePageMarkup == nil {
+	case "Mutation.updatePageDesign":
+		if e.complexity.Mutation.UpdatePageDesign == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_updatePageMarkup_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_updatePageDesign_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdatePageMarkup(childComplexity, args["input"].(model.UpdatePageMarkup)), true
+		return e.complexity.Mutation.UpdatePageDesign(childComplexity, args["input"].(model.UpdatePageDesign)), true
 
 	case "Mutation.updateProject":
 		if e.complexity.Mutation.UpdateProject == nil {
@@ -501,7 +501,7 @@ input NewPage {
   route: String!
 }
 
-input UpdatePageMarkup {
+input UpdatePageDesign {
   projectId: ID!
   pageId: ID!
   componentMap: String!
@@ -528,9 +528,9 @@ type Mutation {
   """
   createPage(input: NewPage!): Page! @isAuthenticated
   """
-  Update the markup in a given page.
+  Update the design of a given page.
   """
-  updatePageMarkup(input: UpdatePageMarkup!): Page! @isAuthenticated
+  updatePageDesign(input: UpdatePageDesign!): Page! @isAuthenticated
   """
   Delete a page on an existing project for the logged in user. It does not
   however delete if it is the last page of the project. In that case, it
@@ -647,13 +647,13 @@ func (ec *executionContext) field_Mutation_deleteQuery_args(ctx context.Context,
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_updatePageMarkup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_updatePageDesign_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.UpdatePageMarkup
+	var arg0 model.UpdatePageDesign
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdatePageMarkup2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐUpdatePageMarkup(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdatePageDesign2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐUpdatePageDesign(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1036,7 +1036,7 @@ func (ec *executionContext) _Mutation_createPage(ctx context.Context, field grap
 	return ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋentᚐPage(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Mutation_updatePageMarkup(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_updatePageDesign(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1053,7 +1053,7 @@ func (ec *executionContext) _Mutation_updatePageMarkup(ctx context.Context, fiel
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Mutation_updatePageMarkup_args(ctx, rawArgs)
+	args, err := ec.field_Mutation_updatePageDesign_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1062,7 +1062,7 @@ func (ec *executionContext) _Mutation_updatePageMarkup(ctx context.Context, fiel
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
-			return ec.resolvers.Mutation().UpdatePageMarkup(rctx, args["input"].(model.UpdatePageMarkup))
+			return ec.resolvers.Mutation().UpdatePageDesign(rctx, args["input"].(model.UpdatePageDesign))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
@@ -3164,8 +3164,8 @@ func (ec *executionContext) unmarshalInputNewProject(ctx context.Context, obj in
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUpdatePageMarkup(ctx context.Context, obj interface{}) (model.UpdatePageMarkup, error) {
-	var it model.UpdatePageMarkup
+func (ec *executionContext) unmarshalInputUpdatePageDesign(ctx context.Context, obj interface{}) (model.UpdatePageDesign, error) {
+	var it model.UpdatePageDesign
 	var asMap = obj.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -3311,8 +3311,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "updatePageMarkup":
-			out.Values[i] = ec._Mutation_updatePageMarkup(ctx, field)
+		case "updatePageDesign":
+			out.Values[i] = ec._Mutation_updatePageDesign(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4035,8 +4035,8 @@ func (ec *executionContext) marshalNString2ᚖstring(ctx context.Context, sel as
 	return res
 }
 
-func (ec *executionContext) unmarshalNUpdatePageMarkup2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐUpdatePageMarkup(ctx context.Context, v interface{}) (model.UpdatePageMarkup, error) {
-	res, err := ec.unmarshalInputUpdatePageMarkup(ctx, v)
+func (ec *executionContext) unmarshalNUpdatePageDesign2githubᚗcomᚋpepsighanᚋgraftini_backendᚋgraphᚋmodelᚐUpdatePageDesign(ctx context.Context, v interface{}) (model.UpdatePageDesign, error) {
+	res, err := ec.unmarshalInputUpdatePageDesign(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

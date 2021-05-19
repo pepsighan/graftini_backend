@@ -22,7 +22,7 @@ type NewProject struct {
 	Name string `json:"name"`
 }
 
-type UpdatePageMarkup struct {
+type UpdatePageDesign struct {
 	ProjectID    uuid.UUID `json:"projectId"`
 	PageID       uuid.UUID `json:"pageId"`
 	ComponentMap string    `json:"componentMap"`
