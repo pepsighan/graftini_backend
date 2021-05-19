@@ -32,7 +32,7 @@ type Page {
   id: ID!
   name: String!
   route: String!
-  componentMap: String!
+  componentMap: String
 }
 
 type GraphQLQuery {
