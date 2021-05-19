@@ -66,10 +66,10 @@ type ComplexityRoot struct {
 	}
 
 	Page struct {
-		ID     func(childComplexity int) int
-		Markup func(childComplexity int) int
-		Name   func(childComplexity int) int
-		Route  func(childComplexity int) int
+		ComponentMap func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Name         func(childComplexity int) int
+		Route        func(childComplexity int) int
 	}
 
 	Project struct {
@@ -234,19 +234,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateProject(childComplexity, args["input"].(model.UpdateProject)), true
 
+	case "Page.componentMap":
+		if e.complexity.Page.ComponentMap == nil {
+			break
+		}
+
+		return e.complexity.Page.ComponentMap(childComplexity), true
+
 	case "Page.id":
 		if e.complexity.Page.ID == nil {
 			break
 		}
 
 		return e.complexity.Page.ID(childComplexity), true
-
-	case "Page.markup":
-		if e.complexity.Page.Markup == nil {
-			break
-		}
-
-		return e.complexity.Page.Markup(childComplexity), true
 
 	case "Page.name":
 		if e.complexity.Page.Name == nil {
@@ -456,7 +456,7 @@ type Page {
   id: ID!
   name: String!
   route: String!
-  markup: String!
+  componentMap: String!
 }
 
 type GraphQLQuery {
@@ -504,7 +504,7 @@ input NewPage {
 input UpdatePageMarkup {
   projectId: ID!
   pageId: ID!
-  markup: String!
+  componentMap: String!
 }
 
 input NewGraphQLQuery {
@@ -1389,7 +1389,7 @@ func (ec *executionContext) _Page_route(ctx context.Context, field graphql.Colle
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Page_markup(ctx context.Context, field graphql.CollectedField, obj *ent.Page) (ret graphql.Marshaler) {
+func (ec *executionContext) _Page_componentMap(ctx context.Context, field graphql.CollectedField, obj *ent.Page) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1407,7 +1407,7 @@ func (ec *executionContext) _Page_markup(ctx context.Context, field graphql.Coll
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Markup, nil
+		return obj.ComponentMap, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1419,9 +1419,9 @@ func (ec *executionContext) _Page_markup(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Project_id(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
@@ -3186,11 +3186,11 @@ func (ec *executionContext) unmarshalInputUpdatePageMarkup(ctx context.Context, 
 			if err != nil {
 				return it, err
 			}
-		case "markup":
+		case "componentMap":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("markup"))
-			it.Markup, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("componentMap"))
+			it.ComponentMap, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3368,8 +3368,8 @@ func (ec *executionContext) _Page(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "markup":
-			out.Values[i] = ec._Page_markup(ctx, field, obj)
+		case "componentMap":
+			out.Values[i] = ec._Page_componentMap(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4006,6 +4006,27 @@ func (ec *executionContext) unmarshalNString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+	res, err := graphql.UnmarshalString(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNString2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := graphql.MarshalString(*v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

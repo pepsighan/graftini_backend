@@ -565,7 +565,7 @@ type PageMutation struct {
 	id            *uuid.UUID
 	name          *string
 	route         *string
-	markup        *string
+	componentMap  *string
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
@@ -733,40 +733,53 @@ func (m *PageMutation) ResetRoute() {
 	m.route = nil
 }
 
-// SetMarkup sets the "markup" field.
-func (m *PageMutation) SetMarkup(s string) {
-	m.markup = &s
+// SetComponentMap sets the "componentMap" field.
+func (m *PageMutation) SetComponentMap(s string) {
+	m.componentMap = &s
 }
 
-// Markup returns the value of the "markup" field in the mutation.
-func (m *PageMutation) Markup() (r string, exists bool) {
-	v := m.markup
+// ComponentMap returns the value of the "componentMap" field in the mutation.
+func (m *PageMutation) ComponentMap() (r string, exists bool) {
+	v := m.componentMap
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldMarkup returns the old "markup" field's value of the Page entity.
+// OldComponentMap returns the old "componentMap" field's value of the Page entity.
 // If the Page object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PageMutation) OldMarkup(ctx context.Context) (v string, err error) {
+func (m *PageMutation) OldComponentMap(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldMarkup is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldComponentMap is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldMarkup requires an ID field in the mutation")
+		return v, fmt.Errorf("OldComponentMap requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMarkup: %w", err)
+		return v, fmt.Errorf("querying old value for OldComponentMap: %w", err)
 	}
-	return oldValue.Markup, nil
+	return oldValue.ComponentMap, nil
 }
 
-// ResetMarkup resets all changes to the "markup" field.
-func (m *PageMutation) ResetMarkup() {
-	m.markup = nil
+// ClearComponentMap clears the value of the "componentMap" field.
+func (m *PageMutation) ClearComponentMap() {
+	m.componentMap = nil
+	m.clearedFields[page.FieldComponentMap] = struct{}{}
+}
+
+// ComponentMapCleared returns if the "componentMap" field was cleared in this mutation.
+func (m *PageMutation) ComponentMapCleared() bool {
+	_, ok := m.clearedFields[page.FieldComponentMap]
+	return ok
+}
+
+// ResetComponentMap resets all changes to the "componentMap" field.
+func (m *PageMutation) ResetComponentMap() {
+	m.componentMap = nil
+	delete(m.clearedFields, page.FieldComponentMap)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -901,8 +914,8 @@ func (m *PageMutation) Fields() []string {
 	if m.route != nil {
 		fields = append(fields, page.FieldRoute)
 	}
-	if m.markup != nil {
-		fields = append(fields, page.FieldMarkup)
+	if m.componentMap != nil {
+		fields = append(fields, page.FieldComponentMap)
 	}
 	if m.created_at != nil {
 		fields = append(fields, page.FieldCreatedAt)
@@ -922,8 +935,8 @@ func (m *PageMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case page.FieldRoute:
 		return m.Route()
-	case page.FieldMarkup:
-		return m.Markup()
+	case page.FieldComponentMap:
+		return m.ComponentMap()
 	case page.FieldCreatedAt:
 		return m.CreatedAt()
 	case page.FieldUpdatedAt:
@@ -941,8 +954,8 @@ func (m *PageMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case page.FieldRoute:
 		return m.OldRoute(ctx)
-	case page.FieldMarkup:
-		return m.OldMarkup(ctx)
+	case page.FieldComponentMap:
+		return m.OldComponentMap(ctx)
 	case page.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case page.FieldUpdatedAt:
@@ -970,12 +983,12 @@ func (m *PageMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRoute(v)
 		return nil
-	case page.FieldMarkup:
+	case page.FieldComponentMap:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetMarkup(v)
+		m.SetComponentMap(v)
 		return nil
 	case page.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1020,7 +1033,11 @@ func (m *PageMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *PageMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(page.FieldComponentMap) {
+		fields = append(fields, page.FieldComponentMap)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1033,6 +1050,11 @@ func (m *PageMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *PageMutation) ClearField(name string) error {
+	switch name {
+	case page.FieldComponentMap:
+		m.ClearComponentMap()
+		return nil
+	}
 	return fmt.Errorf("unknown Page nullable field %s", name)
 }
 
@@ -1046,8 +1068,8 @@ func (m *PageMutation) ResetField(name string) error {
 	case page.FieldRoute:
 		m.ResetRoute()
 		return nil
-	case page.FieldMarkup:
-		m.ResetMarkup()
+	case page.FieldComponentMap:
+		m.ResetComponentMap()
 		return nil
 	case page.FieldCreatedAt:
 		m.ResetCreatedAt()

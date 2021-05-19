@@ -35,12 +35,10 @@ func init() {
 	graphqlquery.DefaultID = graphqlqueryDescID.Default.(func() uuid.UUID)
 	pageFields := schema.Page{}.Fields()
 	_ = pageFields
-	// pageDescMarkup is the schema descriptor for markup field.
-	pageDescMarkup := pageFields[3].Descriptor()
-	// page.DefaultMarkup holds the default value on creation for the markup field.
-	page.DefaultMarkup = pageDescMarkup.Default.(string)
-	// page.MarkupValidator is a validator for the "markup" field. It is called by the builders before save.
-	page.MarkupValidator = pageDescMarkup.Validators[0].(func(string) error)
+	// pageDescComponentMap is the schema descriptor for componentMap field.
+	pageDescComponentMap := pageFields[3].Descriptor()
+	// page.ComponentMapValidator is a validator for the "componentMap" field. It is called by the builders before save.
+	page.ComponentMapValidator = pageDescComponentMap.Validators[0].(func(string) error)
 	// pageDescCreatedAt is the schema descriptor for created_at field.
 	pageDescCreatedAt := pageFields[4].Descriptor()
 	// page.DefaultCreatedAt holds the default value on creation for the created_at field.

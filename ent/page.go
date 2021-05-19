@@ -22,8 +22,8 @@ type Page struct {
 	Name string `json:"name,omitempty"`
 	// Route holds the value of the "route" field.
 	Route string `json:"route,omitempty"`
-	// Markup holds the value of the "markup" field.
-	Markup string `json:"markup,omitempty"`
+	// ComponentMap holds the value of the "componentMap" field.
+	ComponentMap *string `json:"componentMap,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -62,7 +62,7 @@ func (*Page) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case page.FieldName, page.FieldRoute, page.FieldMarkup:
+		case page.FieldName, page.FieldRoute, page.FieldComponentMap:
 			values[i] = new(sql.NullString)
 		case page.FieldCreatedAt, page.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -103,11 +103,12 @@ func (pa *Page) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				pa.Route = value.String
 			}
-		case page.FieldMarkup:
+		case page.FieldComponentMap:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field markup", values[i])
+				return fmt.Errorf("unexpected type %T for field componentMap", values[i])
 			} else if value.Valid {
-				pa.Markup = value.String
+				pa.ComponentMap = new(string)
+				*pa.ComponentMap = value.String
 			}
 		case page.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -164,8 +165,10 @@ func (pa *Page) String() string {
 	builder.WriteString(pa.Name)
 	builder.WriteString(", route=")
 	builder.WriteString(pa.Route)
-	builder.WriteString(", markup=")
-	builder.WriteString(pa.Markup)
+	if v := pa.ComponentMap; v != nil {
+		builder.WriteString(", componentMap=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", created_at=")
 	builder.WriteString(pa.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

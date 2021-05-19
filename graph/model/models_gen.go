@@ -23,9 +23,9 @@ type NewProject struct {
 }
 
 type UpdatePageMarkup struct {
-	ProjectID uuid.UUID `json:"projectId"`
-	PageID    uuid.UUID `json:"pageId"`
-	Markup    string    `json:"markup"`
+	ProjectID    uuid.UUID `json:"projectId"`
+	PageID       uuid.UUID `json:"pageId"`
+	ComponentMap string    `json:"componentMap"`
 }
 
 type UpdateProject struct {

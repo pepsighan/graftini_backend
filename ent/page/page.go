@@ -17,8 +17,8 @@ const (
 	FieldName = "name"
 	// FieldRoute holds the string denoting the route field in the database.
 	FieldRoute = "route"
-	// FieldMarkup holds the string denoting the markup field in the database.
-	FieldMarkup = "markup"
+	// FieldComponentMap holds the string denoting the componentmap field in the database.
+	FieldComponentMap = "component_map"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -41,7 +41,7 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldRoute,
-	FieldMarkup,
+	FieldComponentMap,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -68,10 +68,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultMarkup holds the default value on creation for the "markup" field.
-	DefaultMarkup string
-	// MarkupValidator is a validator for the "markup" field. It is called by the builders before save.
-	MarkupValidator func(string) error
+	// ComponentMapValidator is a validator for the "componentMap" field. It is called by the builders before save.
+	ComponentMapValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

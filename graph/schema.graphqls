@@ -32,7 +32,7 @@ type Page {
   id: ID!
   name: String!
   route: String!
-  markup: String!
+  componentMap: String!
 }
 
 type GraphQLQuery {
@@ -80,7 +80,7 @@ input NewPage {
 input UpdatePageMarkup {
   projectId: ID!
   pageId: ID!
-  markup: String!
+  componentMap: String!
 }
 
 input NewGraphQLQuery {

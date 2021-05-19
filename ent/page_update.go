@@ -41,17 +41,23 @@ func (pu *PageUpdate) SetRoute(s string) *PageUpdate {
 	return pu
 }
 
-// SetMarkup sets the "markup" field.
-func (pu *PageUpdate) SetMarkup(s string) *PageUpdate {
-	pu.mutation.SetMarkup(s)
+// SetComponentMap sets the "componentMap" field.
+func (pu *PageUpdate) SetComponentMap(s string) *PageUpdate {
+	pu.mutation.SetComponentMap(s)
 	return pu
 }
 
-// SetNillableMarkup sets the "markup" field if the given value is not nil.
-func (pu *PageUpdate) SetNillableMarkup(s *string) *PageUpdate {
+// SetNillableComponentMap sets the "componentMap" field if the given value is not nil.
+func (pu *PageUpdate) SetNillableComponentMap(s *string) *PageUpdate {
 	if s != nil {
-		pu.SetMarkup(*s)
+		pu.SetComponentMap(*s)
 	}
+	return pu
+}
+
+// ClearComponentMap clears the value of the "componentMap" field.
+func (pu *PageUpdate) ClearComponentMap() *PageUpdate {
+	pu.mutation.ClearComponentMap()
 	return pu
 }
 
@@ -159,9 +165,9 @@ func (pu *PageUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (pu *PageUpdate) check() error {
-	if v, ok := pu.mutation.Markup(); ok {
-		if err := page.MarkupValidator(v); err != nil {
-			return &ValidationError{Name: "markup", err: fmt.Errorf("ent: validator failed for field \"markup\": %w", err)}
+	if v, ok := pu.mutation.ComponentMap(); ok {
+		if err := page.ComponentMapValidator(v); err != nil {
+			return &ValidationError{Name: "componentMap", err: fmt.Errorf("ent: validator failed for field \"componentMap\": %w", err)}
 		}
 	}
 	return nil
@@ -199,11 +205,17 @@ func (pu *PageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: page.FieldRoute,
 		})
 	}
-	if value, ok := pu.mutation.Markup(); ok {
+	if value, ok := pu.mutation.ComponentMap(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: page.FieldMarkup,
+			Column: page.FieldComponentMap,
+		})
+	}
+	if pu.mutation.ComponentMapCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: page.FieldComponentMap,
 		})
 	}
 	if value, ok := pu.mutation.UpdatedAt(); ok {
@@ -279,17 +291,23 @@ func (puo *PageUpdateOne) SetRoute(s string) *PageUpdateOne {
 	return puo
 }
 
-// SetMarkup sets the "markup" field.
-func (puo *PageUpdateOne) SetMarkup(s string) *PageUpdateOne {
-	puo.mutation.SetMarkup(s)
+// SetComponentMap sets the "componentMap" field.
+func (puo *PageUpdateOne) SetComponentMap(s string) *PageUpdateOne {
+	puo.mutation.SetComponentMap(s)
 	return puo
 }
 
-// SetNillableMarkup sets the "markup" field if the given value is not nil.
-func (puo *PageUpdateOne) SetNillableMarkup(s *string) *PageUpdateOne {
+// SetNillableComponentMap sets the "componentMap" field if the given value is not nil.
+func (puo *PageUpdateOne) SetNillableComponentMap(s *string) *PageUpdateOne {
 	if s != nil {
-		puo.SetMarkup(*s)
+		puo.SetComponentMap(*s)
 	}
+	return puo
+}
+
+// ClearComponentMap clears the value of the "componentMap" field.
+func (puo *PageUpdateOne) ClearComponentMap() *PageUpdateOne {
+	puo.mutation.ClearComponentMap()
 	return puo
 }
 
@@ -404,9 +422,9 @@ func (puo *PageUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (puo *PageUpdateOne) check() error {
-	if v, ok := puo.mutation.Markup(); ok {
-		if err := page.MarkupValidator(v); err != nil {
-			return &ValidationError{Name: "markup", err: fmt.Errorf("ent: validator failed for field \"markup\": %w", err)}
+	if v, ok := puo.mutation.ComponentMap(); ok {
+		if err := page.ComponentMapValidator(v); err != nil {
+			return &ValidationError{Name: "componentMap", err: fmt.Errorf("ent: validator failed for field \"componentMap\": %w", err)}
 		}
 	}
 	return nil
@@ -461,11 +479,17 @@ func (puo *PageUpdateOne) sqlSave(ctx context.Context) (_node *Page, err error) 
 			Column: page.FieldRoute,
 		})
 	}
-	if value, ok := puo.mutation.Markup(); ok {
+	if value, ok := puo.mutation.ComponentMap(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: page.FieldMarkup,
+			Column: page.FieldComponentMap,
+		})
+	}
+	if puo.mutation.ComponentMapCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: page.FieldComponentMap,
 		})
 	}
 	if value, ok := puo.mutation.UpdatedAt(); ok {

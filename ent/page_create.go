@@ -34,16 +34,16 @@ func (pc *PageCreate) SetRoute(s string) *PageCreate {
 	return pc
 }
 
-// SetMarkup sets the "markup" field.
-func (pc *PageCreate) SetMarkup(s string) *PageCreate {
-	pc.mutation.SetMarkup(s)
+// SetComponentMap sets the "componentMap" field.
+func (pc *PageCreate) SetComponentMap(s string) *PageCreate {
+	pc.mutation.SetComponentMap(s)
 	return pc
 }
 
-// SetNillableMarkup sets the "markup" field if the given value is not nil.
-func (pc *PageCreate) SetNillableMarkup(s *string) *PageCreate {
+// SetNillableComponentMap sets the "componentMap" field if the given value is not nil.
+func (pc *PageCreate) SetNillableComponentMap(s *string) *PageCreate {
 	if s != nil {
-		pc.SetMarkup(*s)
+		pc.SetComponentMap(*s)
 	}
 	return pc
 }
@@ -153,10 +153,6 @@ func (pc *PageCreate) SaveX(ctx context.Context) *Page {
 
 // defaults sets the default values of the builder before save.
 func (pc *PageCreate) defaults() {
-	if _, ok := pc.mutation.Markup(); !ok {
-		v := page.DefaultMarkup
-		pc.mutation.SetMarkup(v)
-	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		v := page.DefaultCreatedAt()
 		pc.mutation.SetCreatedAt(v)
@@ -179,12 +175,9 @@ func (pc *PageCreate) check() error {
 	if _, ok := pc.mutation.Route(); !ok {
 		return &ValidationError{Name: "route", err: errors.New("ent: missing required field \"route\"")}
 	}
-	if _, ok := pc.mutation.Markup(); !ok {
-		return &ValidationError{Name: "markup", err: errors.New("ent: missing required field \"markup\"")}
-	}
-	if v, ok := pc.mutation.Markup(); ok {
-		if err := page.MarkupValidator(v); err != nil {
-			return &ValidationError{Name: "markup", err: fmt.Errorf("ent: validator failed for field \"markup\": %w", err)}
+	if v, ok := pc.mutation.ComponentMap(); ok {
+		if err := page.ComponentMapValidator(v); err != nil {
+			return &ValidationError{Name: "componentMap", err: fmt.Errorf("ent: validator failed for field \"componentMap\": %w", err)}
 		}
 	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
@@ -238,13 +231,13 @@ func (pc *PageCreate) createSpec() (*Page, *sqlgraph.CreateSpec) {
 		})
 		_node.Route = value
 	}
-	if value, ok := pc.mutation.Markup(); ok {
+	if value, ok := pc.mutation.ComponentMap(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: page.FieldMarkup,
+			Column: page.FieldComponentMap,
 		})
-		_node.Markup = value
+		_node.ComponentMap = &value
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

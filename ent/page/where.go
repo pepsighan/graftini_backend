@@ -108,10 +108,10 @@ func Route(v string) predicate.Page {
 	})
 }
 
-// Markup applies equality check predicate on the "markup" field. It's identical to MarkupEQ.
-func Markup(v string) predicate.Page {
+// ComponentMap applies equality check predicate on the "componentMap" field. It's identical to ComponentMapEQ.
+func ComponentMap(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMarkup), v))
+		s.Where(sql.EQ(s.C(FieldComponentMap), v))
 	})
 }
 
@@ -351,22 +351,22 @@ func RouteContainsFold(v string) predicate.Page {
 	})
 }
 
-// MarkupEQ applies the EQ predicate on the "markup" field.
-func MarkupEQ(v string) predicate.Page {
+// ComponentMapEQ applies the EQ predicate on the "componentMap" field.
+func ComponentMapEQ(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMarkup), v))
+		s.Where(sql.EQ(s.C(FieldComponentMap), v))
 	})
 }
 
-// MarkupNEQ applies the NEQ predicate on the "markup" field.
-func MarkupNEQ(v string) predicate.Page {
+// ComponentMapNEQ applies the NEQ predicate on the "componentMap" field.
+func ComponentMapNEQ(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldMarkup), v))
+		s.Where(sql.NEQ(s.C(FieldComponentMap), v))
 	})
 }
 
-// MarkupIn applies the In predicate on the "markup" field.
-func MarkupIn(vs ...string) predicate.Page {
+// ComponentMapIn applies the In predicate on the "componentMap" field.
+func ComponentMapIn(vs ...string) predicate.Page {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -378,12 +378,12 @@ func MarkupIn(vs ...string) predicate.Page {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldMarkup), v...))
+		s.Where(sql.In(s.C(FieldComponentMap), v...))
 	})
 }
 
-// MarkupNotIn applies the NotIn predicate on the "markup" field.
-func MarkupNotIn(vs ...string) predicate.Page {
+// ComponentMapNotIn applies the NotIn predicate on the "componentMap" field.
+func ComponentMapNotIn(vs ...string) predicate.Page {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -395,70 +395,84 @@ func MarkupNotIn(vs ...string) predicate.Page {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldMarkup), v...))
+		s.Where(sql.NotIn(s.C(FieldComponentMap), v...))
 	})
 }
 
-// MarkupGT applies the GT predicate on the "markup" field.
-func MarkupGT(v string) predicate.Page {
+// ComponentMapGT applies the GT predicate on the "componentMap" field.
+func ComponentMapGT(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldMarkup), v))
+		s.Where(sql.GT(s.C(FieldComponentMap), v))
 	})
 }
 
-// MarkupGTE applies the GTE predicate on the "markup" field.
-func MarkupGTE(v string) predicate.Page {
+// ComponentMapGTE applies the GTE predicate on the "componentMap" field.
+func ComponentMapGTE(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldMarkup), v))
+		s.Where(sql.GTE(s.C(FieldComponentMap), v))
 	})
 }
 
-// MarkupLT applies the LT predicate on the "markup" field.
-func MarkupLT(v string) predicate.Page {
+// ComponentMapLT applies the LT predicate on the "componentMap" field.
+func ComponentMapLT(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldMarkup), v))
+		s.Where(sql.LT(s.C(FieldComponentMap), v))
 	})
 }
 
-// MarkupLTE applies the LTE predicate on the "markup" field.
-func MarkupLTE(v string) predicate.Page {
+// ComponentMapLTE applies the LTE predicate on the "componentMap" field.
+func ComponentMapLTE(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldMarkup), v))
+		s.Where(sql.LTE(s.C(FieldComponentMap), v))
 	})
 }
 
-// MarkupContains applies the Contains predicate on the "markup" field.
-func MarkupContains(v string) predicate.Page {
+// ComponentMapContains applies the Contains predicate on the "componentMap" field.
+func ComponentMapContains(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldMarkup), v))
+		s.Where(sql.Contains(s.C(FieldComponentMap), v))
 	})
 }
 
-// MarkupHasPrefix applies the HasPrefix predicate on the "markup" field.
-func MarkupHasPrefix(v string) predicate.Page {
+// ComponentMapHasPrefix applies the HasPrefix predicate on the "componentMap" field.
+func ComponentMapHasPrefix(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldMarkup), v))
+		s.Where(sql.HasPrefix(s.C(FieldComponentMap), v))
 	})
 }
 
-// MarkupHasSuffix applies the HasSuffix predicate on the "markup" field.
-func MarkupHasSuffix(v string) predicate.Page {
+// ComponentMapHasSuffix applies the HasSuffix predicate on the "componentMap" field.
+func ComponentMapHasSuffix(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldMarkup), v))
+		s.Where(sql.HasSuffix(s.C(FieldComponentMap), v))
 	})
 }
 
-// MarkupEqualFold applies the EqualFold predicate on the "markup" field.
-func MarkupEqualFold(v string) predicate.Page {
+// ComponentMapIsNil applies the IsNil predicate on the "componentMap" field.
+func ComponentMapIsNil() predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldMarkup), v))
+		s.Where(sql.IsNull(s.C(FieldComponentMap)))
 	})
 }
 
-// MarkupContainsFold applies the ContainsFold predicate on the "markup" field.
-func MarkupContainsFold(v string) predicate.Page {
+// ComponentMapNotNil applies the NotNil predicate on the "componentMap" field.
+func ComponentMapNotNil() predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldMarkup), v))
+		s.Where(sql.NotNull(s.C(FieldComponentMap)))
+	})
+}
+
+// ComponentMapEqualFold applies the EqualFold predicate on the "componentMap" field.
+func ComponentMapEqualFold(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldComponentMap), v))
+	})
+}
+
+// ComponentMapContainsFold applies the ContainsFold predicate on the "componentMap" field.
+func ComponentMapContainsFold(v string) predicate.Page {
+	return predicate.Page(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldComponentMap), v))
 	})
 }
 

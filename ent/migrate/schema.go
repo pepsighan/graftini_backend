@@ -36,7 +36,7 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "route", Type: field.TypeString},
-		{Name: "markup", Type: field.TypeString, Default: "{\"ROOT\":{\"id\":\"ROOT\",\"component\":\"Root\",\"props\":{\"backgroundColor\":{\"a\":1,\"b\":255,\"g\":255,\"r\":255}},\"isCanvas\":true,\"childrenNodes\":null}}"},
+		{Name: "component_map", Type: field.TypeString, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
 		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
 		{Name: "project_pages", Type: field.TypeUUID, Nullable: true},

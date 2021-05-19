@@ -22,13 +22,14 @@ func (Page) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
 		field.String("name"),
 		field.String("route"),
-		// This is where the design of the page would be stored in a serialized format.
-		field.String("markup").
-			Default(defaultMarkup()).
+		// This is where the design of the page would be stored in a serialized standard format.
+		field.String("componentMap").
+			Optional().
+			Nillable().
 			Validate(func(s string) error {
-				var markup Markup
-				// It is valid only if it can be read into the Markup schema.
-				return json.Unmarshal([]byte(s), &markup)
+				var compMap ComponentMap
+				// It is valid only if it can be read into the schema.
+				return json.Unmarshal([]byte(s), &compMap)
 			}),
 		// These are newly added fields, so will require a default value for older
 		// rows, hence `CURRENT_TIMESTAMP`.
