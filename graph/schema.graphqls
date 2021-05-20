@@ -71,16 +71,20 @@ input UpdateProject {
   graphqlEndpoint: String
 }
 
+input UpdateProjectDesign {
+  projectId: ID!
+  pages: [UpdatePageDesign!]!
+}
+
+input UpdatePageDesign {
+  pageId: ID!
+  componentMap: String!
+}
+
 input NewPage {
   projectId: ID!
   name: String!
   route: String!
-}
-
-input UpdatePageDesign {
-  projectId: ID!
-  pageId: ID!
-  componentMap: String!
 }
 
 input NewGraphQLQuery {
@@ -100,13 +104,13 @@ type Mutation {
   """
   updateProject(input: UpdateProject!): Project! @isAuthenticated
   """
+  Update the designs of the pages in a project.
+  """
+  updateProjectDesign(input: UpdateProjectDesign!): Project! @isAuthenticated
+  """
   Create a page on an existing project for the logged in user.
   """
   createPage(input: NewPage!): Page! @isAuthenticated
-  """
-  Update the design of a given page.
-  """
-  updatePageDesign(input: UpdatePageDesign!): Page! @isAuthenticated
   """
   Delete a page on an existing project for the logged in user. It does not
   however delete if it is the last page of the project. In that case, it

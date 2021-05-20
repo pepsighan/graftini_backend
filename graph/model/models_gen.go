@@ -23,7 +23,6 @@ type NewProject struct {
 }
 
 type UpdatePageDesign struct {
-	ProjectID    uuid.UUID `json:"projectId"`
 	PageID       uuid.UUID `json:"pageId"`
 	ComponentMap string    `json:"componentMap"`
 }
@@ -32,4 +31,9 @@ type UpdateProject struct {
 	ID              uuid.UUID `json:"id"`
 	Name            string    `json:"name"`
 	GraphqlEndpoint *string   `json:"graphqlEndpoint"`
+}
+
+type UpdateProjectDesign struct {
+	ProjectID uuid.UUID           `json:"projectId"`
+	Pages     []*UpdatePageDesign `json:"pages"`
 }

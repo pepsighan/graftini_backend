@@ -62,6 +62,38 @@ func (r *mutationResolver) UpdateProject(ctx context.Context, input model1.Updat
 	return nil, nil
 }
 
+func (r *mutationResolver) UpdateProjectDesign(ctx context.Context, input model1.UpdateProjectDesign) (*ent.Project, error) {
+	user := auth.RequiredAuthenticatedUser(ctx)
+
+	prj, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(input.ProjectID, user.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Update all the pages in a transaction.
+	err = db.WithTx(ctx, r.Ent, func(tx *ent.Tx) error {
+		for _, pg := range input.Pages {
+			_, err := r.Ent.Page.
+				UpdateOneID(pg.PageID).
+				SetComponentMap(pg.ComponentMap).
+				Save(ctx)
+
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return prj, nil
+}
+
 func (r *mutationResolver) CreatePage(ctx context.Context, input model1.NewPage) (*ent.Page, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 
@@ -76,28 +108,6 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model1.NewPage)
 		SetName(input.Name).
 		SetRoute(input.Route).
 		SetPageOf(prj).
-		Save(ctx)
-}
-
-func (r *mutationResolver) UpdatePageDesign(ctx context.Context, input model1.UpdatePageDesign) (*ent.Page, error) {
-	user := auth.RequiredAuthenticatedUser(ctx)
-
-	prj, err := r.Ent.Project.Query().
-		ByIDAndOwnedBy(input.ProjectID, user.ID).
-		First(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	pg, err := prj.QueryPages().
-		Where(page.IDEQ(input.PageID)).
-		First(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return pg.Update().
-		SetComponentMap(input.ComponentMap).
 		Save(ctx)
 }
 
