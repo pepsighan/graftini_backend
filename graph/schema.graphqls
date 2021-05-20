@@ -78,7 +78,7 @@ input UpdateProjectDesign {
 
 input UpdatePageDesign {
   pageId: ID!
-  componentMap: String!
+  componentMap: String
 }
 
 input NewPage {

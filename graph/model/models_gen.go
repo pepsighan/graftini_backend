@@ -24,7 +24,7 @@ type NewProject struct {
 
 type UpdatePageDesign struct {
 	PageID       uuid.UUID `json:"pageId"`
-	ComponentMap string    `json:"componentMap"`
+	ComponentMap *string   `json:"componentMap"`
 }
 
 type UpdateProject struct {

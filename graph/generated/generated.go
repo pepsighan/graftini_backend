@@ -502,7 +502,7 @@ input UpdateProjectDesign {
 
 input UpdatePageDesign {
   pageId: ID!
-  componentMap: String!
+  componentMap: String
 }
 
 input NewPage {
@@ -3183,7 +3183,7 @@ func (ec *executionContext) unmarshalInputUpdatePageDesign(ctx context.Context, 
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("componentMap"))
-			it.ComponentMap, err = ec.unmarshalNString2string(ctx, v)
+			it.ComponentMap, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
