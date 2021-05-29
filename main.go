@@ -3,6 +3,11 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	firebase "firebase.google.com/go/v4"
 	authFirebase "firebase.google.com/go/v4/auth"
@@ -88,5 +93,30 @@ func main() {
 
 	e.POST("/query", graphqlHandler(client))
 	e.GET("/", playgroundHandler())
-	e.Logger.Fatal(e.Start(":" + config.Port))
+
+	// Start server
+	go func() {
+		if err := e.Start(":" + config.Port); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("shutting down the server")
+		}
+	}()
+
+	// Wait for interrupt or terminate signal to gracefully shutdown the server with a timeout
+	// of 10 seconds.
+	quit := make(chan os.Signal, 1)
+	// SIGINT handles Ctrl+C locally.
+	// SIGTERM handles Cloud Run termination signal.
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Close database connections before shutting down.
+	if err := client.Close(); err != nil {
+		log.Printf("failed to close database connection: %v", err)
+	}
+
+	if err := e.Shutdown(ctx); err != nil {
+		log.Fatal(err)
+	}
 }
