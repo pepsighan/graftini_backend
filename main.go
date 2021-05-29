@@ -3,14 +3,11 @@ package main
 import (
 	"context"
 	"log"
-	"os"
-	"strings"
 
 	firebase "firebase.google.com/go/v4"
 	authFirebase "firebase.google.com/go/v4/auth"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	_ "github.com/lib/pq"
@@ -18,6 +15,7 @@ import (
 	"github.com/pepsighan/graftini_backend/graph"
 	"github.com/pepsighan/graftini_backend/graph/generated"
 	"github.com/pepsighan/graftini_backend/internal/auth"
+	"github.com/pepsighan/graftini_backend/internal/config"
 )
 
 func firebaseAuth() *authFirebase.Client {
@@ -61,12 +59,8 @@ func playgroundHandler() echo.HandlerFunc {
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
 
-	client, err := ent.Open("postgres", os.Getenv("POSTGRES_URL"))
+	client, err := ent.Open("postgres", config.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -94,23 +88,12 @@ func main() {
 	// Do not allow CORs requests by default. If allowed origins are provided, then
 	// use them.
 	corsConfig := middleware.DefaultCORSConfig
-	allowedOrigins, ok := os.LookupEnv("ALLOWED_ORIGINS")
-	if ok {
-		corsConfig.AllowOrigins = strings.Split(allowedOrigins, ",")
-	} else {
-		corsConfig.AllowOrigins = []string{}
-	}
-
+	corsConfig.AllowOrigins = config.AllowedOrigins
 	e.Use(middleware.CORSWithConfig(corsConfig))
 
 	// Do not allow any request with body more than 2MB by default. This will
 	// limit DoS attacks by file uploads.
-	maxBodySize, ok := os.LookupEnv("MAX_BODY_SIZE")
-	if ok {
-		e.Use(middleware.BodyLimit(maxBodySize))
-	} else {
-		e.Use(middleware.BodyLimit("2M"))
-	}
+	e.Use(middleware.BodyLimit(config.MaxBodySize))
 
 	e.POST("/query", graphqlHandler(client))
 	e.GET("/", playgroundHandler())
