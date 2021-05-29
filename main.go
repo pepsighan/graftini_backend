@@ -70,6 +70,12 @@ func main() {
 	}
 	defer client.Close()
 
+	// Run the migrations if any on start. The migrations won't drop any fields by
+	// default.
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
+
 	e := echo.New()
 
 	// Recover from panics within route handlers. This saves the app from crashes.
