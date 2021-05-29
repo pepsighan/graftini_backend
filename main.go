@@ -66,14 +66,6 @@ func main() {
 	}
 	defer client.Close()
 
-	// This will migrate any new additions to the database models. It won't drop
-	// any columns or indexes by default. Only additive changes are done automatically.
-	//
-	// Look into https://entgo.io/docs/migrate for more.
-	if err := client.Schema.Create(context.Background()); err != nil {
-		log.Fatalf("failed creating schema resources: %v", err)
-	}
-
 	e := echo.New()
 
 	// Recover from panics within route handlers. This saves the app from crashes.
