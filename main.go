@@ -97,5 +97,5 @@ func main() {
 
 	e.POST("/query", graphqlHandler(client))
 	e.GET("/", playgroundHandler())
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(":" + config.Port))
 }

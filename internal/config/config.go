@@ -11,6 +11,7 @@ import (
 
 var (
 	Env                          Environment = Environment(requireEnv("ENV"))
+	Port                                     = port()
 	DatabaseURL                              = databaseURL()
 	AllowedOrigins                           = allowedOrigins()
 	MaxBodySize                              = maxBodySize()
@@ -39,6 +40,14 @@ func requireEnv(key string) string {
 	}
 
 	return value
+}
+
+func port() string {
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
+		return "1323"
+	}
+	return port
 }
 
 func allowedOrigins() []string {
