@@ -59,7 +59,6 @@ func playgroundHandler() echo.HandlerFunc {
 }
 
 func main() {
-
 	client, err := ent.Open("postgres", config.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)

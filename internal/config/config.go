@@ -10,12 +10,11 @@ import (
 )
 
 var (
-	Env                          Environment = Environment(requireEnv("ENV"))
-	Port                                     = port()
-	DatabaseURL                              = databaseURL()
-	AllowedOrigins                           = allowedOrigins()
-	MaxBodySize                              = maxBodySize()
-	GoogleApplicationCredentials             = requireEnv("GOOGLE_APPLICATION_CREDENTIALS")
+	Env            Environment = Environment(requireEnv("ENV"))
+	Port                       = port()
+	DatabaseURL                = databaseURL()
+	AllowedOrigins             = allowedOrigins()
+	MaxBodySize                = maxBodySize()
 )
 
 type Environment string
