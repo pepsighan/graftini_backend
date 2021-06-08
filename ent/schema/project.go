@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
@@ -33,7 +34,13 @@ func (Project) Edges() []ent.Edge {
 		edge.From("owner", User.Type).
 			Ref("projects").
 			Unique(),
-		edge.To("pages", Page.Type),
-		edge.To("queries", GraphQLQuery.Type),
+		edge.To("pages", Page.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
+		edge.To("queries", GraphQLQuery.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 	}
 }

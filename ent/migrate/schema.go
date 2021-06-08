@@ -27,7 +27,7 @@ var (
 				Symbol:     "graph_ql_queries_projects_queries",
 				Columns:    []*schema.Column{GraphQlQueriesColumns[5]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -51,7 +51,7 @@ var (
 				Symbol:     "pages_projects_pages",
 				Columns:    []*schema.Column{PagesColumns[6]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
@@ -74,7 +74,7 @@ var (
 				Symbol:     "projects_users_projects",
 				Columns:    []*schema.Column{ProjectsColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}

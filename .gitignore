@@ -5,6 +5,8 @@
 *.so
 *.dylib
 /graftini_backend
+/migrate
+/generate
 
 # Test binary, built with `go test -c`
 *.test
