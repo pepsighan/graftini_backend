@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
+	"time"
 
 	_ "github.com/lib/pq"
 	"github.com/pepsighan/graftini_backend/ent"
@@ -19,14 +21,25 @@ func main() {
 	}
 	defer client.Close()
 
-	f, err := os.Create("./bin/generate/migration.sql")
+	unixTime := time.Now().Unix()
+	fileUp := fmt.Sprintf("./bin/generate/migrations/%v_migration.up.sql", unixTime)
+
+	fUp, err := os.Create(fileUp)
 	if err != nil {
 		log.Fatalf("could not create migration file: %v", err)
 	}
-	defer f.Close()
+	defer fUp.Close()
 
 	ctx := context.Background()
-	if err := client.Schema.WriteTo(ctx, f); err != nil {
+	if err := client.Schema.WriteTo(ctx, fUp); err != nil {
 		log.Fatalf("failed printing schema changes: %v", err)
 	}
+
+	// Creating a downfile just because its required by migrate package.
+	fileDown := fmt.Sprintf("./bin/generate/migrations/%v_migration.down.sql", unixTime)
+	fDown, err := os.Create(fileDown)
+	if err != nil {
+		log.Fatalf("could not create migration file: %v", err)
+	}
+	defer fDown.Close()
 }
