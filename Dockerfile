@@ -40,4 +40,5 @@ COPY --from=builder /app/bin/generate/migrations /app/bin/generate/migrations
 # Note: It would be better if migration could be run in the build step because it would
 # ensure that the it is only run once. Otherwise, there are chances that multiple instances
 # of cloud run may run it at the same time & cause failure.
-CMD /app/migrate && /app/server
+WORKDIR /app
+CMD ./migrate && ./server
