@@ -19,7 +19,7 @@ COPY . ./
 RUN go build -v -o server
 
 # Build the migrate binary.
-RUN go build ./bin/migrate -v -o migrate
+RUN go build -v -o migrate ./bin/migrate
 
 # Use the official Debian slim image for a lean production container.
 # https://hub.docker.com/_/debian
