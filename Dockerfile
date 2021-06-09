@@ -32,6 +32,7 @@ RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -
 # Copy the binaries to the production image from the builder stage.
 COPY --from=builder /app/server /app/server
 COPY --from=builder /app/migrate /app/migrate
+COPY --from=builder /app/bin/generate/migrations /app/bin/generate/migrations
 
 # Run the migrations 
 
