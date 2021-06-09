@@ -2,7 +2,7 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"errors"
 	"log"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -29,10 +29,10 @@ func main() {
 		"postgres", driver,
 	)
 	if err != nil {
-		fmt.Printf("failed to create migration instance: %v", err)
+		log.Fatalf("failed to create migration instance: %v", err)
 	}
 
-	if err := m.Up(); err != nil {
-		fmt.Printf("could not run the migrations: %v", err)
+	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		log.Fatalf("could not run the migrations: %v", err)
 	}
 }
