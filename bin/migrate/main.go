@@ -2,28 +2,37 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
-	"os"
 
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
 	"github.com/pepsighan/graftini_backend/internal/config"
 )
 
-// Run the migrations that are generated in the generate directory.
 func main() {
-	client, err := sql.Open("postgres", config.DatabaseURL)
+	db, err := sql.Open("postgres", config.DatabaseURL)
 	if err != nil {
 		log.Fatalf("failed connecting to postgres: %v", err)
 	}
-	defer client.Close()
+	defer db.Close()
 
-	migrations, err := os.ReadFile("./bin/generate/migration.sql")
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
-		log.Fatalf("could not read migration file: %v", err)
+		log.Fatalf("failed to create postgres instance: %v", err)
 	}
 
-	_, err = client.Exec(string(migrations[:]))
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://bin/generate/migrations",
+		"postgres", driver,
+	)
 	if err != nil {
-		log.Fatalf("could not migrate sql: %v", err)
+		fmt.Printf("failed to create migration instance: %v", err)
+	}
+
+	if err := m.Up(); err != nil {
+		fmt.Printf("could not run the migrations: %v", err)
 	}
 }
