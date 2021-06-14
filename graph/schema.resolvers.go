@@ -62,6 +62,24 @@ func (r *mutationResolver) UpdateProject(ctx context.Context, input model1.Updat
 	return nil, nil
 }
 
+func (r *mutationResolver) DeleteProject(ctx context.Context, projectID uuid.UUID) (*ent.Project, error) {
+	owner := auth.RequiredAuthenticatedUser(ctx)
+
+	prj, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(projectID, owner.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = r.Ent.Project.DeleteOne(prj).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return prj, nil
+}
+
 func (r *mutationResolver) UpdateProjectDesign(ctx context.Context, input model1.UpdateProjectDesign) (*ent.Project, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 

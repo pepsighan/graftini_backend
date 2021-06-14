@@ -104,6 +104,10 @@ type Mutation {
   """
   updateProject(input: UpdateProject!): Project! @isAuthenticated
   """
+  Deletes the project of the logged in user.
+  """
+  deleteProject(projectId: ID!): Project! @isAuthenticated
+  """
   Update the designs of the pages in a project.
   """
   updateProjectDesign(input: UpdateProjectDesign!): Project! @isAuthenticated
