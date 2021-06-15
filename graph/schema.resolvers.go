@@ -156,6 +156,10 @@ func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, 
 		return nil, err
 	}
 
+	if pg.Route == "/" {
+		return nil, fmt.Errorf("cannot delete the default page")
+	}
+
 	err = r.Ent.Page.DeleteOne(pg).Exec(ctx)
 	if err != nil {
 		return nil, err
