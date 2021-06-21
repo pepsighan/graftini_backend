@@ -32,3 +32,17 @@ func CreateProject(name string) (*Project, error) {
 
 	return response.Result().(*Project), nil
 }
+
+// DeleteProject deletes a vercel project.
+func DeleteProject(projectID string) error {
+	response, err := request().
+		SetError(VercelFailure{}).
+		Delete(route(fmt.Sprintf("v8/projects/%v", projectID)))
+
+	if err != nil {
+		return err
+	}
+
+	err1, _ := response.Error().(*VercelFailure)
+	return err1
+}
