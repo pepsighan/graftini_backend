@@ -88,6 +88,25 @@ func UploadDeploymentFile(file *os.File) (string, error) {
 	return hash, nil
 }
 
+// GetDeployment gets the deployment.
+func GetDeployment(deploymentID string) (*Deployment, error) {
+	response, err := request().
+		SetResult(Deployment{}).
+		SetError(VercelFailure{}).
+		Get(fmt.Sprintf("v11/now/deployments/%v", deploymentID))
+
+	if err != nil {
+		return nil, fmt.Errorf("could not get deployment: %w", err)
+	}
+
+	fail, _ := response.Error().(*VercelFailure)
+	if fail != nil {
+		return nil, fmt.Errorf("could not get deployment: %w", fail)
+	}
+
+	return response.Result().(*Deployment), nil
+}
+
 // CancelDeployment cancels the currently running deployment.
 func CancelDeployment(deploymentID string) (*Deployment, error) {
 	response, err := request().
