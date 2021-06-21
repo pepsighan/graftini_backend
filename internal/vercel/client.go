@@ -1,6 +1,7 @@
 package vercel
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
@@ -11,8 +12,9 @@ import (
 var client = resty.New()
 
 // request to get a request with prefilled configuration to hit Vercel APIs.
-func request() *resty.Request {
+func request(ctx context.Context) *resty.Request {
 	return client.R().
+		SetContext(ctx).
 		SetAuthScheme("Bearer").
 		SetAuthToken(deployconfig.VercelToken).
 		SetQueryParam("teamId", deployconfig.VercelTeamID)

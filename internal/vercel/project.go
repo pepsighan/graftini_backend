@@ -1,6 +1,9 @@
 package vercel
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 // Project is a project that is on vercel.
 type Project struct {
@@ -12,8 +15,8 @@ type Project struct {
 }
 
 // CreateProject creates a new vercel project.
-func CreateProject(name string) (*Project, error) {
-	response, err := request().
+func CreateProject(ctx context.Context, name string) (*Project, error) {
+	response, err := request(ctx).
 		SetBody(map[string]string{
 			"name": name,
 		}).
@@ -34,8 +37,8 @@ func CreateProject(name string) (*Project, error) {
 }
 
 // DeleteProject deletes a vercel project.
-func DeleteProject(projectID string) error {
-	response, err := request().
+func DeleteProject(ctx context.Context, projectID string) error {
+	response, err := request(ctx).
 		SetError(VercelFailure{}).
 		Delete(route(fmt.Sprintf("v8/projects/%v", projectID)))
 

@@ -1,6 +1,7 @@
 package vercel
 
 import (
+	"context"
 	"crypto/sha1"
 	"fmt"
 	"io"
@@ -32,8 +33,8 @@ const (
 )
 
 // CreateNewDeployment creates a new deployment with the given file SHA1 hashes.
-func CreateNewDeployment(projectName string, fileSHAs []string) (*Deployment, error) {
-	response, err := request().
+func CreateNewDeployment(ctx context.Context, projectName string, fileSHAs []string) (*Deployment, error) {
+	response, err := request(ctx).
 		SetBody(map[string]interface{}{
 			"name":  projectName,
 			"files": fileSHAs,
@@ -58,7 +59,7 @@ func CreateNewDeployment(projectName string, fileSHAs []string) (*Deployment, er
 }
 
 // UploadDeploymentFile uploads the given file and returns the SHA1 hash for it.
-func UploadDeploymentFile(file *os.File) (string, error) {
+func UploadDeploymentFile(ctx context.Context, file *os.File) (string, error) {
 	hash, err := calcSHA1Hash(file)
 	if err != nil {
 		return "", fmt.Errorf("could not upload deployment file: %w", err)
@@ -69,7 +70,7 @@ func UploadDeploymentFile(file *os.File) (string, error) {
 		return "", fmt.Errorf("could not upload deployment file: %w", err)
 	}
 
-	response, err := request().
+	response, err := request(ctx).
 		SetHeader("x-now-digest", hash).
 		SetContentLength(true).
 		SetBody(bytes).
@@ -89,8 +90,8 @@ func UploadDeploymentFile(file *os.File) (string, error) {
 }
 
 // GetDeployment gets the deployment.
-func GetDeployment(deploymentID string) (*Deployment, error) {
-	response, err := request().
+func GetDeployment(ctx context.Context, deploymentID string) (*Deployment, error) {
+	response, err := request(ctx).
 		SetResult(Deployment{}).
 		SetError(VercelFailure{}).
 		Get(fmt.Sprintf("v11/now/deployments/%v", deploymentID))
@@ -108,8 +109,8 @@ func GetDeployment(deploymentID string) (*Deployment, error) {
 }
 
 // CancelDeployment cancels the currently running deployment.
-func CancelDeployment(deploymentID string) (*Deployment, error) {
-	response, err := request().
+func CancelDeployment(ctx context.Context, deploymentID string) (*Deployment, error) {
+	response, err := request(ctx).
 		SetResult(Deployment{}).
 		SetError(VercelFailure{}).
 		Patch(route(fmt.Sprintf("v12/now/deployments/%v/cancel", deploymentID)))
