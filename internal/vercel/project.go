@@ -22,12 +22,12 @@ func CreateProject(name string) (*Project, error) {
 		Post(route("v8/projects"))
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to make request: %w", err)
+		return nil, fmt.Errorf("could not create project: %w", err)
 	}
 
-	err1, _ := response.Error().(*VercelFailure)
-	if err != nil {
-		return nil, err1
+	fail, _ := response.Error().(*VercelFailure)
+	if fail != nil {
+		return nil, fmt.Errorf("could not create project: %w", fail)
 	}
 
 	return response.Result().(*Project), nil
@@ -40,9 +40,9 @@ func DeleteProject(projectID string) error {
 		Delete(route(fmt.Sprintf("v8/projects/%v", projectID)))
 
 	if err != nil {
-		return err
+		return fmt.Errorf("could not delete project: %w", err)
 	}
 
-	err1, _ := response.Error().(*VercelFailure)
-	return err1
+	fail, _ := response.Error().(*VercelFailure)
+	return fail
 }

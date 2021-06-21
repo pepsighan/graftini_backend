@@ -46,12 +46,12 @@ func CreateNewDeployment(projectName string, fileSHAs []string) (*Deployment, er
 		Post(route("v12/now/deployments"))
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not create new deployment: %w", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
 	if fail != nil {
-		return nil, fail
+		return nil, fmt.Errorf("could not create new deployment: %w", err)
 	}
 
 	return response.Result().(*Deployment), nil
@@ -115,12 +115,12 @@ func CancelDeployment(deploymentID string) (*Deployment, error) {
 		Patch(route(fmt.Sprintf("v12/now/deployments/%v/cancel", deploymentID)))
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not cancel deployment: %w", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
 	if fail != nil {
-		return nil, fail
+		return nil, fmt.Errorf("could not cancel deployment: %w", fail)
 	}
 
 	return response.Result().(*Deployment), nil
