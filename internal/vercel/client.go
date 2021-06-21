@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/pepsighan/graftini_backend/internal/deployconfig"
 )
 
 // client is a shared client to make API requests.
@@ -13,8 +14,8 @@ var client = resty.New()
 func request() *resty.Request {
 	return client.R().
 		SetAuthScheme("Bearer").
-		SetAuthToken("bearer_token").
-		SetQueryParam("teamId", "dummy_id")
+		SetAuthToken(deployconfig.VercelToken).
+		SetQueryParam("teamId", deployconfig.VercelTeamID)
 }
 
 // route generates a full API endpoint from the given relative path. Do not start

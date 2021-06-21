@@ -2,44 +2,19 @@ package backendconfig
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
-	"github.com/joho/godotenv"
+	"github.com/pepsighan/graftini_backend/internal/config"
 )
 
 var (
-	Env            Environment = Environment(requireEnv("ENV"))
-	Port                       = port()
-	DatabaseURL                = databaseURL()
-	AllowedOrigins             = allowedOrigins()
-	MaxBodySize                = maxBodySize()
+	Env            config.Environment = config.Environment(config.RequireEnv("ENV"))
+	Port                              = port()
+	DatabaseURL                       = databaseURL()
+	AllowedOrigins                    = allowedOrigins()
+	MaxBodySize                       = maxBodySize()
 )
-
-type Environment string
-
-var (
-	EnvLocal       Environment = "local"
-	EnvDevelopment Environment = "development"
-	EnvProduction  Environment = "production"
-)
-
-// requireEnv panics if the environment is not present.
-func requireEnv(key string) string {
-	// Load the environment variables from the .env file if it exists.
-	err := godotenv.Load()
-	if err != nil && !os.IsNotExist(err) {
-		log.Fatal("error loading .env file")
-	}
-
-	value, ok := os.LookupEnv(key)
-	if !ok {
-		log.Fatalf("could not find `%v` environment variable", key)
-	}
-
-	return value
-}
 
 func port() string {
 	port, ok := os.LookupEnv("PORT")
@@ -69,8 +44,8 @@ func maxBodySize() string {
 
 // databaseURL gets the database URL to connect to based on the environment.
 func databaseURL() string {
-	if Env == EnvLocal {
-		return requireEnv("POSTGRES_URL")
+	if Env == config.EnvLocal {
+		return config.RequireEnv("POSTGRES_URL")
 	}
 
 	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
@@ -78,10 +53,10 @@ func databaseURL() string {
 		socketDir = "/cloudsql"
 	}
 
-	dbUser := requireEnv("DB_USER")
-	dbPassword := requireEnv("DB_PASS")
-	dbInstanceConnectionName := requireEnv("INSTANCE_CONNECTION_NAME")
-	dbName := requireEnv("DB_NAME")
+	dbUser := config.RequireEnv("DB_USER")
+	dbPassword := config.RequireEnv("DB_PASS")
+	dbInstanceConnectionName := config.RequireEnv("INSTANCE_CONNECTION_NAME")
+	dbName := config.RequireEnv("DB_NAME")
 
 	dbURI := fmt.Sprintf("user=%s password=%s database=%s host=%s/%s", dbUser, dbPassword, dbName, socketDir, dbInstanceConnectionName)
 	return dbURI
