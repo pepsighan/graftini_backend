@@ -4,7 +4,7 @@
 *.dll
 *.so
 *.dylib
-/graftini_backend
+/backend
 /migrate
 /generate
 
