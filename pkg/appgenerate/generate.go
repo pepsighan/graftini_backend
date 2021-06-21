@@ -35,5 +35,5 @@ func generateComponentBody(c string) (string, error) {
 		return "", err
 	}
 
-	return "<></>", nil
+	return templates.PageContent(componentMap), nil
 }

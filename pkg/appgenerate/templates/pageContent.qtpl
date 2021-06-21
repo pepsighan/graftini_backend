@@ -1,0 +1,12 @@
+Generates the React markup for the page based on the component map.
+
+{% import "github.com/pepsighan/graftini_backend/ent/schema" %}
+
+{% func PageContent(m *schema.ComponentMap) %}
+return (
+  <>
+    Hello World
+  </>
+);
+{% endfunc %}
+
