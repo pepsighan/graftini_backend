@@ -9,13 +9,13 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/pepsighan/graftini_backend/ent"
-	"github.com/pepsighan/graftini_backend/internal/config"
+	"github.com/pepsighan/graftini_backend/internal/backendconfig"
 )
 
 // Generate the migration manually. Do not automigrate. We can track
 // if any issues exist with the generated SQL.
 func main() {
-	client, err := ent.Open("postgres", config.DatabaseURL)
+	client, err := ent.Open("postgres", backendconfig.DatabaseURL)
 	if err != nil {
 		log.Fatalf("failed connecting to postgres: %v", err)
 	}
