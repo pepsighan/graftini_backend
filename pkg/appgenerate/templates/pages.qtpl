@@ -1,8 +1,6 @@
-This template is used to generate pages.
-
-
+{% comment %} This template is used to generate pages. {% endcomment %}
 {% func Page(name string, componentBody string) %}
 export default function {%s name %}() {
-	{%s componentBody %}
+	{%v componentBody %}
 }
 {% endfunc %}

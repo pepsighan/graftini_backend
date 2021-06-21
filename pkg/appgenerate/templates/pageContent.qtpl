@@ -1,12 +1,21 @@
-Generates the React markup for the page based on the component map.
-
 {% import "github.com/pepsighan/graftini_backend/ent/schema" %}
 
+{% comment %} Generates the React markup for the page based on the component map. {% endcomment %}
 {% func PageContent(m *schema.ComponentMap) %}
 return (
-  <>
-    Hello World
-  </>
+  {%= subPageContent("ROOT_NODE_ID", m) %}
 );
+{% endfunc %}
+
+
+{% comment %} The following recursively generates the markup for each component node and its children. {% endcomment %}
+{% func subPageContent(id string, m *schema.ComponentMap) %}
+  <{%v m[id].Type %}>
+    {% if m[id].IsCanvas == true %}
+      {% for childID, _ := range m[id].ChildrenNodes %}
+        {%= subPageContent(childID, n) %}
+      {% endfor %}
+    {% endif %}
+  </{%v m[id].Type %}>
 {% endfunc %}
 
