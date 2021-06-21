@@ -1,6 +1,12 @@
 package vercel
 
-import "fmt"
+import (
+	"crypto/sha1"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+)
 
 // Deployment is a deployment on Vercel.
 // Types documented at https://vercel.com/docs/api#endpoints/deployments/create-a-new-deployment/response-parameters.
@@ -51,6 +57,37 @@ func CreateNewDeployment(projectName string, fileSHAs []string) (*Deployment, er
 	return response.Result().(*Deployment), nil
 }
 
+// UploadDeploymentFile uploads the given file and returns the SHA1 hash for it.
+func UploadDeploymentFile(file *os.File) (string, error) {
+	hash, err := calcSHA1Hash(file)
+	if err != nil {
+		return "", fmt.Errorf("could not upload deployment file: %w", err)
+	}
+
+	bytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		return "", fmt.Errorf("could not upload deployment file: %w", err)
+	}
+
+	response, err := request().
+		SetHeader("x-now-digest", hash).
+		SetContentLength(true).
+		SetBody(bytes).
+		SetError(VercelFailure{}).
+		Post(route("v2/now/files"))
+
+	if err != nil {
+		return "", fmt.Errorf("could not upload deployment file: %w", err)
+	}
+
+	fail, _ := response.Error().(*VercelFailure)
+	if fail != nil {
+		return "", fmt.Errorf("could not upload deployment file: %w", fail)
+	}
+
+	return hash, nil
+}
+
 // CancelDeployment cancels the currently running deployment.
 func CancelDeployment(deploymentID string) (*Deployment, error) {
 	response, err := request().
@@ -68,4 +105,15 @@ func CancelDeployment(deploymentID string) (*Deployment, error) {
 	}
 
 	return response.Result().(*Deployment), nil
+}
+
+// calcSHA1Hash calculates the SHA1 hash for the given file.
+func calcSHA1Hash(file *os.File) (string, error) {
+	hasher := sha1.New()
+
+	if _, err := io.Copy(hasher, file); err != nil {
+		return "", err
+	}
+
+	return string(hasher.Sum(nil)[:]), nil
 }
