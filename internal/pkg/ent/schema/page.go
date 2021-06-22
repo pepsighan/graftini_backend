@@ -23,7 +23,7 @@ func (Page) Fields() []ent.Field {
 		field.String("name"),
 		field.String("route"),
 		// This is where the design of the page would be stored in a serialized standard format.
-		field.String("componentMap").
+		field.String("component_map").
 			Optional().
 			Nillable().
 			Validate(func(s string) error {
@@ -47,7 +47,7 @@ func (Page) Fields() []ent.Field {
 // Edges of the Page.
 func (Page) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("pageOf", Project.Type).
+		edge.From("page_of", Project.Type).
 			Ref("pages").
 			Unique(),
 	}

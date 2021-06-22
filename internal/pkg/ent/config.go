@@ -24,6 +24,7 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
+	Deployment   []ent.Hook
 	GraphQLQuery []ent.Hook
 	Page         []ent.Hook
 	Project      []ent.Hook

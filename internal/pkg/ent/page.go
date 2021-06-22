@@ -22,8 +22,8 @@ type Page struct {
 	Name string `json:"name,omitempty"`
 	// Route holds the value of the "route" field.
 	Route string `json:"route,omitempty"`
-	// ComponentMap holds the value of the "componentMap" field.
-	ComponentMap *string `json:"componentMap,omitempty"`
+	// ComponentMap holds the value of the "component_map" field.
+	ComponentMap *string `json:"component_map,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -36,8 +36,8 @@ type Page struct {
 
 // PageEdges holds the relations/edges for other nodes in the graph.
 type PageEdges struct {
-	// PageOf holds the value of the pageOf edge.
-	PageOf *Project `json:"pageOf,omitempty"`
+	// PageOf holds the value of the page_of edge.
+	PageOf *Project `json:"page_of,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
@@ -48,13 +48,13 @@ type PageEdges struct {
 func (e PageEdges) PageOfOrErr() (*Project, error) {
 	if e.loadedTypes[0] {
 		if e.PageOf == nil {
-			// The edge pageOf was loaded in eager-loading,
+			// The edge page_of was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: project.Label}
 		}
 		return e.PageOf, nil
 	}
-	return nil, &NotLoadedError{edge: "pageOf"}
+	return nil, &NotLoadedError{edge: "page_of"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -105,7 +105,7 @@ func (pa *Page) assignValues(columns []string, values []interface{}) error {
 			}
 		case page.FieldComponentMap:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field componentMap", values[i])
+				return fmt.Errorf("unexpected type %T for field component_map", values[i])
 			} else if value.Valid {
 				pa.ComponentMap = new(string)
 				*pa.ComponentMap = value.String
@@ -133,7 +133,7 @@ func (pa *Page) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryPageOf queries the "pageOf" edge of the Page entity.
+// QueryPageOf queries the "page_of" edge of the Page entity.
 func (pa *Page) QueryPageOf() *ProjectQuery {
 	return (&PageClient{config: pa.config}).QueryPageOf(pa)
 }
@@ -166,7 +166,7 @@ func (pa *Page) String() string {
 	builder.WriteString(", route=")
 	builder.WriteString(pa.Route)
 	if v := pa.ComponentMap; v != nil {
-		builder.WriteString(", componentMap=")
+		builder.WriteString(", component_map=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", created_at=")

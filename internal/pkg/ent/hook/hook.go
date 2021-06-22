@@ -9,6 +9,19 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 )
 
+// The DeploymentFunc type is an adapter to allow the use of ordinary
+// function as Deployment mutator.
+type DeploymentFunc func(context.Context, *ent.DeploymentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DeploymentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.DeploymentMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeploymentMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The GraphQLQueryFunc type is an adapter to allow the use of ordinary
 // function as GraphQLQuery mutator.
 type GraphQLQueryFunc func(context.Context, *ent.GraphQLQueryMutation) (ent.Value, error)

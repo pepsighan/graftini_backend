@@ -94,14 +94,14 @@ func IDLTE(id uuid.UUID) predicate.GraphQLQuery {
 	})
 }
 
-// VariableName applies equality check predicate on the "variableName" field. It's identical to VariableNameEQ.
+// VariableName applies equality check predicate on the "variable_name" field. It's identical to VariableNameEQ.
 func VariableName(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldVariableName), v))
 	})
 }
 
-// GqlAst applies equality check predicate on the "gqlAst" field. It's identical to GqlAstEQ.
+// GqlAst applies equality check predicate on the "gql_ast" field. It's identical to GqlAstEQ.
 func GqlAst(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldGqlAst), v))
@@ -122,21 +122,21 @@ func UpdatedAt(v time.Time) predicate.GraphQLQuery {
 	})
 }
 
-// VariableNameEQ applies the EQ predicate on the "variableName" field.
+// VariableNameEQ applies the EQ predicate on the "variable_name" field.
 func VariableNameEQ(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldVariableName), v))
 	})
 }
 
-// VariableNameNEQ applies the NEQ predicate on the "variableName" field.
+// VariableNameNEQ applies the NEQ predicate on the "variable_name" field.
 func VariableNameNEQ(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldVariableName), v))
 	})
 }
 
-// VariableNameIn applies the In predicate on the "variableName" field.
+// VariableNameIn applies the In predicate on the "variable_name" field.
 func VariableNameIn(vs ...string) predicate.GraphQLQuery {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -153,7 +153,7 @@ func VariableNameIn(vs ...string) predicate.GraphQLQuery {
 	})
 }
 
-// VariableNameNotIn applies the NotIn predicate on the "variableName" field.
+// VariableNameNotIn applies the NotIn predicate on the "variable_name" field.
 func VariableNameNotIn(vs ...string) predicate.GraphQLQuery {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -170,84 +170,84 @@ func VariableNameNotIn(vs ...string) predicate.GraphQLQuery {
 	})
 }
 
-// VariableNameGT applies the GT predicate on the "variableName" field.
+// VariableNameGT applies the GT predicate on the "variable_name" field.
 func VariableNameGT(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldVariableName), v))
 	})
 }
 
-// VariableNameGTE applies the GTE predicate on the "variableName" field.
+// VariableNameGTE applies the GTE predicate on the "variable_name" field.
 func VariableNameGTE(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldVariableName), v))
 	})
 }
 
-// VariableNameLT applies the LT predicate on the "variableName" field.
+// VariableNameLT applies the LT predicate on the "variable_name" field.
 func VariableNameLT(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldVariableName), v))
 	})
 }
 
-// VariableNameLTE applies the LTE predicate on the "variableName" field.
+// VariableNameLTE applies the LTE predicate on the "variable_name" field.
 func VariableNameLTE(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldVariableName), v))
 	})
 }
 
-// VariableNameContains applies the Contains predicate on the "variableName" field.
+// VariableNameContains applies the Contains predicate on the "variable_name" field.
 func VariableNameContains(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.Contains(s.C(FieldVariableName), v))
 	})
 }
 
-// VariableNameHasPrefix applies the HasPrefix predicate on the "variableName" field.
+// VariableNameHasPrefix applies the HasPrefix predicate on the "variable_name" field.
 func VariableNameHasPrefix(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.HasPrefix(s.C(FieldVariableName), v))
 	})
 }
 
-// VariableNameHasSuffix applies the HasSuffix predicate on the "variableName" field.
+// VariableNameHasSuffix applies the HasSuffix predicate on the "variable_name" field.
 func VariableNameHasSuffix(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldVariableName), v))
 	})
 }
 
-// VariableNameEqualFold applies the EqualFold predicate on the "variableName" field.
+// VariableNameEqualFold applies the EqualFold predicate on the "variable_name" field.
 func VariableNameEqualFold(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.EqualFold(s.C(FieldVariableName), v))
 	})
 }
 
-// VariableNameContainsFold applies the ContainsFold predicate on the "variableName" field.
+// VariableNameContainsFold applies the ContainsFold predicate on the "variable_name" field.
 func VariableNameContainsFold(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldVariableName), v))
 	})
 }
 
-// GqlAstEQ applies the EQ predicate on the "gqlAst" field.
+// GqlAstEQ applies the EQ predicate on the "gql_ast" field.
 func GqlAstEQ(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldGqlAst), v))
 	})
 }
 
-// GqlAstNEQ applies the NEQ predicate on the "gqlAst" field.
+// GqlAstNEQ applies the NEQ predicate on the "gql_ast" field.
 func GqlAstNEQ(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldGqlAst), v))
 	})
 }
 
-// GqlAstIn applies the In predicate on the "gqlAst" field.
+// GqlAstIn applies the In predicate on the "gql_ast" field.
 func GqlAstIn(vs ...string) predicate.GraphQLQuery {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -264,7 +264,7 @@ func GqlAstIn(vs ...string) predicate.GraphQLQuery {
 	})
 }
 
-// GqlAstNotIn applies the NotIn predicate on the "gqlAst" field.
+// GqlAstNotIn applies the NotIn predicate on the "gql_ast" field.
 func GqlAstNotIn(vs ...string) predicate.GraphQLQuery {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -281,63 +281,63 @@ func GqlAstNotIn(vs ...string) predicate.GraphQLQuery {
 	})
 }
 
-// GqlAstGT applies the GT predicate on the "gqlAst" field.
+// GqlAstGT applies the GT predicate on the "gql_ast" field.
 func GqlAstGT(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldGqlAst), v))
 	})
 }
 
-// GqlAstGTE applies the GTE predicate on the "gqlAst" field.
+// GqlAstGTE applies the GTE predicate on the "gql_ast" field.
 func GqlAstGTE(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldGqlAst), v))
 	})
 }
 
-// GqlAstLT applies the LT predicate on the "gqlAst" field.
+// GqlAstLT applies the LT predicate on the "gql_ast" field.
 func GqlAstLT(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldGqlAst), v))
 	})
 }
 
-// GqlAstLTE applies the LTE predicate on the "gqlAst" field.
+// GqlAstLTE applies the LTE predicate on the "gql_ast" field.
 func GqlAstLTE(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldGqlAst), v))
 	})
 }
 
-// GqlAstContains applies the Contains predicate on the "gqlAst" field.
+// GqlAstContains applies the Contains predicate on the "gql_ast" field.
 func GqlAstContains(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.Contains(s.C(FieldGqlAst), v))
 	})
 }
 
-// GqlAstHasPrefix applies the HasPrefix predicate on the "gqlAst" field.
+// GqlAstHasPrefix applies the HasPrefix predicate on the "gql_ast" field.
 func GqlAstHasPrefix(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.HasPrefix(s.C(FieldGqlAst), v))
 	})
 }
 
-// GqlAstHasSuffix applies the HasSuffix predicate on the "gqlAst" field.
+// GqlAstHasSuffix applies the HasSuffix predicate on the "gql_ast" field.
 func GqlAstHasSuffix(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldGqlAst), v))
 	})
 }
 
-// GqlAstEqualFold applies the EqualFold predicate on the "gqlAst" field.
+// GqlAstEqualFold applies the EqualFold predicate on the "gql_ast" field.
 func GqlAstEqualFold(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.EqualFold(s.C(FieldGqlAst), v))
 	})
 }
 
-// GqlAstContainsFold applies the ContainsFold predicate on the "gqlAst" field.
+// GqlAstContainsFold applies the ContainsFold predicate on the "gql_ast" field.
 func GqlAstContainsFold(v string) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldGqlAst), v))
@@ -496,7 +496,7 @@ func UpdatedAtLTE(v time.Time) predicate.GraphQLQuery {
 	})
 }
 
-// HasQueryOf applies the HasEdge predicate on the "queryOf" edge.
+// HasQueryOf applies the HasEdge predicate on the "query_of" edge.
 func HasQueryOf() predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -508,7 +508,7 @@ func HasQueryOf() predicate.GraphQLQuery {
 	})
 }
 
-// HasQueryOfWith applies the HasEdge predicate on the "queryOf" edge with a given conditions (other predicates).
+// HasQueryOfWith applies the HasEdge predicate on the "query_of" edge with a given conditions (other predicates).
 func HasQueryOfWith(preds ...predicate.Project) predicate.GraphQLQuery {
 	return predicate.GraphQLQuery(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

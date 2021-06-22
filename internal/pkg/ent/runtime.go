@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/project"
@@ -17,6 +18,22 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	deploymentFields := schema.Deployment{}.Fields()
+	_ = deploymentFields
+	// deploymentDescCreatedAt is the schema descriptor for created_at field.
+	deploymentDescCreatedAt := deploymentFields[2].Descriptor()
+	// deployment.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deployment.DefaultCreatedAt = deploymentDescCreatedAt.Default.(func() time.Time)
+	// deploymentDescUpdatedAt is the schema descriptor for updated_at field.
+	deploymentDescUpdatedAt := deploymentFields[3].Descriptor()
+	// deployment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
+	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	deployment.UpdateDefaultUpdatedAt = deploymentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// deploymentDescID is the schema descriptor for id field.
+	deploymentDescID := deploymentFields[0].Descriptor()
+	// deployment.DefaultID holds the default value on creation for the id field.
+	deployment.DefaultID = deploymentDescID.Default.(func() uuid.UUID)
 	graphqlqueryFields := schema.GraphQLQuery{}.Fields()
 	_ = graphqlqueryFields
 	// graphqlqueryDescCreatedAt is the schema descriptor for created_at field.
@@ -35,9 +52,9 @@ func init() {
 	graphqlquery.DefaultID = graphqlqueryDescID.Default.(func() uuid.UUID)
 	pageFields := schema.Page{}.Fields()
 	_ = pageFields
-	// pageDescComponentMap is the schema descriptor for componentMap field.
+	// pageDescComponentMap is the schema descriptor for component_map field.
 	pageDescComponentMap := pageFields[3].Descriptor()
-	// page.ComponentMapValidator is a validator for the "componentMap" field. It is called by the builders before save.
+	// page.ComponentMapValidator is a validator for the "component_map" field. It is called by the builders before save.
 	page.ComponentMapValidator = pageDescComponentMap.Validators[0].(func(string) error)
 	// pageDescCreatedAt is the schema descriptor for created_at field.
 	pageDescCreatedAt := pageFields[4].Descriptor()

@@ -65,7 +65,7 @@ func (gqqq *GraphQLQueryQuery) Order(o ...OrderFunc) *GraphQLQueryQuery {
 	return gqqq
 }
 
-// QueryQueryOf chains the current query on the "queryOf" edge.
+// QueryQueryOf chains the current query on the "query_of" edge.
 func (gqqq *GraphQLQueryQuery) QueryQueryOf() *ProjectQuery {
 	query := &ProjectQuery{config: gqqq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -276,7 +276,7 @@ func (gqqq *GraphQLQueryQuery) Clone() *GraphQLQueryQuery {
 }
 
 // WithQueryOf tells the query-builder to eager-load the nodes that are connected to
-// the "queryOf" edge. The optional arguments are used to configure the query builder of the edge.
+// the "query_of" edge. The optional arguments are used to configure the query builder of the edge.
 func (gqqq *GraphQLQueryQuery) WithQueryOf(opts ...func(*ProjectQuery)) *GraphQLQueryQuery {
 	query := &ProjectQuery{config: gqqq.config}
 	for _, opt := range opts {
@@ -292,7 +292,7 @@ func (gqqq *GraphQLQueryQuery) WithQueryOf(opts ...func(*ProjectQuery)) *GraphQL
 // Example:
 //
 //	var v []struct {
-//		VariableName string `json:"variableName,omitempty"`
+//		VariableName string `json:"variable_name,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -319,7 +319,7 @@ func (gqqq *GraphQLQueryQuery) GroupBy(field string, fields ...string) *GraphQLQ
 // Example:
 //
 //	var v []struct {
-//		VariableName string `json:"variableName,omitempty"`
+//		VariableName string `json:"variable_name,omitempty"`
 //	}
 //
 //	client.GraphQLQuery.Query().

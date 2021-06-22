@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/predicate"
@@ -30,10 +31,11 @@ type ProjectQuery struct {
 	fields     []string
 	predicates []predicate.Project
 	// eager-loading edges.
-	withOwner   *UserQuery
-	withPages   *PageQuery
-	withQueries *GraphQLQueryQuery
-	withFKs     bool
+	withOwner       *UserQuery
+	withPages       *PageQuery
+	withQueries     *GraphQLQueryQuery
+	withDeployments *DeploymentQuery
+	withFKs         bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -129,6 +131,28 @@ func (pq *ProjectQuery) QueryQueries() *GraphQLQueryQuery {
 			sqlgraph.From(project.Table, project.FieldID, selector),
 			sqlgraph.To(graphqlquery.Table, graphqlquery.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, project.QueriesTable, project.QueriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDeployments chains the current query on the "deployments" edge.
+func (pq *ProjectQuery) QueryDeployments() *DeploymentQuery {
+	query := &DeploymentQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, selector),
+			sqlgraph.To(deployment.Table, deployment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.DeploymentsTable, project.DeploymentsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -312,14 +336,15 @@ func (pq *ProjectQuery) Clone() *ProjectQuery {
 		return nil
 	}
 	return &ProjectQuery{
-		config:      pq.config,
-		limit:       pq.limit,
-		offset:      pq.offset,
-		order:       append([]OrderFunc{}, pq.order...),
-		predicates:  append([]predicate.Project{}, pq.predicates...),
-		withOwner:   pq.withOwner.Clone(),
-		withPages:   pq.withPages.Clone(),
-		withQueries: pq.withQueries.Clone(),
+		config:          pq.config,
+		limit:           pq.limit,
+		offset:          pq.offset,
+		order:           append([]OrderFunc{}, pq.order...),
+		predicates:      append([]predicate.Project{}, pq.predicates...),
+		withOwner:       pq.withOwner.Clone(),
+		withPages:       pq.withPages.Clone(),
+		withQueries:     pq.withQueries.Clone(),
+		withDeployments: pq.withDeployments.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -356,6 +381,17 @@ func (pq *ProjectQuery) WithQueries(opts ...func(*GraphQLQueryQuery)) *ProjectQu
 		opt(query)
 	}
 	pq.withQueries = query
+	return pq
+}
+
+// WithDeployments tells the query-builder to eager-load the nodes that are connected to
+// the "deployments" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *ProjectQuery) WithDeployments(opts ...func(*DeploymentQuery)) *ProjectQuery {
+	query := &DeploymentQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withDeployments = query
 	return pq
 }
 
@@ -425,10 +461,11 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 		nodes       = []*Project{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			pq.withOwner != nil,
 			pq.withPages != nil,
 			pq.withQueries != nil,
+			pq.withDeployments != nil,
 		}
 	)
 	if pq.withOwner != nil {
@@ -541,6 +578,35 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "project_queries" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Queries = append(node.Edges.Queries, n)
+		}
+	}
+
+	if query := pq.withDeployments; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uuid.UUID]*Project)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Deployments = []*Deployment{}
+		}
+		query.withFKs = true
+		query.Where(predicate.Deployment(func(s *sql.Selector) {
+			s.Where(sql.InValues(project.DeploymentsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.project_deployments
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "project_deployments" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "project_deployments" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Deployments = append(node.Edges.Deployments, n)
 		}
 	}
 

@@ -65,7 +65,7 @@ func (pq *PageQuery) Order(o ...OrderFunc) *PageQuery {
 	return pq
 }
 
-// QueryPageOf chains the current query on the "pageOf" edge.
+// QueryPageOf chains the current query on the "page_of" edge.
 func (pq *PageQuery) QueryPageOf() *ProjectQuery {
 	query := &ProjectQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -276,7 +276,7 @@ func (pq *PageQuery) Clone() *PageQuery {
 }
 
 // WithPageOf tells the query-builder to eager-load the nodes that are connected to
-// the "pageOf" edge. The optional arguments are used to configure the query builder of the edge.
+// the "page_of" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *PageQuery) WithPageOf(opts ...func(*ProjectQuery)) *PageQuery {
 	query := &ProjectQuery{config: pq.config}
 	for _, opt := range opts {

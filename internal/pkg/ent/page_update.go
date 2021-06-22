@@ -41,13 +41,13 @@ func (pu *PageUpdate) SetRoute(s string) *PageUpdate {
 	return pu
 }
 
-// SetComponentMap sets the "componentMap" field.
+// SetComponentMap sets the "component_map" field.
 func (pu *PageUpdate) SetComponentMap(s string) *PageUpdate {
 	pu.mutation.SetComponentMap(s)
 	return pu
 }
 
-// SetNillableComponentMap sets the "componentMap" field if the given value is not nil.
+// SetNillableComponentMap sets the "component_map" field if the given value is not nil.
 func (pu *PageUpdate) SetNillableComponentMap(s *string) *PageUpdate {
 	if s != nil {
 		pu.SetComponentMap(*s)
@@ -55,7 +55,7 @@ func (pu *PageUpdate) SetNillableComponentMap(s *string) *PageUpdate {
 	return pu
 }
 
-// ClearComponentMap clears the value of the "componentMap" field.
+// ClearComponentMap clears the value of the "component_map" field.
 func (pu *PageUpdate) ClearComponentMap() *PageUpdate {
 	pu.mutation.ClearComponentMap()
 	return pu
@@ -67,13 +67,13 @@ func (pu *PageUpdate) SetUpdatedAt(t time.Time) *PageUpdate {
 	return pu
 }
 
-// SetPageOfID sets the "pageOf" edge to the Project entity by ID.
+// SetPageOfID sets the "page_of" edge to the Project entity by ID.
 func (pu *PageUpdate) SetPageOfID(id uuid.UUID) *PageUpdate {
 	pu.mutation.SetPageOfID(id)
 	return pu
 }
 
-// SetNillablePageOfID sets the "pageOf" edge to the Project entity by ID if the given value is not nil.
+// SetNillablePageOfID sets the "page_of" edge to the Project entity by ID if the given value is not nil.
 func (pu *PageUpdate) SetNillablePageOfID(id *uuid.UUID) *PageUpdate {
 	if id != nil {
 		pu = pu.SetPageOfID(*id)
@@ -81,7 +81,7 @@ func (pu *PageUpdate) SetNillablePageOfID(id *uuid.UUID) *PageUpdate {
 	return pu
 }
 
-// SetPageOf sets the "pageOf" edge to the Project entity.
+// SetPageOf sets the "page_of" edge to the Project entity.
 func (pu *PageUpdate) SetPageOf(p *Project) *PageUpdate {
 	return pu.SetPageOfID(p.ID)
 }
@@ -91,7 +91,7 @@ func (pu *PageUpdate) Mutation() *PageMutation {
 	return pu.mutation
 }
 
-// ClearPageOf clears the "pageOf" edge to the Project entity.
+// ClearPageOf clears the "page_of" edge to the Project entity.
 func (pu *PageUpdate) ClearPageOf() *PageUpdate {
 	pu.mutation.ClearPageOf()
 	return pu
@@ -167,7 +167,7 @@ func (pu *PageUpdate) defaults() {
 func (pu *PageUpdate) check() error {
 	if v, ok := pu.mutation.ComponentMap(); ok {
 		if err := page.ComponentMapValidator(v); err != nil {
-			return &ValidationError{Name: "componentMap", err: fmt.Errorf("ent: validator failed for field \"componentMap\": %w", err)}
+			return &ValidationError{Name: "component_map", err: fmt.Errorf("ent: validator failed for field \"component_map\": %w", err)}
 		}
 	}
 	return nil
@@ -291,13 +291,13 @@ func (puo *PageUpdateOne) SetRoute(s string) *PageUpdateOne {
 	return puo
 }
 
-// SetComponentMap sets the "componentMap" field.
+// SetComponentMap sets the "component_map" field.
 func (puo *PageUpdateOne) SetComponentMap(s string) *PageUpdateOne {
 	puo.mutation.SetComponentMap(s)
 	return puo
 }
 
-// SetNillableComponentMap sets the "componentMap" field if the given value is not nil.
+// SetNillableComponentMap sets the "component_map" field if the given value is not nil.
 func (puo *PageUpdateOne) SetNillableComponentMap(s *string) *PageUpdateOne {
 	if s != nil {
 		puo.SetComponentMap(*s)
@@ -305,7 +305,7 @@ func (puo *PageUpdateOne) SetNillableComponentMap(s *string) *PageUpdateOne {
 	return puo
 }
 
-// ClearComponentMap clears the value of the "componentMap" field.
+// ClearComponentMap clears the value of the "component_map" field.
 func (puo *PageUpdateOne) ClearComponentMap() *PageUpdateOne {
 	puo.mutation.ClearComponentMap()
 	return puo
@@ -317,13 +317,13 @@ func (puo *PageUpdateOne) SetUpdatedAt(t time.Time) *PageUpdateOne {
 	return puo
 }
 
-// SetPageOfID sets the "pageOf" edge to the Project entity by ID.
+// SetPageOfID sets the "page_of" edge to the Project entity by ID.
 func (puo *PageUpdateOne) SetPageOfID(id uuid.UUID) *PageUpdateOne {
 	puo.mutation.SetPageOfID(id)
 	return puo
 }
 
-// SetNillablePageOfID sets the "pageOf" edge to the Project entity by ID if the given value is not nil.
+// SetNillablePageOfID sets the "page_of" edge to the Project entity by ID if the given value is not nil.
 func (puo *PageUpdateOne) SetNillablePageOfID(id *uuid.UUID) *PageUpdateOne {
 	if id != nil {
 		puo = puo.SetPageOfID(*id)
@@ -331,7 +331,7 @@ func (puo *PageUpdateOne) SetNillablePageOfID(id *uuid.UUID) *PageUpdateOne {
 	return puo
 }
 
-// SetPageOf sets the "pageOf" edge to the Project entity.
+// SetPageOf sets the "page_of" edge to the Project entity.
 func (puo *PageUpdateOne) SetPageOf(p *Project) *PageUpdateOne {
 	return puo.SetPageOfID(p.ID)
 }
@@ -341,7 +341,7 @@ func (puo *PageUpdateOne) Mutation() *PageMutation {
 	return puo.mutation
 }
 
-// ClearPageOf clears the "pageOf" edge to the Project entity.
+// ClearPageOf clears the "page_of" edge to the Project entity.
 func (puo *PageUpdateOne) ClearPageOf() *PageUpdateOne {
 	puo.mutation.ClearPageOf()
 	return puo
@@ -424,7 +424,7 @@ func (puo *PageUpdateOne) defaults() {
 func (puo *PageUpdateOne) check() error {
 	if v, ok := puo.mutation.ComponentMap(); ok {
 		if err := page.ComponentMapValidator(v); err != nil {
-			return &ValidationError{Name: "componentMap", err: fmt.Errorf("ent: validator failed for field \"componentMap\": %w", err)}
+			return &ValidationError{Name: "component_map", err: fmt.Errorf("ent: validator failed for field \"component_map\": %w", err)}
 		}
 	}
 	return nil

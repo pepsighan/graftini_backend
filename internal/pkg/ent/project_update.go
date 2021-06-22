@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/predicate"
@@ -112,6 +113,21 @@ func (pu *ProjectUpdate) AddQueries(g ...*GraphQLQuery) *ProjectUpdate {
 	return pu.AddQueryIDs(ids...)
 }
 
+// AddDeploymentIDs adds the "deployments" edge to the Deployment entity by IDs.
+func (pu *ProjectUpdate) AddDeploymentIDs(ids ...uuid.UUID) *ProjectUpdate {
+	pu.mutation.AddDeploymentIDs(ids...)
+	return pu
+}
+
+// AddDeployments adds the "deployments" edges to the Deployment entity.
+func (pu *ProjectUpdate) AddDeployments(d ...*Deployment) *ProjectUpdate {
+	ids := make([]uuid.UUID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return pu.AddDeploymentIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (pu *ProjectUpdate) Mutation() *ProjectMutation {
 	return pu.mutation
@@ -163,6 +179,27 @@ func (pu *ProjectUpdate) RemoveQueries(g ...*GraphQLQuery) *ProjectUpdate {
 		ids[i] = g[i].ID
 	}
 	return pu.RemoveQueryIDs(ids...)
+}
+
+// ClearDeployments clears all "deployments" edges to the Deployment entity.
+func (pu *ProjectUpdate) ClearDeployments() *ProjectUpdate {
+	pu.mutation.ClearDeployments()
+	return pu
+}
+
+// RemoveDeploymentIDs removes the "deployments" edge to Deployment entities by IDs.
+func (pu *ProjectUpdate) RemoveDeploymentIDs(ids ...uuid.UUID) *ProjectUpdate {
+	pu.mutation.RemoveDeploymentIDs(ids...)
+	return pu
+}
+
+// RemoveDeployments removes "deployments" edges to Deployment entities.
+func (pu *ProjectUpdate) RemoveDeployments(d ...*Deployment) *ProjectUpdate {
+	ids := make([]uuid.UUID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return pu.RemoveDeploymentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -413,6 +450,60 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.DeploymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeploymentsTable,
+			Columns: []string{project.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedDeploymentsIDs(); len(nodes) > 0 && !pu.mutation.DeploymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeploymentsTable,
+			Columns: []string{project.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.DeploymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeploymentsTable,
+			Columns: []string{project.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{project.Label}
@@ -513,6 +604,21 @@ func (puo *ProjectUpdateOne) AddQueries(g ...*GraphQLQuery) *ProjectUpdateOne {
 	return puo.AddQueryIDs(ids...)
 }
 
+// AddDeploymentIDs adds the "deployments" edge to the Deployment entity by IDs.
+func (puo *ProjectUpdateOne) AddDeploymentIDs(ids ...uuid.UUID) *ProjectUpdateOne {
+	puo.mutation.AddDeploymentIDs(ids...)
+	return puo
+}
+
+// AddDeployments adds the "deployments" edges to the Deployment entity.
+func (puo *ProjectUpdateOne) AddDeployments(d ...*Deployment) *ProjectUpdateOne {
+	ids := make([]uuid.UUID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return puo.AddDeploymentIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (puo *ProjectUpdateOne) Mutation() *ProjectMutation {
 	return puo.mutation
@@ -564,6 +670,27 @@ func (puo *ProjectUpdateOne) RemoveQueries(g ...*GraphQLQuery) *ProjectUpdateOne
 		ids[i] = g[i].ID
 	}
 	return puo.RemoveQueryIDs(ids...)
+}
+
+// ClearDeployments clears all "deployments" edges to the Deployment entity.
+func (puo *ProjectUpdateOne) ClearDeployments() *ProjectUpdateOne {
+	puo.mutation.ClearDeployments()
+	return puo
+}
+
+// RemoveDeploymentIDs removes the "deployments" edge to Deployment entities by IDs.
+func (puo *ProjectUpdateOne) RemoveDeploymentIDs(ids ...uuid.UUID) *ProjectUpdateOne {
+	puo.mutation.RemoveDeploymentIDs(ids...)
+	return puo
+}
+
+// RemoveDeployments removes "deployments" edges to Deployment entities.
+func (puo *ProjectUpdateOne) RemoveDeployments(d ...*Deployment) *ProjectUpdateOne {
+	ids := make([]uuid.UUID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return puo.RemoveDeploymentIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -830,6 +957,60 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: graphqlquery.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.DeploymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeploymentsTable,
+			Columns: []string{project.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedDeploymentsIDs(); len(nodes) > 0 && !puo.mutation.DeploymentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeploymentsTable,
+			Columns: []string{project.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: deployment.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.DeploymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeploymentsTable,
+			Columns: []string{project.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: deployment.FieldID,
 				},
 			},
 		}

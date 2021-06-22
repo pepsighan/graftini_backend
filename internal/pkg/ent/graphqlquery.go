@@ -18,10 +18,10 @@ type GraphQLQuery struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
-	// VariableName holds the value of the "variableName" field.
-	VariableName string `json:"variableName,omitempty"`
-	// GqlAst holds the value of the "gqlAst" field.
-	GqlAst string `json:"gqlAst,omitempty"`
+	// VariableName holds the value of the "variable_name" field.
+	VariableName string `json:"variable_name,omitempty"`
+	// GqlAst holds the value of the "gql_ast" field.
+	GqlAst string `json:"gql_ast,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -34,8 +34,8 @@ type GraphQLQuery struct {
 
 // GraphQLQueryEdges holds the relations/edges for other nodes in the graph.
 type GraphQLQueryEdges struct {
-	// QueryOf holds the value of the queryOf edge.
-	QueryOf *Project `json:"queryOf,omitempty"`
+	// QueryOf holds the value of the query_of edge.
+	QueryOf *Project `json:"query_of,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
@@ -46,13 +46,13 @@ type GraphQLQueryEdges struct {
 func (e GraphQLQueryEdges) QueryOfOrErr() (*Project, error) {
 	if e.loadedTypes[0] {
 		if e.QueryOf == nil {
-			// The edge queryOf was loaded in eager-loading,
+			// The edge query_of was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: project.Label}
 		}
 		return e.QueryOf, nil
 	}
-	return nil, &NotLoadedError{edge: "queryOf"}
+	return nil, &NotLoadedError{edge: "query_of"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -91,13 +91,13 @@ func (gqq *GraphQLQuery) assignValues(columns []string, values []interface{}) er
 			}
 		case graphqlquery.FieldVariableName:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field variableName", values[i])
+				return fmt.Errorf("unexpected type %T for field variable_name", values[i])
 			} else if value.Valid {
 				gqq.VariableName = value.String
 			}
 		case graphqlquery.FieldGqlAst:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field gqlAst", values[i])
+				return fmt.Errorf("unexpected type %T for field gql_ast", values[i])
 			} else if value.Valid {
 				gqq.GqlAst = value.String
 			}
@@ -124,7 +124,7 @@ func (gqq *GraphQLQuery) assignValues(columns []string, values []interface{}) er
 	return nil
 }
 
-// QueryQueryOf queries the "queryOf" edge of the GraphQLQuery entity.
+// QueryQueryOf queries the "query_of" edge of the GraphQLQuery entity.
 func (gqq *GraphQLQuery) QueryQueryOf() *ProjectQuery {
 	return (&GraphQLQueryClient{config: gqq.config}).QueryQueryOf(gqq)
 }
@@ -152,9 +152,9 @@ func (gqq *GraphQLQuery) String() string {
 	var builder strings.Builder
 	builder.WriteString("GraphQLQuery(")
 	builder.WriteString(fmt.Sprintf("id=%v", gqq.ID))
-	builder.WriteString(", variableName=")
+	builder.WriteString(", variable_name=")
 	builder.WriteString(gqq.VariableName)
-	builder.WriteString(", gqlAst=")
+	builder.WriteString(", gql_ast=")
 	builder.WriteString(gqq.GqlAst)
 	builder.WriteString(", created_at=")
 	builder.WriteString(gqq.CreatedAt.Format(time.ANSIC))

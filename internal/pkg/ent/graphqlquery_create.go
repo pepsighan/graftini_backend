@@ -22,13 +22,13 @@ type GraphQLQueryCreate struct {
 	hooks    []Hook
 }
 
-// SetVariableName sets the "variableName" field.
+// SetVariableName sets the "variable_name" field.
 func (gqqc *GraphQLQueryCreate) SetVariableName(s string) *GraphQLQueryCreate {
 	gqqc.mutation.SetVariableName(s)
 	return gqqc
 }
 
-// SetGqlAst sets the "gqlAst" field.
+// SetGqlAst sets the "gql_ast" field.
 func (gqqc *GraphQLQueryCreate) SetGqlAst(s string) *GraphQLQueryCreate {
 	gqqc.mutation.SetGqlAst(s)
 	return gqqc
@@ -68,13 +68,13 @@ func (gqqc *GraphQLQueryCreate) SetID(u uuid.UUID) *GraphQLQueryCreate {
 	return gqqc
 }
 
-// SetQueryOfID sets the "queryOf" edge to the Project entity by ID.
+// SetQueryOfID sets the "query_of" edge to the Project entity by ID.
 func (gqqc *GraphQLQueryCreate) SetQueryOfID(id uuid.UUID) *GraphQLQueryCreate {
 	gqqc.mutation.SetQueryOfID(id)
 	return gqqc
 }
 
-// SetNillableQueryOfID sets the "queryOf" edge to the Project entity by ID if the given value is not nil.
+// SetNillableQueryOfID sets the "query_of" edge to the Project entity by ID if the given value is not nil.
 func (gqqc *GraphQLQueryCreate) SetNillableQueryOfID(id *uuid.UUID) *GraphQLQueryCreate {
 	if id != nil {
 		gqqc = gqqc.SetQueryOfID(*id)
@@ -82,7 +82,7 @@ func (gqqc *GraphQLQueryCreate) SetNillableQueryOfID(id *uuid.UUID) *GraphQLQuer
 	return gqqc
 }
 
-// SetQueryOf sets the "queryOf" edge to the Project entity.
+// SetQueryOf sets the "query_of" edge to the Project entity.
 func (gqqc *GraphQLQueryCreate) SetQueryOf(p *Project) *GraphQLQueryCreate {
 	return gqqc.SetQueryOfID(p.ID)
 }
@@ -156,10 +156,10 @@ func (gqqc *GraphQLQueryCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (gqqc *GraphQLQueryCreate) check() error {
 	if _, ok := gqqc.mutation.VariableName(); !ok {
-		return &ValidationError{Name: "variableName", err: errors.New("ent: missing required field \"variableName\"")}
+		return &ValidationError{Name: "variable_name", err: errors.New("ent: missing required field \"variable_name\"")}
 	}
 	if _, ok := gqqc.mutation.GqlAst(); !ok {
-		return &ValidationError{Name: "gqlAst", err: errors.New("ent: missing required field \"gqlAst\"")}
+		return &ValidationError{Name: "gql_ast", err: errors.New("ent: missing required field \"gql_ast\"")}
 	}
 	if _, ok := gqqc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}

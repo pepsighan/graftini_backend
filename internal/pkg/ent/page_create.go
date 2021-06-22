@@ -34,13 +34,13 @@ func (pc *PageCreate) SetRoute(s string) *PageCreate {
 	return pc
 }
 
-// SetComponentMap sets the "componentMap" field.
+// SetComponentMap sets the "component_map" field.
 func (pc *PageCreate) SetComponentMap(s string) *PageCreate {
 	pc.mutation.SetComponentMap(s)
 	return pc
 }
 
-// SetNillableComponentMap sets the "componentMap" field if the given value is not nil.
+// SetNillableComponentMap sets the "component_map" field if the given value is not nil.
 func (pc *PageCreate) SetNillableComponentMap(s *string) *PageCreate {
 	if s != nil {
 		pc.SetComponentMap(*s)
@@ -82,13 +82,13 @@ func (pc *PageCreate) SetID(u uuid.UUID) *PageCreate {
 	return pc
 }
 
-// SetPageOfID sets the "pageOf" edge to the Project entity by ID.
+// SetPageOfID sets the "page_of" edge to the Project entity by ID.
 func (pc *PageCreate) SetPageOfID(id uuid.UUID) *PageCreate {
 	pc.mutation.SetPageOfID(id)
 	return pc
 }
 
-// SetNillablePageOfID sets the "pageOf" edge to the Project entity by ID if the given value is not nil.
+// SetNillablePageOfID sets the "page_of" edge to the Project entity by ID if the given value is not nil.
 func (pc *PageCreate) SetNillablePageOfID(id *uuid.UUID) *PageCreate {
 	if id != nil {
 		pc = pc.SetPageOfID(*id)
@@ -96,7 +96,7 @@ func (pc *PageCreate) SetNillablePageOfID(id *uuid.UUID) *PageCreate {
 	return pc
 }
 
-// SetPageOf sets the "pageOf" edge to the Project entity.
+// SetPageOf sets the "page_of" edge to the Project entity.
 func (pc *PageCreate) SetPageOf(p *Project) *PageCreate {
 	return pc.SetPageOfID(p.ID)
 }
@@ -177,7 +177,7 @@ func (pc *PageCreate) check() error {
 	}
 	if v, ok := pc.mutation.ComponentMap(); ok {
 		if err := page.ComponentMapValidator(v); err != nil {
-			return &ValidationError{Name: "componentMap", err: fmt.Errorf("ent: validator failed for field \"componentMap\": %w", err)}
+			return &ValidationError{Name: "component_map", err: fmt.Errorf("ent: validator failed for field \"component_map\": %w", err)}
 		}
 	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {

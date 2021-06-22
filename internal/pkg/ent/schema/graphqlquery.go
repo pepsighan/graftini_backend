@@ -18,8 +18,8 @@ type GraphQLQuery struct {
 func (GraphQLQuery) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
-		field.String("variableName"),
-		field.String("gqlAst"),
+		field.String("variable_name"),
+		field.String("gql_ast"),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}
@@ -28,7 +28,7 @@ func (GraphQLQuery) Fields() []ent.Field {
 // Edges of the GraphQLQuery.
 func (GraphQLQuery) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("queryOf", Project.Type).
+		edge.From("query_of", Project.Type).
 			Ref("queries").
 			Unique(),
 	}

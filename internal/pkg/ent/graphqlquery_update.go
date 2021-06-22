@@ -29,13 +29,13 @@ func (gqqu *GraphQLQueryUpdate) Where(ps ...predicate.GraphQLQuery) *GraphQLQuer
 	return gqqu
 }
 
-// SetVariableName sets the "variableName" field.
+// SetVariableName sets the "variable_name" field.
 func (gqqu *GraphQLQueryUpdate) SetVariableName(s string) *GraphQLQueryUpdate {
 	gqqu.mutation.SetVariableName(s)
 	return gqqu
 }
 
-// SetGqlAst sets the "gqlAst" field.
+// SetGqlAst sets the "gql_ast" field.
 func (gqqu *GraphQLQueryUpdate) SetGqlAst(s string) *GraphQLQueryUpdate {
 	gqqu.mutation.SetGqlAst(s)
 	return gqqu
@@ -47,13 +47,13 @@ func (gqqu *GraphQLQueryUpdate) SetUpdatedAt(t time.Time) *GraphQLQueryUpdate {
 	return gqqu
 }
 
-// SetQueryOfID sets the "queryOf" edge to the Project entity by ID.
+// SetQueryOfID sets the "query_of" edge to the Project entity by ID.
 func (gqqu *GraphQLQueryUpdate) SetQueryOfID(id uuid.UUID) *GraphQLQueryUpdate {
 	gqqu.mutation.SetQueryOfID(id)
 	return gqqu
 }
 
-// SetNillableQueryOfID sets the "queryOf" edge to the Project entity by ID if the given value is not nil.
+// SetNillableQueryOfID sets the "query_of" edge to the Project entity by ID if the given value is not nil.
 func (gqqu *GraphQLQueryUpdate) SetNillableQueryOfID(id *uuid.UUID) *GraphQLQueryUpdate {
 	if id != nil {
 		gqqu = gqqu.SetQueryOfID(*id)
@@ -61,7 +61,7 @@ func (gqqu *GraphQLQueryUpdate) SetNillableQueryOfID(id *uuid.UUID) *GraphQLQuer
 	return gqqu
 }
 
-// SetQueryOf sets the "queryOf" edge to the Project entity.
+// SetQueryOf sets the "query_of" edge to the Project entity.
 func (gqqu *GraphQLQueryUpdate) SetQueryOf(p *Project) *GraphQLQueryUpdate {
 	return gqqu.SetQueryOfID(p.ID)
 }
@@ -71,7 +71,7 @@ func (gqqu *GraphQLQueryUpdate) Mutation() *GraphQLQueryMutation {
 	return gqqu.mutation
 }
 
-// ClearQueryOf clears the "queryOf" edge to the Project entity.
+// ClearQueryOf clears the "query_of" edge to the Project entity.
 func (gqqu *GraphQLQueryUpdate) ClearQueryOf() *GraphQLQueryUpdate {
 	gqqu.mutation.ClearQueryOf()
 	return gqqu
@@ -230,13 +230,13 @@ type GraphQLQueryUpdateOne struct {
 	mutation *GraphQLQueryMutation
 }
 
-// SetVariableName sets the "variableName" field.
+// SetVariableName sets the "variable_name" field.
 func (gqquo *GraphQLQueryUpdateOne) SetVariableName(s string) *GraphQLQueryUpdateOne {
 	gqquo.mutation.SetVariableName(s)
 	return gqquo
 }
 
-// SetGqlAst sets the "gqlAst" field.
+// SetGqlAst sets the "gql_ast" field.
 func (gqquo *GraphQLQueryUpdateOne) SetGqlAst(s string) *GraphQLQueryUpdateOne {
 	gqquo.mutation.SetGqlAst(s)
 	return gqquo
@@ -248,13 +248,13 @@ func (gqquo *GraphQLQueryUpdateOne) SetUpdatedAt(t time.Time) *GraphQLQueryUpdat
 	return gqquo
 }
 
-// SetQueryOfID sets the "queryOf" edge to the Project entity by ID.
+// SetQueryOfID sets the "query_of" edge to the Project entity by ID.
 func (gqquo *GraphQLQueryUpdateOne) SetQueryOfID(id uuid.UUID) *GraphQLQueryUpdateOne {
 	gqquo.mutation.SetQueryOfID(id)
 	return gqquo
 }
 
-// SetNillableQueryOfID sets the "queryOf" edge to the Project entity by ID if the given value is not nil.
+// SetNillableQueryOfID sets the "query_of" edge to the Project entity by ID if the given value is not nil.
 func (gqquo *GraphQLQueryUpdateOne) SetNillableQueryOfID(id *uuid.UUID) *GraphQLQueryUpdateOne {
 	if id != nil {
 		gqquo = gqquo.SetQueryOfID(*id)
@@ -262,7 +262,7 @@ func (gqquo *GraphQLQueryUpdateOne) SetNillableQueryOfID(id *uuid.UUID) *GraphQL
 	return gqquo
 }
 
-// SetQueryOf sets the "queryOf" edge to the Project entity.
+// SetQueryOf sets the "query_of" edge to the Project entity.
 func (gqquo *GraphQLQueryUpdateOne) SetQueryOf(p *Project) *GraphQLQueryUpdateOne {
 	return gqquo.SetQueryOfID(p.ID)
 }
@@ -272,7 +272,7 @@ func (gqquo *GraphQLQueryUpdateOne) Mutation() *GraphQLQueryMutation {
 	return gqquo.mutation
 }
 
-// ClearQueryOf clears the "queryOf" edge to the Project entity.
+// ClearQueryOf clears the "query_of" edge to the Project entity.
 func (gqquo *GraphQLQueryUpdateOne) ClearQueryOf() *GraphQLQueryUpdateOne {
 	gqquo.mutation.ClearQueryOf()
 	return gqquo

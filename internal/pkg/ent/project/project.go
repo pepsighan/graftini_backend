@@ -27,6 +27,8 @@ const (
 	EdgePages = "pages"
 	// EdgeQueries holds the string denoting the queries edge name in mutations.
 	EdgeQueries = "queries"
+	// EdgeDeployments holds the string denoting the deployments edge name in mutations.
+	EdgeDeployments = "deployments"
 	// Table holds the table name of the project in the database.
 	Table = "projects"
 	// OwnerTable is the table the holds the owner relation/edge.
@@ -50,6 +52,13 @@ const (
 	QueriesInverseTable = "graph_ql_queries"
 	// QueriesColumn is the table column denoting the queries relation/edge.
 	QueriesColumn = "project_queries"
+	// DeploymentsTable is the table the holds the deployments relation/edge.
+	DeploymentsTable = "deployments"
+	// DeploymentsInverseTable is the table name for the Deployment entity.
+	// It exists in this package in order to avoid circular dependency with the "deployment" package.
+	DeploymentsInverseTable = "deployments"
+	// DeploymentsColumn is the table column denoting the deployments relation/edge.
+	DeploymentsColumn = "project_deployments"
 )
 
 // Columns holds all SQL columns for project fields.

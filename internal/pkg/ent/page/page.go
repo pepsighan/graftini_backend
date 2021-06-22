@@ -17,22 +17,22 @@ const (
 	FieldName = "name"
 	// FieldRoute holds the string denoting the route field in the database.
 	FieldRoute = "route"
-	// FieldComponentMap holds the string denoting the componentmap field in the database.
+	// FieldComponentMap holds the string denoting the component_map field in the database.
 	FieldComponentMap = "component_map"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgePageOf holds the string denoting the pageof edge name in mutations.
-	EdgePageOf = "pageOf"
+	// EdgePageOf holds the string denoting the page_of edge name in mutations.
+	EdgePageOf = "page_of"
 	// Table holds the table name of the page in the database.
 	Table = "pages"
-	// PageOfTable is the table the holds the pageOf relation/edge.
+	// PageOfTable is the table the holds the page_of relation/edge.
 	PageOfTable = "pages"
 	// PageOfInverseTable is the table name for the Project entity.
 	// It exists in this package in order to avoid circular dependency with the "project" package.
 	PageOfInverseTable = "projects"
-	// PageOfColumn is the table column denoting the pageOf relation/edge.
+	// PageOfColumn is the table column denoting the page_of relation/edge.
 	PageOfColumn = "project_pages"
 )
 
@@ -68,7 +68,7 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// ComponentMapValidator is a validator for the "componentMap" field. It is called by the builders before save.
+	// ComponentMapValidator is a validator for the "component_map" field. It is called by the builders before save.
 	ComponentMapValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time

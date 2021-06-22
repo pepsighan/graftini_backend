@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/project"
@@ -125,6 +126,21 @@ func (pc *ProjectCreate) AddQueries(g ...*GraphQLQuery) *ProjectCreate {
 		ids[i] = g[i].ID
 	}
 	return pc.AddQueryIDs(ids...)
+}
+
+// AddDeploymentIDs adds the "deployments" edge to the Deployment entity by IDs.
+func (pc *ProjectCreate) AddDeploymentIDs(ids ...uuid.UUID) *ProjectCreate {
+	pc.mutation.AddDeploymentIDs(ids...)
+	return pc
+}
+
+// AddDeployments adds the "deployments" edges to the Deployment entity.
+func (pc *ProjectCreate) AddDeployments(d ...*Deployment) *ProjectCreate {
+	ids := make([]uuid.UUID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return pc.AddDeploymentIDs(ids...)
 }
 
 // Mutation returns the ProjectMutation object of the builder.
@@ -315,6 +331,25 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: graphqlquery.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.DeploymentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeploymentsTable,
+			Columns: []string{project.DeploymentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: deployment.FieldID,
 				},
 			},
 		}

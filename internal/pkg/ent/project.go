@@ -40,9 +40,11 @@ type ProjectEdges struct {
 	Pages []*Page `json:"pages,omitempty"`
 	// Queries holds the value of the queries edge.
 	Queries []*GraphQLQuery `json:"queries,omitempty"`
+	// Deployments holds the value of the deployments edge.
+	Deployments []*Deployment `json:"deployments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // OwnerOrErr returns the Owner value or an error if the edge
@@ -75,6 +77,15 @@ func (e ProjectEdges) QueriesOrErr() ([]*GraphQLQuery, error) {
 		return e.Queries, nil
 	}
 	return nil, &NotLoadedError{edge: "queries"}
+}
+
+// DeploymentsOrErr returns the Deployments value or an error if the edge
+// was not loaded in eager-loading.
+func (e ProjectEdges) DeploymentsOrErr() ([]*Deployment, error) {
+	if e.loadedTypes[3] {
+		return e.Deployments, nil
+	}
+	return nil, &NotLoadedError{edge: "deployments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -160,6 +171,11 @@ func (pr *Project) QueryPages() *PageQuery {
 // QueryQueries queries the "queries" edge of the Project entity.
 func (pr *Project) QueryQueries() *GraphQLQueryQuery {
 	return (&ProjectClient{config: pr.config}).QueryQueries(pr)
+}
+
+// QueryDeployments queries the "deployments" edge of the Project entity.
+func (pr *Project) QueryDeployments() *DeploymentQuery {
+	return (&ProjectClient{config: pr.config}).QueryDeployments(pr)
 }
 
 // Update returns a builder for updating this Project.

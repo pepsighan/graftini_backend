@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Deployment is the predicate function for deployment builders.
+type Deployment func(*sql.Selector)
+
 // GraphQLQuery is the predicate function for graphqlquery builders.
 type GraphQLQuery func(*sql.Selector)
 

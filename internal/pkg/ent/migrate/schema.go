@@ -8,6 +8,28 @@ import (
 )
 
 var (
+	// DeploymentsColumns holds the columns for the "deployments" table.
+	DeploymentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "status", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
+		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
+		{Name: "project_deployments", Type: field.TypeUUID, Nullable: true},
+	}
+	// DeploymentsTable holds the schema information for the "deployments" table.
+	DeploymentsTable = &schema.Table{
+		Name:       "deployments",
+		Columns:    DeploymentsColumns,
+		PrimaryKey: []*schema.Column{DeploymentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "deployments_projects_deployments",
+				Columns:    []*schema.Column{DeploymentsColumns[4]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// GraphQlQueriesColumns holds the columns for the "graph_ql_queries" table.
 	GraphQlQueriesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -97,6 +119,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		DeploymentsTable,
 		GraphQlQueriesTable,
 		PagesTable,
 		ProjectsTable,
@@ -105,6 +128,7 @@ var (
 )
 
 func init() {
+	DeploymentsTable.ForeignKeys[0].RefTable = ProjectsTable
 	GraphQlQueriesTable.ForeignKeys[0].RefTable = ProjectsTable
 	PagesTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectsTable.ForeignKeys[0].RefTable = UsersTable

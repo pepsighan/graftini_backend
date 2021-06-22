@@ -108,7 +108,7 @@ func Route(v string) predicate.Page {
 	})
 }
 
-// ComponentMap applies equality check predicate on the "componentMap" field. It's identical to ComponentMapEQ.
+// ComponentMap applies equality check predicate on the "component_map" field. It's identical to ComponentMapEQ.
 func ComponentMap(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldComponentMap), v))
@@ -351,21 +351,21 @@ func RouteContainsFold(v string) predicate.Page {
 	})
 }
 
-// ComponentMapEQ applies the EQ predicate on the "componentMap" field.
+// ComponentMapEQ applies the EQ predicate on the "component_map" field.
 func ComponentMapEQ(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldComponentMap), v))
 	})
 }
 
-// ComponentMapNEQ applies the NEQ predicate on the "componentMap" field.
+// ComponentMapNEQ applies the NEQ predicate on the "component_map" field.
 func ComponentMapNEQ(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldComponentMap), v))
 	})
 }
 
-// ComponentMapIn applies the In predicate on the "componentMap" field.
+// ComponentMapIn applies the In predicate on the "component_map" field.
 func ComponentMapIn(vs ...string) predicate.Page {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -382,7 +382,7 @@ func ComponentMapIn(vs ...string) predicate.Page {
 	})
 }
 
-// ComponentMapNotIn applies the NotIn predicate on the "componentMap" field.
+// ComponentMapNotIn applies the NotIn predicate on the "component_map" field.
 func ComponentMapNotIn(vs ...string) predicate.Page {
 	v := make([]interface{}, len(vs))
 	for i := range v {
@@ -399,77 +399,77 @@ func ComponentMapNotIn(vs ...string) predicate.Page {
 	})
 }
 
-// ComponentMapGT applies the GT predicate on the "componentMap" field.
+// ComponentMapGT applies the GT predicate on the "component_map" field.
 func ComponentMapGT(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldComponentMap), v))
 	})
 }
 
-// ComponentMapGTE applies the GTE predicate on the "componentMap" field.
+// ComponentMapGTE applies the GTE predicate on the "component_map" field.
 func ComponentMapGTE(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldComponentMap), v))
 	})
 }
 
-// ComponentMapLT applies the LT predicate on the "componentMap" field.
+// ComponentMapLT applies the LT predicate on the "component_map" field.
 func ComponentMapLT(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldComponentMap), v))
 	})
 }
 
-// ComponentMapLTE applies the LTE predicate on the "componentMap" field.
+// ComponentMapLTE applies the LTE predicate on the "component_map" field.
 func ComponentMapLTE(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldComponentMap), v))
 	})
 }
 
-// ComponentMapContains applies the Contains predicate on the "componentMap" field.
+// ComponentMapContains applies the Contains predicate on the "component_map" field.
 func ComponentMapContains(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.Contains(s.C(FieldComponentMap), v))
 	})
 }
 
-// ComponentMapHasPrefix applies the HasPrefix predicate on the "componentMap" field.
+// ComponentMapHasPrefix applies the HasPrefix predicate on the "component_map" field.
 func ComponentMapHasPrefix(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.HasPrefix(s.C(FieldComponentMap), v))
 	})
 }
 
-// ComponentMapHasSuffix applies the HasSuffix predicate on the "componentMap" field.
+// ComponentMapHasSuffix applies the HasSuffix predicate on the "component_map" field.
 func ComponentMapHasSuffix(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldComponentMap), v))
 	})
 }
 
-// ComponentMapIsNil applies the IsNil predicate on the "componentMap" field.
+// ComponentMapIsNil applies the IsNil predicate on the "component_map" field.
 func ComponentMapIsNil() predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.IsNull(s.C(FieldComponentMap)))
 	})
 }
 
-// ComponentMapNotNil applies the NotNil predicate on the "componentMap" field.
+// ComponentMapNotNil applies the NotNil predicate on the "component_map" field.
 func ComponentMapNotNil() predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldComponentMap)))
 	})
 }
 
-// ComponentMapEqualFold applies the EqualFold predicate on the "componentMap" field.
+// ComponentMapEqualFold applies the EqualFold predicate on the "component_map" field.
 func ComponentMapEqualFold(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.EqualFold(s.C(FieldComponentMap), v))
 	})
 }
 
-// ComponentMapContainsFold applies the ContainsFold predicate on the "componentMap" field.
+// ComponentMapContainsFold applies the ContainsFold predicate on the "component_map" field.
 func ComponentMapContainsFold(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldComponentMap), v))
@@ -628,7 +628,7 @@ func UpdatedAtLTE(v time.Time) predicate.Page {
 	})
 }
 
-// HasPageOf applies the HasEdge predicate on the "pageOf" edge.
+// HasPageOf applies the HasEdge predicate on the "page_of" edge.
 func HasPageOf() predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -640,7 +640,7 @@ func HasPageOf() predicate.Page {
 	})
 }
 
-// HasPageOfWith applies the HasEdge predicate on the "pageOf" edge with a given conditions (other predicates).
+// HasPageOfWith applies the HasEdge predicate on the "page_of" edge with a given conditions (other predicates).
 func HasPageOfWith(preds ...predicate.Project) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
