@@ -1,6 +1,6 @@
 package config
 
-import "github.com/pepsighan/graftini_backend/internal/config"
+import "github.com/pepsighan/graftini_backend/internal/pkg/config"
 
 var (
 	Env          Environment = Environment(config.RequireEnv("ENV"))

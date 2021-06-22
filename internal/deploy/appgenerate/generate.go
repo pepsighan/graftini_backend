@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/pepsighan/graftini_backend/ent"
-	"github.com/pepsighan/graftini_backend/ent/schema"
 	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate/templates"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
 
 // WritePageToFile writes the page component based on the given page information.

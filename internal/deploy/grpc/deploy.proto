@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "github.com/pepsighan/graftini_backend/internal/deploy/grpc";
+
+package grpc;
+
+// The deploy service definition.
+service Deploy {
+  rpc DeployProject(DeployRequest) returns (DeployReply) {}
+}
+
+message DeployRequest {
+  bytes projectID = 1;
+}
+
+message DeployReply {
+  bytes deploymentID = 1;
+}
