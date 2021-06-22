@@ -49,6 +49,10 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Deployment struct {
+		ID func(childComplexity int) int
+	}
+
 	GraphQLQuery struct {
 		GqlAst       func(childComplexity int) int
 		ID           func(childComplexity int) int
@@ -62,6 +66,7 @@ type ComplexityRoot struct {
 		DeletePage          func(childComplexity int, projectID uuid.UUID, pageID uuid.UUID) int
 		DeleteProject       func(childComplexity int, projectID uuid.UUID) int
 		DeleteQuery         func(childComplexity int, projectID uuid.UUID, queryID uuid.UUID) int
+		DeployProject       func(childComplexity int, projectID uuid.UUID) int
 		UpdateProject       func(childComplexity int, input model.UpdateProject) int
 		UpdateProjectDesign func(childComplexity int, input model.UpdateProjectDesign) int
 	}
@@ -100,6 +105,7 @@ type MutationResolver interface {
 	CreateProject(ctx context.Context, input model.NewProject) (*ent.Project, error)
 	UpdateProject(ctx context.Context, input model.UpdateProject) (*ent.Project, error)
 	DeleteProject(ctx context.Context, projectID uuid.UUID) (*ent.Project, error)
+	DeployProject(ctx context.Context, projectID uuid.UUID) (*ent.Deployment, error)
 	UpdateProjectDesign(ctx context.Context, input model.UpdateProjectDesign) (*ent.Project, error)
 	CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error)
 	DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error)
@@ -130,6 +136,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Deployment.id":
+		if e.complexity.Deployment.ID == nil {
+			break
+		}
+
+		return e.complexity.Deployment.ID(childComplexity), true
 
 	case "GraphQLQuery.gqlAst":
 		if e.complexity.GraphQLQuery.GqlAst == nil {
@@ -223,6 +236,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteQuery(childComplexity, args["projectId"].(uuid.UUID), args["queryId"].(uuid.UUID)), true
+
+	case "Mutation.deployProject":
+		if e.complexity.Mutation.DeployProject == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deployProject_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeployProject(childComplexity, args["projectId"].(uuid.UUID)), true
 
 	case "Mutation.updateProject":
 		if e.complexity.Mutation.UpdateProject == nil {
@@ -473,6 +498,10 @@ type Page {
   componentMap: String
 }
 
+type Deployment {
+  id: ID!
+}
+
 type GraphQLQuery {
   id: ID!
   variableName: String!
@@ -545,6 +574,10 @@ type Mutation {
   Deletes the project of the logged in user.
   """
   deleteProject(projectId: ID!): Project! @isAuthenticated
+  """
+  Deploy the project.
+  """
+  deployProject(projectId: ID!): Deployment! @isAuthenticated
   """
   Update the designs of the pages in a project.
   """
@@ -684,6 +717,21 @@ func (ec *executionContext) field_Mutation_deleteQuery_args(ctx context.Context,
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deployProject_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 uuid.UUID
+	if tmp, ok := rawArgs["projectId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+		arg0, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["projectId"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateProjectDesign_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -781,6 +829,41 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Deployment_id(ctx context.Context, field graphql.CollectedField, obj *ent.Deployment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Deployment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(uuid.UUID)
+	fc.Result = res
+	return ec.marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _GraphQLQuery_id(ctx context.Context, field graphql.CollectedField, obj *ent.GraphQLQuery) (ret graphql.Marshaler) {
 	defer func() {
@@ -1071,6 +1154,68 @@ func (ec *executionContext) _Mutation_deleteProject(ctx context.Context, field g
 	res := resTmp.(*ent.Project)
 	fc.Result = res
 	return ec.marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐProject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deployProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deployProject_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DeployProject(rctx, args["projectId"].(uuid.UUID))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.Deployment); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/graftini_backend/internal/pkg/ent.Deployment`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Deployment)
+	fc.Result = res
+	return ec.marshalNDeployment2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐDeployment(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_updateProjectDesign(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3360,6 +3505,33 @@ func (ec *executionContext) unmarshalInputUpdateProjectDesign(ctx context.Contex
 
 // region    **************************** object.gotpl ****************************
 
+var deploymentImplementors = []string{"Deployment"}
+
+func (ec *executionContext) _Deployment(ctx context.Context, sel ast.SelectionSet, obj *ent.Deployment) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deploymentImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Deployment")
+		case "id":
+			out.Values[i] = ec._Deployment_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var graphQLQueryImplementors = []string{"GraphQLQuery"}
 
 func (ec *executionContext) _GraphQLQuery(ctx context.Context, sel ast.SelectionSet, obj *ent.GraphQLQuery) graphql.Marshaler {
@@ -3424,6 +3596,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deleteProject":
 			out.Values[i] = ec._Mutation_deleteProject(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deployProject":
+			out.Values[i] = ec._Mutation_deployProject(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -3932,6 +4109,20 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNDeployment2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐDeployment(ctx context.Context, sel ast.SelectionSet, v ent.Deployment) graphql.Marshaler {
+	return ec._Deployment(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeployment2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐDeployment(ctx context.Context, sel ast.SelectionSet, v *ent.Deployment) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Deployment(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNGraphQLQuery2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐGraphQLQuery(ctx context.Context, sel ast.SelectionSet, v ent.GraphQLQuery) graphql.Marshaler {

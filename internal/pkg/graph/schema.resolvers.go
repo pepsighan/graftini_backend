@@ -80,6 +80,21 @@ func (r *mutationResolver) DeleteProject(ctx context.Context, projectID uuid.UUI
 	return prj, nil
 }
 
+func (r *mutationResolver) DeployProject(ctx context.Context, projectID uuid.UUID) (*ent.Deployment, error) {
+	user := auth.RequiredAuthenticatedUser(ctx)
+
+	prj, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(projectID, user.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a deployment here.
+	deploymentID := uuid.New()
+	return r.Ent.Deployment.Get(ctx, deploymentID)
+}
+
 func (r *mutationResolver) UpdateProjectDesign(ctx context.Context, input model1.UpdateProjectDesign) (*ent.Project, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 

@@ -35,6 +35,10 @@ type Page {
   componentMap: String
 }
 
+type Deployment {
+  id: ID!
+}
+
 type GraphQLQuery {
   id: ID!
   variableName: String!
@@ -107,6 +111,10 @@ type Mutation {
   Deletes the project of the logged in user.
   """
   deleteProject(projectId: ID!): Project! @isAuthenticated
+  """
+  Deploy the project.
+  """
+  deployProject(projectId: ID!): Deployment! @isAuthenticated
   """
   Update the designs of the pages in a project.
   """

@@ -53,5 +53,7 @@ models:
     model: github.com/pepsighan/graftini_backend/internal/pkg/ent.Project
   Page:
     model: github.com/pepsighan/graftini_backend/internal/pkg/ent.Page
+  Deployment:
+    model: github.com/pepsighan/graftini_backend/internal/pkg/ent.Deployment
   GraphQLQuery:
     model: github.com/pepsighan/graftini_backend/internal/pkg/ent.GraphQLQuery
