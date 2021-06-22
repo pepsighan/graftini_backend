@@ -16,11 +16,11 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	_ "github.com/lib/pq"
-	"github.com/pepsighan/graftini_backend/ent"
-	"github.com/pepsighan/graftini_backend/graph"
-	"github.com/pepsighan/graftini_backend/graph/generated"
-	"github.com/pepsighan/graftini_backend/internal/auth"
-	"github.com/pepsighan/graftini_backend/internal/backendconfig"
+	"github.com/pepsighan/graftini_backend/internal/backend/auth"
+	"github.com/pepsighan/graftini_backend/internal/backend/config"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/graph"
+	"github.com/pepsighan/graftini_backend/internal/pkg/graph/generated"
 )
 
 func firebaseAuth() *authFirebase.Client {
@@ -64,7 +64,7 @@ func playgroundHandler() echo.HandlerFunc {
 }
 
 func main() {
-	client, err := ent.Open("postgres", backendconfig.DatabaseURL)
+	client, err := ent.Open("postgres", config.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -90,19 +90,19 @@ func main() {
 	// Do not allow CORs requests by default. If allowed origins are provided, then
 	// use them.
 	corsConfig := middleware.DefaultCORSConfig
-	corsConfig.AllowOrigins = backendconfig.AllowedOrigins
+	corsConfig.AllowOrigins = config.AllowedOrigins
 	e.Use(middleware.CORSWithConfig(corsConfig))
 
 	// Do not allow any request with body more than 2MB by default. This will
 	// limit DoS attacks by file uploads.
-	e.Use(middleware.BodyLimit(backendconfig.MaxBodySize))
+	e.Use(middleware.BodyLimit(config.MaxBodySize))
 
 	e.POST("/query", graphqlHandler(client))
 	e.GET("/", playgroundHandler())
 
 	// Start server
 	go func() {
-		if err := e.Start(":" + backendconfig.Port); err != nil && err != http.ErrServerClosed {
+		if err := e.Start(":" + config.Port); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("shutting down the server")
 		}
 	}()

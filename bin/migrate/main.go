@@ -9,11 +9,11 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
-	"github.com/pepsighan/graftini_backend/internal/backendconfig"
+	"github.com/pepsighan/graftini_backend/internal/backend/config"
 )
 
 func main() {
-	db, err := sql.Open("postgres", backendconfig.DatabaseURL)
+	db, err := sql.Open("postgres", config.DatabaseURL)
 	if err != nil {
 		log.Fatalf("failed connecting to postgres: %v", err)
 	}
