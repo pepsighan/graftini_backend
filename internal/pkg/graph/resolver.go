@@ -2,6 +2,7 @@ package graph
 
 import (
 	"firebase.google.com/go/v4/auth"
+	"github.com/pepsighan/graftini_backend/internal/deploy/grpc"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 )
 
@@ -14,11 +15,13 @@ import (
 type Resolver struct {
 	Ent          *ent.Client
 	FirebaseAuth *auth.Client
+	Deploy       grpc.DeployClient
 }
 
-func NewResolver(client *ent.Client, auth *auth.Client) *Resolver {
+func NewResolver(client *ent.Client, auth *auth.Client, deploy grpc.DeployClient) *Resolver {
 	return &Resolver{
 		Ent:          client,
 		FirebaseAuth: auth,
+		Deploy:       deploy,
 	}
 }

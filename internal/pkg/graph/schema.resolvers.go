@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pepsighan/graftini_backend/internal/backend/auth"
+	"github.com/pepsighan/graftini_backend/internal/deploy/grpc"
 	"github.com/pepsighan/graftini_backend/internal/pkg/db"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
@@ -90,8 +91,24 @@ func (r *mutationResolver) DeployProject(ctx context.Context, projectID uuid.UUI
 		return nil, err
 	}
 
+	projectIDBytes, err := prj.ID.MarshalBinary()
+	if err != nil {
+		return nil, err
+	}
+
+	reply, err := r.Deploy.DeployProject(ctx, &grpc.DeployRequest{
+		ProjectID: projectIDBytes,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	deploymentID, err := uuid.FromBytes(reply.DeploymentID)
+	if err != nil {
+		return nil, err
+	}
+
 	// Create a deployment here.
-	deploymentID := uuid.New()
 	return r.Ent.Deployment.Get(ctx, deploymentID)
 }
 
