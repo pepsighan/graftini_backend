@@ -1,4 +1,4 @@
-{% import "github.com/pepsighan/graftini_backend/ent/schema" %}
+{% import "github.com/pepsighan/graftini_backend/internal/pkg/ent/schema" %}
 
 {% comment %} Generates the React markup for the page based on the component map. {% endcomment %}
 {% func PageContent(m *schema.ComponentMap) %}

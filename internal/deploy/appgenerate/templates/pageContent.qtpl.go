@@ -5,7 +5,7 @@
 package templates
 
 //line templates/pageContent.qtpl:1
-import "github.com/pepsighan/graftini_backend/ent/schema"
+import "github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 
 //line templates/pageContent.qtpl:4
 import (
