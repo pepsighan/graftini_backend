@@ -42,7 +42,10 @@ func firebaseAuth() *authFirebase.Client {
 }
 
 func grpcClient() (service.DeployClient, *grpc.ClientConn) {
-	conn, err := grpc.Dial(config.DeployEndpoint, grpc.WithInsecure(), grpc.WithBlock())
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	conn, err := grpc.DialContext(ctx, config.DeployEndpoint, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
