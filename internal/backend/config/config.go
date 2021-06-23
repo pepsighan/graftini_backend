@@ -13,20 +13,12 @@ var _ = config.LoadEnvFile(".backend.env")
 
 var (
 	Env            config.Environment = config.Environment(config.RequireEnv("ENV"))
-	Port                              = port()
+	Port                              = config.Env("PORT", "1323")
 	DatabaseURL                       = databaseURL()
 	AllowedOrigins                    = allowedOrigins()
-	MaxBodySize                       = maxBodySize()
+	MaxBodySize                       = config.Env("MAX_BODY_SIZE", "2M")
 	DeployEndpoint                    = config.RequireEnv("DEPLOY_ENDPOINT")
 )
-
-func port() string {
-	port, ok := os.LookupEnv("PORT")
-	if !ok {
-		return "1323"
-	}
-	return port
-}
 
 func allowedOrigins() []string {
 	allowedOrigins, ok := os.LookupEnv("ALLOWED_ORIGINS")
@@ -34,15 +26,6 @@ func allowedOrigins() []string {
 		return strings.Split(allowedOrigins, ",")
 	} else {
 		return []string{}
-	}
-}
-
-func maxBodySize() string {
-	maxBodySize, ok := os.LookupEnv("MAX_BODY_SIZE")
-	if ok {
-		return maxBodySize
-	} else {
-		return "2M"
 	}
 }
 

@@ -37,3 +37,12 @@ func RequireEnv(key string) string {
 
 	return value
 }
+
+// Env gets the value from the env. If not present, uses the default value.
+func Env(key string, defaultVal string) string {
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
+		return defaultVal
+	}
+	return port
+}
