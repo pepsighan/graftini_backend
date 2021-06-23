@@ -10,7 +10,9 @@ import (
 	"os"
 	"path"
 
+	"github.com/otiai10/copy"
 	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate/templates"
+	"github.com/pepsighan/graftini_backend/internal/deploy/config"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
@@ -23,8 +25,14 @@ func GenerateCodeBaseForProject(ctx context.Context, project *ent.Project) (Code
 		return "", err
 	}
 
-	// Create a temporary directory
+	// Create a temporary directory on which a new project is to be generated.
 	projectPath, err := newCodeBasePath()
+	if err != nil {
+		return "", err
+	}
+
+	// Copy the template next app in the temp location. We are going to build on top of it.
+	err = copy.Copy(config.TemplateNextAppPath, string(projectPath))
 	if err != nil {
 		return "", err
 	}
