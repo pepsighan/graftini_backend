@@ -11,7 +11,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/backend/auth"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
 	model1 "github.com/pepsighan/graftini_backend/internal/backend/graph/model"
-	"github.com/pepsighan/graftini_backend/internal/deploy/grpc"
+	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/db"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
@@ -96,7 +96,7 @@ func (r *mutationResolver) DeployProject(ctx context.Context, projectID uuid.UUI
 		return nil, err
 	}
 
-	reply, err := r.Deploy.DeployProject(ctx, &grpc.DeployRequest{
+	reply, err := r.Deploy.DeployProject(ctx, &service.DeployRequest{
 		ProjectID: projectIDBytes,
 	})
 	if err != nil {

@@ -5,8 +5,8 @@ import (
 	"net"
 
 	"github.com/pepsighan/graftini_backend/internal/deploy/config"
-	"github.com/pepsighan/graftini_backend/internal/deploy/grpc"
-	g "google.golang.org/grpc"
+	"github.com/pepsighan/graftini_backend/internal/deploy/service"
+	"google.golang.org/grpc"
 )
 
 func main() {
@@ -15,8 +15,8 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s := g.NewServer()
-	grpc.RegisterDeployServer(s, &grpc.Server{})
+	s := grpc.NewServer()
+	service.RegisterDeployServer(s, &service.Server{})
 
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {

@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-option go_package = "github.com/pepsighan/graftini_backend/internal/deploy/grpc";
+option go_package = "github.com/pepsighan/graftini_backend/internal/deploy/service";
 
-package grpc;
+package service;
 
 // The deploy service definition.
 service Deploy {

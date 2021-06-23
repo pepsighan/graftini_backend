@@ -14,6 +14,7 @@ var (
 	DatabaseURL                       = databaseURL()
 	AllowedOrigins                    = allowedOrigins()
 	MaxBodySize                       = maxBodySize()
+	DeployEndpoint                    = config.RequireEnv("DEPLOY_ENDPOINT")
 )
 
 func port() string {

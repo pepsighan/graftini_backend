@@ -20,7 +20,9 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
+	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"google.golang.org/grpc"
 )
 
 func firebaseAuth() *authFirebase.Client {
@@ -39,11 +41,23 @@ func firebaseAuth() *authFirebase.Client {
 	return client
 }
 
+func grpcClient() (service.DeployClient, *grpc.ClientConn) {
+	conn, err := grpc.Dial(config.DeployEndpoint, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+
+	return service.NewDeployClient(conn), conn
+}
+
 func graphqlHandler(client *ent.Client) echo.HandlerFunc {
 	firebaseClient := firebaseAuth()
 
+	deployClient, grpcConn := grpcClient()
+	defer grpcConn.Close()
+
 	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
-		Resolvers:  graph.NewResolver(client, firebaseClient),
+		Resolvers:  graph.NewResolver(client, firebaseClient, deployClient),
 		Directives: graph.NewDirective(client, firebaseClient),
 	}))
 
