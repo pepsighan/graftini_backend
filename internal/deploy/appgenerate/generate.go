@@ -5,9 +5,10 @@ package appgenerate
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"os"
+	"path"
 
 	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate/templates"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
@@ -28,8 +29,10 @@ func GenerateCodeBaseForProject(ctx context.Context, project *ent.Project) (Code
 		return "", err
 	}
 
+	pagesPath := path.Join(string(projectPath), "pages")
+
 	for _, page := range pages {
-		if err := writePageToFile(page, "/some/path/for/page"); err != nil {
+		if err := writePageInPath(page, pagesPath); err != nil {
 			return projectPath, err
 		}
 	}
@@ -37,8 +40,8 @@ func GenerateCodeBaseForProject(ctx context.Context, project *ent.Project) (Code
 	return projectPath, nil
 }
 
-// writePageToFile writes the page component based on the given page information.
-func writePageToFile(p *ent.Page, path string) error {
+// writePageInPath writes a page component based on the given page information.
+func writePageInPath(p *ent.Page, pagesPath string) error {
 	if p.ComponentMap == nil {
 		return nil
 	}
@@ -49,9 +52,9 @@ func writePageToFile(p *ent.Page, path string) error {
 	}
 
 	page := templates.Page(p.Name, body)
-	fmt.Println(page)
+	pageFilePath := path.Join(pagesPath, resolvePagePath(p.Route))
 
-	return nil
+	return ioutil.WriteFile(pageFilePath, []byte(page), fs.ModePerm)
 }
 
 func generateComponentBody(c string) (string, error) {
@@ -85,4 +88,10 @@ func newCodeBasePath() (CodeBasePath, error) {
 // Cleanup removes all the files within the code base path.
 func (c CodeBasePath) Cleanup() error {
 	return os.RemoveAll(string(c))
+}
+
+// resolvePagePath gets the file path for the route in the pattern of the NextJS
+// page directory structure.
+func resolvePagePath(route string) string {
+	return route
 }
