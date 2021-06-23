@@ -6,6 +6,9 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/config"
 )
 
+// Load from the .deploy.env if present.
+var _ = config.LoadEnvFile(".deploy.env")
+
 var (
 	Env          Environment = Environment(config.RequireEnv("ENV"))
 	VercelToken  string      = config.RequireEnv("VERCEL_TOKEN")

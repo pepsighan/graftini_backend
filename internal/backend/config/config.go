@@ -8,6 +8,9 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/config"
 )
 
+// Load from the .backend.env if present.
+var _ = config.LoadEnvFile(".backend.env")
+
 var (
 	Env            config.Environment = config.Environment(config.RequireEnv("ENV"))
 	Port                              = port()
