@@ -93,5 +93,16 @@ func (c CodeBasePath) Cleanup() error {
 // resolvePagePath gets the file path for the route in the pattern of the NextJS
 // page directory structure.
 func resolvePagePath(route string) string {
-	return route
+	// There can be the following kinds of path definitions:
+	// 1. /
+	// 2. /name
+	// 3. /name/help
+	//
+	// And the one at 1 can be represented as `/index.js`.
+	// While 2 can be represented as `/name.js` or `/name/index.js`.
+	// And 3 can be represented as `/name/help.js` or `/name/help/index.js`.
+	//
+	// If 2 and 3 were to happen at once, it can be much simpler to organize
+	// and define the routes by appending index.js.
+	return path.Join(route, "index.js")
 }
