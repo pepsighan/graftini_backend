@@ -3,6 +3,7 @@
 package appgenerate
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -11,8 +12,27 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
 
-// WritePageToFile writes the page component based on the given page information.
-func WritePageToFile(p *ent.Page) error {
+// GenerateProject generates a code base for the project and returns the file path in which
+// it was generated in.
+func GenerateCodeBaseForProject(ctx context.Context, project *ent.Project) (string, error) {
+	pages, err := project.QueryPages().All(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	generatedPath := "/some/project/path"
+
+	for _, page := range pages {
+		if err := writePageToFile(page, "/some/path/for/page"); err != nil {
+			return "", err
+		}
+	}
+
+	return generatedPath, nil
+}
+
+// writePageToFile writes the page component based on the given page information.
+func writePageToFile(p *ent.Page, path string) error {
 	if p.ComponentMap == nil {
 		return nil
 	}
