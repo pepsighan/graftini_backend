@@ -15,8 +15,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/google/uuid"
 	"github.com/pepsighan/graftini_backend/internal/backend/gqlgen"
+	"github.com/pepsighan/graftini_backend/internal/backend/graph/model"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
-	"github.com/pepsighan/graftini_backend/internal/pkg/graph/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -461,7 +461,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "internal/pkg/graph/schema.graphqls", Input: `# --------------------------------------
+	{Name: "internal/backend/graph/schema.graphqls", Input: `# --------------------------------------
 # Directives are written below.
 # --------------------------------------
 
@@ -615,7 +615,7 @@ func (ec *executionContext) field_Mutation_createPage_args(ctx context.Context, 
 	var arg0 model.NewPage
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewPage2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐNewPage(ctx, tmp)
+		arg0, err = ec.unmarshalNNewPage2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐNewPage(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -630,7 +630,7 @@ func (ec *executionContext) field_Mutation_createProject_args(ctx context.Contex
 	var arg0 model.NewProject
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐNewProject(ctx, tmp)
+		arg0, err = ec.unmarshalNNewProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐNewProject(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -645,7 +645,7 @@ func (ec *executionContext) field_Mutation_createQuery_args(ctx context.Context,
 	var arg0 model.NewGraphQLQuery
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewGraphQLQuery2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐNewGraphQLQuery(ctx, tmp)
+		arg0, err = ec.unmarshalNNewGraphQLQuery2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐNewGraphQLQuery(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -738,7 +738,7 @@ func (ec *executionContext) field_Mutation_updateProjectDesign_args(ctx context.
 	var arg0 model.UpdateProjectDesign
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateProjectDesign2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐUpdateProjectDesign(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateProjectDesign2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐUpdateProjectDesign(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -753,7 +753,7 @@ func (ec *executionContext) field_Mutation_updateProject_args(ctx context.Contex
 	var arg0 model.UpdateProject
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐUpdateProject(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐUpdateProject(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3487,7 +3487,7 @@ func (ec *executionContext) unmarshalInputUpdateProjectDesign(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pages"))
-			it.Pages, err = ec.unmarshalNUpdatePageDesign2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐUpdatePageDesignᚄ(ctx, v)
+			it.Pages, err = ec.unmarshalNUpdatePageDesign2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐUpdatePageDesignᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -4191,17 +4191,17 @@ func (ec *executionContext) marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx c
 	return res
 }
 
-func (ec *executionContext) unmarshalNNewGraphQLQuery2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐNewGraphQLQuery(ctx context.Context, v interface{}) (model.NewGraphQLQuery, error) {
+func (ec *executionContext) unmarshalNNewGraphQLQuery2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐNewGraphQLQuery(ctx context.Context, v interface{}) (model.NewGraphQLQuery, error) {
 	res, err := ec.unmarshalInputNewGraphQLQuery(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNNewPage2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐNewPage(ctx context.Context, v interface{}) (model.NewPage, error) {
+func (ec *executionContext) unmarshalNNewPage2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐNewPage(ctx context.Context, v interface{}) (model.NewPage, error) {
 	res, err := ec.unmarshalInputNewPage(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNNewProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐNewProject(ctx context.Context, v interface{}) (model.NewProject, error) {
+func (ec *executionContext) unmarshalNNewProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐNewProject(ctx context.Context, v interface{}) (model.NewProject, error) {
 	res, err := ec.unmarshalInputNewProject(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -4323,7 +4323,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) unmarshalNUpdatePageDesign2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐUpdatePageDesignᚄ(ctx context.Context, v interface{}) ([]*model.UpdatePageDesign, error) {
+func (ec *executionContext) unmarshalNUpdatePageDesign2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐUpdatePageDesignᚄ(ctx context.Context, v interface{}) ([]*model.UpdatePageDesign, error) {
 	var vSlice []interface{}
 	if v != nil {
 		if tmp1, ok := v.([]interface{}); ok {
@@ -4336,7 +4336,7 @@ func (ec *executionContext) unmarshalNUpdatePageDesign2ᚕᚖgithubᚗcomᚋpeps
 	res := make([]*model.UpdatePageDesign, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNUpdatePageDesign2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐUpdatePageDesign(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNUpdatePageDesign2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐUpdatePageDesign(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -4344,17 +4344,17 @@ func (ec *executionContext) unmarshalNUpdatePageDesign2ᚕᚖgithubᚗcomᚋpeps
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalNUpdatePageDesign2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐUpdatePageDesign(ctx context.Context, v interface{}) (*model.UpdatePageDesign, error) {
+func (ec *executionContext) unmarshalNUpdatePageDesign2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐUpdatePageDesign(ctx context.Context, v interface{}) (*model.UpdatePageDesign, error) {
 	res, err := ec.unmarshalInputUpdatePageDesign(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNUpdateProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐUpdateProject(ctx context.Context, v interface{}) (model.UpdateProject, error) {
+func (ec *executionContext) unmarshalNUpdateProject2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐUpdateProject(ctx context.Context, v interface{}) (model.UpdateProject, error) {
 	res, err := ec.unmarshalInputUpdateProject(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNUpdateProjectDesign2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋgraphᚋmodelᚐUpdateProjectDesign(ctx context.Context, v interface{}) (model.UpdateProjectDesign, error) {
+func (ec *executionContext) unmarshalNUpdateProjectDesign2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐUpdateProjectDesign(ctx context.Context, v interface{}) (model.UpdateProjectDesign, error) {
 	res, err := ec.unmarshalInputUpdateProjectDesign(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }

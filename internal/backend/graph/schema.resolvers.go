@@ -9,13 +9,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pepsighan/graftini_backend/internal/backend/auth"
+	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
+	model1 "github.com/pepsighan/graftini_backend/internal/backend/graph/model"
 	"github.com/pepsighan/graftini_backend/internal/deploy/grpc"
 	"github.com/pepsighan/graftini_backend/internal/pkg/db"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
-	"github.com/pepsighan/graftini_backend/internal/pkg/graph/generated"
-	model1 "github.com/pepsighan/graftini_backend/internal/pkg/graph/model"
 )
 
 func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewProject) (*ent.Project, error) {

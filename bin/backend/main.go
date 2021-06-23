@@ -18,9 +18,9 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/pepsighan/graftini_backend/internal/backend/auth"
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
+	"github.com/pepsighan/graftini_backend/internal/backend/graph"
+	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
-	"github.com/pepsighan/graftini_backend/internal/pkg/graph"
-	"github.com/pepsighan/graftini_backend/internal/pkg/graph/generated"
 )
 
 func firebaseAuth() *authFirebase.Client {
