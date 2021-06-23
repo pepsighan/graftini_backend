@@ -23,6 +23,8 @@ func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployR
 
 	project, err := s.Ent.Project.Get(ctx, projectID)
 	projectPath, err := appgenerate.GenerateCodeBaseForProject(ctx, project)
+	defer projectPath.Cleanup() // Cleanup the folder regardless of the error.
+
 	if err != nil {
 		return nil, err
 	}
