@@ -8,8 +8,9 @@ import (
 var _ = config.LoadEnvFile(".deploy.env")
 
 var (
-	Env          config.Environment = config.Environment(config.RequireEnv("ENV"))
-	VercelToken  string             = config.RequireEnv("VERCEL_TOKEN")
-	VercelTeamID string             = config.RequireEnv("VERCEL_TEAM_ID")
-	Port         string             = config.Env("PORT", "8888")
+	Env          = config.Environment(config.RequireEnv("ENV"))
+	DatabaseURL  = config.DatabaseURL(Env)
+	VercelToken  = config.RequireEnv("VERCEL_TOKEN")
+	VercelTeamID = config.RequireEnv("VERCEL_TEAM_ID")
+	Port         = config.Env("PORT", "8888")
 )

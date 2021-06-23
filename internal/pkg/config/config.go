@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -45,4 +46,24 @@ func Env(key string, defaultVal string) string {
 		return defaultVal
 	}
 	return port
+}
+
+// DatabaseURL gets the database URL to connect to based on the environment.
+func DatabaseURL(env Environment) string {
+	if env == EnvLocal {
+		return RequireEnv("POSTGRES_URL")
+	}
+
+	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
+	if !isSet {
+		socketDir = "/cloudsql"
+	}
+
+	dbUser := RequireEnv("DB_USER")
+	dbPassword := RequireEnv("DB_PASS")
+	dbInstanceConnectionName := RequireEnv("INSTANCE_CONNECTION_NAME")
+	dbName := RequireEnv("DB_NAME")
+
+	dbURI := fmt.Sprintf("user=%s password=%s database=%s host=%s/%s", dbUser, dbPassword, dbName, socketDir, dbInstanceConnectionName)
+	return dbURI
 }
