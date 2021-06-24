@@ -66,8 +66,8 @@ func writePageInPath(p *ent.Page, pagesPath string) error {
 }
 
 func generateComponentBody(c string) (string, error) {
-	componentMap := &schema.ComponentMap{}
-	err := json.Unmarshal([]byte(c), componentMap)
+	componentMap := schema.ComponentMap{}
+	err := json.Unmarshal([]byte(c), &componentMap)
 	if err != nil {
 		return "", err
 	}

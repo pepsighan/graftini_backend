@@ -21,7 +21,7 @@ var (
 )
 
 //line templates/pageContent.qtpl:4
-func StreamPageContent(qw422016 *qt422016.Writer, m *schema.ComponentMap) {
+func StreamPageContent(qw422016 *qt422016.Writer, m schema.ComponentMap) {
 //line templates/pageContent.qtpl:4
 	qw422016.N().S(`
 return (
@@ -36,7 +36,7 @@ return (
 }
 
 //line templates/pageContent.qtpl:8
-func WritePageContent(qq422016 qtio422016.Writer, m *schema.ComponentMap) {
+func WritePageContent(qq422016 qtio422016.Writer, m schema.ComponentMap) {
 //line templates/pageContent.qtpl:8
 	qw422016 := qt422016.AcquireWriter(qq422016)
 //line templates/pageContent.qtpl:8
@@ -47,7 +47,7 @@ func WritePageContent(qq422016 qtio422016.Writer, m *schema.ComponentMap) {
 }
 
 //line templates/pageContent.qtpl:8
-func PageContent(m *schema.ComponentMap) string {
+func PageContent(m schema.ComponentMap) string {
 //line templates/pageContent.qtpl:8
 	qb422016 := qt422016.AcquireByteBuffer()
 //line templates/pageContent.qtpl:8
@@ -62,7 +62,7 @@ func PageContent(m *schema.ComponentMap) string {
 }
 
 //line templates/pageContent.qtpl:12
-func streamsubPageContent(qw422016 *qt422016.Writer, id string, m *schema.ComponentMap) {
+func streamsubPageContent(qw422016 *qt422016.Writer, id string, m schema.ComponentMap) {
 //line templates/pageContent.qtpl:12
 	qw422016.N().S(`
   <`)
@@ -77,12 +77,12 @@ func streamsubPageContent(qw422016 *qt422016.Writer, id string, m *schema.Compon
 		qw422016.N().S(`
       `)
 //line templates/pageContent.qtpl:15
-		for childID, _ := range m[id].ChildrenNodes {
+		for _, childID := range m[id].ChildrenNodes {
 //line templates/pageContent.qtpl:15
 			qw422016.N().S(`
         `)
 //line templates/pageContent.qtpl:16
-			streamsubPageContent(qw422016, childID, n)
+			streamsubPageContent(qw422016, childID, m)
 //line templates/pageContent.qtpl:16
 			qw422016.N().S(`
       `)
@@ -105,7 +105,7 @@ func streamsubPageContent(qw422016 *qt422016.Writer, id string, m *schema.Compon
 }
 
 //line templates/pageContent.qtpl:20
-func writesubPageContent(qq422016 qtio422016.Writer, id string, m *schema.ComponentMap) {
+func writesubPageContent(qq422016 qtio422016.Writer, id string, m schema.ComponentMap) {
 //line templates/pageContent.qtpl:20
 	qw422016 := qt422016.AcquireWriter(qq422016)
 //line templates/pageContent.qtpl:20
@@ -116,7 +116,7 @@ func writesubPageContent(qq422016 qtio422016.Writer, id string, m *schema.Compon
 }
 
 //line templates/pageContent.qtpl:20
-func subPageContent(id string, m *schema.ComponentMap) string {
+func subPageContent(id string, m schema.ComponentMap) string {
 //line templates/pageContent.qtpl:20
 	qb422016 := qt422016.AcquireByteBuffer()
 //line templates/pageContent.qtpl:20
