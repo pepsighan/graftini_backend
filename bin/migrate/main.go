@@ -9,7 +9,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
-	"github.com/pepsighan/graftini_backend/internal/config"
+	"github.com/pepsighan/graftini_backend/internal/backend/config"
 )
 
 func main() {

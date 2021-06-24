@@ -8,8 +8,8 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-	"github.com/pepsighan/graftini_backend/ent"
-	"github.com/pepsighan/graftini_backend/internal/config"
+	"github.com/pepsighan/graftini_backend/internal/backend/config"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 )
 
 // Generate the migration manually. Do not automigrate. We can track

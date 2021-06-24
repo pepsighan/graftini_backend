@@ -4,9 +4,10 @@
 *.dll
 *.so
 *.dylib
-/graftini_backend
+/backend
 /migrate
 /generate
+/deploy
 
 # Test binary, built with `go test -c`
 *.test
@@ -21,7 +22,11 @@
 .vscode
 
 # Environment files
-.env
+.backend.env
+.deploy.env
 
 # Firebase Admin SDK Credentials
 /adminsdk-credentials.json
+
+# Temporary directory during deploy.
+/deployApps

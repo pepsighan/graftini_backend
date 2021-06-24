@@ -1,0 +1,8 @@
+{% comment %} This template is used to generate pages. {% endcomment %}
+{% func Page(name string, componentBody string) %}
+import { Box, Text } from '@graftini/bricks';
+
+export default function {%s name %}() {
+	{%s= componentBody %}
+}
+{% endfunc %}
