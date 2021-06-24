@@ -2,17 +2,15 @@ package auth
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 
 	"firebase.google.com/go/v4/auth"
 	"github.com/labstack/echo"
+	"github.com/pepsighan/graftini_backend/internal/backend/errs"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/user"
 )
-
-var ErrUnauthorizedAccess = errors.New("unauthorized access")
 
 type AuthContext struct {
 	echo.Context
@@ -30,7 +28,7 @@ func (a *AuthContext) user(ctx context.Context, entClient *ent.Client, firebaseA
 	token, err := firebaseAuth.VerifyIDToken(ctx, a.token)
 	if err != nil {
 		// The request has an authorized token and if the token verification fails, then the user is unauthorized.
-		return nil, fmt.Errorf("could not get user from auth: %w due to: %v", ErrUnauthorizedAccess, err)
+		return nil, fmt.Errorf("could not get user from auth: %w due to: %v", errs.ErrUnauthorizedAccess, err)
 	}
 
 	// The following errors in the subsequent code are not actually unauthorized access errors because the following

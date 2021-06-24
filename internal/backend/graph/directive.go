@@ -6,6 +6,7 @@ import (
 	"firebase.google.com/go/v4/auth"
 	"github.com/99designs/gqlgen/graphql"
 	iauth "github.com/pepsighan/graftini_backend/internal/backend/auth"
+	"github.com/pepsighan/graftini_backend/internal/backend/errs"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 )
@@ -19,7 +20,7 @@ func NewDirective(entClient *ent.Client, firebaseAuth *auth.Client) generated.Di
 			}
 
 			if user == nil {
-				return nil, iauth.ErrUnauthorizedAccess
+				return nil, errs.ErrUnauthorizedAccess
 			}
 
 			return next(iauth.WithAuthUser(ctx, user))

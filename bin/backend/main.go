@@ -18,6 +18,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/pepsighan/graftini_backend/internal/backend/auth"
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
+	"github.com/pepsighan/graftini_backend/internal/backend/errs"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
@@ -63,6 +64,8 @@ func graphqlHandler(client *ent.Client) echo.HandlerFunc {
 		Resolvers:  graph.NewResolver(client, firebaseClient, deployClient),
 		Directives: graph.NewDirective(client, firebaseClient),
 	}))
+	h.SetErrorPresenter(errs.ErrorPresenter)
+	h.SetRecoverFunc(errs.PanicPresenter)
 
 	return func(c echo.Context) error {
 		ctx := auth.WithBearerAuth(c)
