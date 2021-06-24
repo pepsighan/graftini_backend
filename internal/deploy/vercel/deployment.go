@@ -47,6 +47,7 @@ func CreateNewDeployment(ctx context.Context, projectName string, files []*Proje
 			"projectSettings": map[string]string{
 				"framework": "nextjs",
 			},
+			"target": "production", // Only allow production vercel deployments.
 		}).
 		SetResult(Deployment{}).
 		SetError(VercelFailure{}).
