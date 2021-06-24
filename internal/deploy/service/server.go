@@ -18,15 +18,19 @@ type Server struct {
 func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployReply, error) {
 	projectID, err := uuid.FromBytes(in.GetProjectID())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not get the project id: %w", err)
 	}
 
 	project, err := s.Ent.Project.Get(ctx, projectID)
+	if err != nil {
+		return nil, fmt.Errorf("could not find the project: %w", err)
+	}
+
 	projectPath, err := appgenerate.GenerateCodeBaseForProject(ctx, project)
 	defer projectPath.Cleanup() // Cleanup the folder regardless of the error.
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not generate code base for project: %w", err)
 	}
 
 	fmt.Println("Deploying the project from " + projectPath)
