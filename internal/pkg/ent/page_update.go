@@ -47,20 +47,6 @@ func (pu *PageUpdate) SetComponentMap(s string) *PageUpdate {
 	return pu
 }
 
-// SetNillableComponentMap sets the "component_map" field if the given value is not nil.
-func (pu *PageUpdate) SetNillableComponentMap(s *string) *PageUpdate {
-	if s != nil {
-		pu.SetComponentMap(*s)
-	}
-	return pu
-}
-
-// ClearComponentMap clears the value of the "component_map" field.
-func (pu *PageUpdate) ClearComponentMap() *PageUpdate {
-	pu.mutation.ClearComponentMap()
-	return pu
-}
-
 // SetUpdatedAt sets the "updated_at" field.
 func (pu *PageUpdate) SetUpdatedAt(t time.Time) *PageUpdate {
 	pu.mutation.SetUpdatedAt(t)
@@ -212,12 +198,6 @@ func (pu *PageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: page.FieldComponentMap,
 		})
 	}
-	if pu.mutation.ComponentMapCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: page.FieldComponentMap,
-		})
-	}
 	if value, ok := pu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -294,20 +274,6 @@ func (puo *PageUpdateOne) SetRoute(s string) *PageUpdateOne {
 // SetComponentMap sets the "component_map" field.
 func (puo *PageUpdateOne) SetComponentMap(s string) *PageUpdateOne {
 	puo.mutation.SetComponentMap(s)
-	return puo
-}
-
-// SetNillableComponentMap sets the "component_map" field if the given value is not nil.
-func (puo *PageUpdateOne) SetNillableComponentMap(s *string) *PageUpdateOne {
-	if s != nil {
-		puo.SetComponentMap(*s)
-	}
-	return puo
-}
-
-// ClearComponentMap clears the value of the "component_map" field.
-func (puo *PageUpdateOne) ClearComponentMap() *PageUpdateOne {
-	puo.mutation.ClearComponentMap()
 	return puo
 }
 
@@ -483,12 +449,6 @@ func (puo *PageUpdateOne) sqlSave(ctx context.Context) (_node *Page, err error) 
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: page.FieldComponentMap,
-		})
-	}
-	if puo.mutation.ComponentMapCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
 			Column: page.FieldComponentMap,
 		})
 	}

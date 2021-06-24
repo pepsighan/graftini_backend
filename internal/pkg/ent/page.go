@@ -23,7 +23,7 @@ type Page struct {
 	// Route holds the value of the "route" field.
 	Route string `json:"route,omitempty"`
 	// ComponentMap holds the value of the "component_map" field.
-	ComponentMap *string `json:"component_map,omitempty"`
+	ComponentMap string `json:"component_map,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -107,8 +107,7 @@ func (pa *Page) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field component_map", values[i])
 			} else if value.Valid {
-				pa.ComponentMap = new(string)
-				*pa.ComponentMap = value.String
+				pa.ComponentMap = value.String
 			}
 		case page.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -165,10 +164,8 @@ func (pa *Page) String() string {
 	builder.WriteString(pa.Name)
 	builder.WriteString(", route=")
 	builder.WriteString(pa.Route)
-	if v := pa.ComponentMap; v != nil {
-		builder.WriteString(", component_map=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", component_map=")
+	builder.WriteString(pa.ComponentMap)
 	builder.WriteString(", created_at=")
 	builder.WriteString(pa.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

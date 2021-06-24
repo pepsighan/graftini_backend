@@ -24,8 +24,6 @@ func (Page) Fields() []ent.Field {
 		field.String("route"),
 		// This is where the design of the page would be stored in a serialized standard format.
 		field.String("component_map").
-			Optional().
-			Nillable().
 			Validate(func(s string) error {
 				var compMap ComponentMap
 				// It is valid only if it can be read into the schema.

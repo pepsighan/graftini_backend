@@ -40,14 +40,6 @@ func (pc *PageCreate) SetComponentMap(s string) *PageCreate {
 	return pc
 }
 
-// SetNillableComponentMap sets the "component_map" field if the given value is not nil.
-func (pc *PageCreate) SetNillableComponentMap(s *string) *PageCreate {
-	if s != nil {
-		pc.SetComponentMap(*s)
-	}
-	return pc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (pc *PageCreate) SetCreatedAt(t time.Time) *PageCreate {
 	pc.mutation.SetCreatedAt(t)
@@ -175,6 +167,9 @@ func (pc *PageCreate) check() error {
 	if _, ok := pc.mutation.Route(); !ok {
 		return &ValidationError{Name: "route", err: errors.New("ent: missing required field \"route\"")}
 	}
+	if _, ok := pc.mutation.ComponentMap(); !ok {
+		return &ValidationError{Name: "component_map", err: errors.New("ent: missing required field \"component_map\"")}
+	}
 	if v, ok := pc.mutation.ComponentMap(); ok {
 		if err := page.ComponentMapValidator(v); err != nil {
 			return &ValidationError{Name: "component_map", err: fmt.Errorf("ent: validator failed for field \"component_map\": %w", err)}
@@ -237,7 +232,7 @@ func (pc *PageCreate) createSpec() (*Page, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: page.FieldComponentMap,
 		})
-		_node.ComponentMap = &value
+		_node.ComponentMap = value
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

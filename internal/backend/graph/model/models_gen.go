@@ -13,18 +13,20 @@ type NewGraphQLQuery struct {
 }
 
 type NewPage struct {
-	ProjectID uuid.UUID `json:"projectId"`
-	Name      string    `json:"name"`
-	Route     string    `json:"route"`
+	ProjectID    uuid.UUID `json:"projectId"`
+	Name         string    `json:"name"`
+	Route        string    `json:"route"`
+	ComponentMap string    `json:"componentMap"`
 }
 
 type NewProject struct {
-	Name string `json:"name"`
+	Name                    string `json:"name"`
+	DefaultPageComponentMap string `json:"defaultPageComponentMap"`
 }
 
 type UpdatePageDesign struct {
 	PageID       uuid.UUID `json:"pageId"`
-	ComponentMap *string   `json:"componentMap"`
+	ComponentMap string    `json:"componentMap"`
 }
 
 type UpdateProject struct {

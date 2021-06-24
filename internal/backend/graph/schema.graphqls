@@ -67,6 +67,7 @@ type Query {
 
 input NewProject {
   name: String!
+  defaultPageComponentMap: String!
 }
 
 input UpdateProject {
@@ -82,13 +83,14 @@ input UpdateProjectDesign {
 
 input UpdatePageDesign {
   pageId: ID!
-  componentMap: String
+  componentMap: String!
 }
 
 input NewPage {
   projectId: ID!
   name: String!
   route: String!
+  componentMap: String!
 }
 
 input NewGraphQLQuery {

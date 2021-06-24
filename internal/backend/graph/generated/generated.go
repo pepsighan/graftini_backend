@@ -530,6 +530,7 @@ type Query {
 
 input NewProject {
   name: String!
+  defaultPageComponentMap: String!
 }
 
 input UpdateProject {
@@ -545,13 +546,14 @@ input UpdateProjectDesign {
 
 input UpdatePageDesign {
   pageId: ID!
-  componentMap: String
+  componentMap: String!
 }
 
 input NewPage {
   projectId: ID!
   name: String!
   route: String!
+  componentMap: String!
 }
 
 input NewGraphQLQuery {
@@ -3379,6 +3381,14 @@ func (ec *executionContext) unmarshalInputNewPage(ctx context.Context, obj inter
 			if err != nil {
 				return it, err
 			}
+		case "componentMap":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("componentMap"))
+			it.ComponentMap, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -3396,6 +3406,14 @@ func (ec *executionContext) unmarshalInputNewProject(ctx context.Context, obj in
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "defaultPageComponentMap":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("defaultPageComponentMap"))
+			it.DefaultPageComponentMap, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3423,7 +3441,7 @@ func (ec *executionContext) unmarshalInputUpdatePageDesign(ctx context.Context, 
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("componentMap"))
-			it.ComponentMap, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.ComponentMap, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

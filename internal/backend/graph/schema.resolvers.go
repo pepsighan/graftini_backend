@@ -127,7 +127,7 @@ func (r *mutationResolver) UpdateProjectDesign(ctx context.Context, input model1
 		for _, pg := range input.Pages {
 			_, err := r.Ent.Page.
 				UpdateOneID(pg.PageID).
-				SetNillableComponentMap(pg.ComponentMap).
+				SetComponentMap(pg.ComponentMap).
 				Save(ctx)
 
 			if err != nil {

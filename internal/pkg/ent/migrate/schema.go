@@ -58,7 +58,7 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "route", Type: field.TypeString},
-		{Name: "component_map", Type: field.TypeString, Nullable: true},
+		{Name: "component_map", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
 		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
 		{Name: "project_pages", Type: field.TypeUUID, Nullable: true},

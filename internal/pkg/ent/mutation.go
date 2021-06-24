@@ -1223,7 +1223,7 @@ func (m *PageMutation) ComponentMap() (r string, exists bool) {
 // OldComponentMap returns the old "component_map" field's value of the Page entity.
 // If the Page object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PageMutation) OldComponentMap(ctx context.Context) (v *string, err error) {
+func (m *PageMutation) OldComponentMap(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldComponentMap is only allowed on UpdateOne operations")
 	}
@@ -1237,22 +1237,9 @@ func (m *PageMutation) OldComponentMap(ctx context.Context) (v *string, err erro
 	return oldValue.ComponentMap, nil
 }
 
-// ClearComponentMap clears the value of the "component_map" field.
-func (m *PageMutation) ClearComponentMap() {
-	m.component_map = nil
-	m.clearedFields[page.FieldComponentMap] = struct{}{}
-}
-
-// ComponentMapCleared returns if the "component_map" field was cleared in this mutation.
-func (m *PageMutation) ComponentMapCleared() bool {
-	_, ok := m.clearedFields[page.FieldComponentMap]
-	return ok
-}
-
 // ResetComponentMap resets all changes to the "component_map" field.
 func (m *PageMutation) ResetComponentMap() {
 	m.component_map = nil
-	delete(m.clearedFields, page.FieldComponentMap)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -1506,11 +1493,7 @@ func (m *PageMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *PageMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(page.FieldComponentMap) {
-		fields = append(fields, page.FieldComponentMap)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1523,11 +1506,6 @@ func (m *PageMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *PageMutation) ClearField(name string) error {
-	switch name {
-	case page.FieldComponentMap:
-		m.ClearComponentMap()
-		return nil
-	}
 	return fmt.Errorf("unknown Page nullable field %s", name)
 }
 

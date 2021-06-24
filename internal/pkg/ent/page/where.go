@@ -448,20 +448,6 @@ func ComponentMapHasSuffix(v string) predicate.Page {
 	})
 }
 
-// ComponentMapIsNil applies the IsNil predicate on the "component_map" field.
-func ComponentMapIsNil() predicate.Page {
-	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldComponentMap)))
-	})
-}
-
-// ComponentMapNotNil applies the NotNil predicate on the "component_map" field.
-func ComponentMapNotNil() predicate.Page {
-	return predicate.Page(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldComponentMap)))
-	})
-}
-
 // ComponentMapEqualFold applies the EqualFold predicate on the "component_map" field.
 func ComponentMapEqualFold(v string) predicate.Page {
 	return predicate.Page(func(s *sql.Selector) {
