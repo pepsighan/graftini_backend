@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
 
 // Server is used to implement the GRPC deploy service.
@@ -33,6 +34,22 @@ func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployR
 		return nil, fmt.Errorf("could not generate code base for project: %w", err)
 	}
 
-	fmt.Println("Deploying the project from " + projectPath)
-	return nil, nil
+	deployment, err := recordDeployment(ctx, project, s.Ent)
+	if err != nil {
+		return nil, fmt.Errorf("could not record the deployment: %w", err)
+	}
+
+	deployID, err := deployment.ID.MarshalBinary()
+	if err != nil {
+		return nil, fmt.Errorf("could not get the deployment id: %w", err)
+	}
+	return &DeployReply{DeploymentID: deployID}, nil
+}
+
+// recordDeployment records the deployment to be tracked later.
+func recordDeployment(ctx context.Context, project *ent.Project, client *ent.Client) (*ent.Deployment, error) {
+	return client.Deployment.Create().
+		SetStatus(schema.DeploymentInitializing).
+		SetDeploymentsOf(project).
+		Save(ctx)
 }
