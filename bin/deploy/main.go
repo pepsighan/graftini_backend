@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 
+	_ "github.com/lib/pq"
 	"github.com/pepsighan/graftini_backend/internal/deploy/config"
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
