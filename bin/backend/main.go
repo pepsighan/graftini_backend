@@ -54,11 +54,8 @@ func grpcClient() (service.DeployClient, *grpc.ClientConn) {
 	return service.NewDeployClient(conn), conn
 }
 
-func graphqlHandler(client *ent.Client) echo.HandlerFunc {
+func graphqlHandler(client *ent.Client, deployClient service.DeployClient) echo.HandlerFunc {
 	firebaseClient := firebaseAuth()
-
-	deployClient, grpcConn := grpcClient()
-	defer grpcConn.Close()
 
 	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
 		Resolvers:  graph.NewResolver(client, firebaseClient, deployClient),
@@ -90,6 +87,9 @@ func main() {
 	}
 	defer client.Close()
 
+	deployClient, grpcConn := grpcClient()
+	defer grpcConn.Close()
+
 	e := echo.New()
 
 	// Recover from panics within route handlers. This saves the app from crashes.
@@ -111,7 +111,7 @@ func main() {
 	// limit DoS attacks by file uploads.
 	e.Use(middleware.BodyLimit(config.MaxBodySize))
 
-	e.POST("/query", graphqlHandler(client))
+	e.POST("/query", graphqlHandler(client, deployClient))
 	e.GET("/", playgroundHandler())
 
 	// Start server
