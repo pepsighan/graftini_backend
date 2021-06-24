@@ -4,9 +4,7 @@ import (
 	"context"
 	"crypto/sha1"
 	"fmt"
-	"io"
 	"io/ioutil"
-	"os"
 )
 
 // Deployment is a deployment on Vercel.
@@ -58,16 +56,17 @@ func CreateNewDeployment(ctx context.Context, projectName string, fileSHAs []str
 	return response.Result().(*Deployment), nil
 }
 
-// UploadDeploymentFile uploads the given file and returns the SHA1 hash for it.
-func UploadDeploymentFile(ctx context.Context, file *os.File) (string, error) {
-	hash, err := calcSHA1Hash(file)
+// UploadDeploymentFile uploads the given file path and returns the SHA1 hash and the content
+// length for it.
+func UploadDeploymentFile(ctx context.Context, filepath string) (string, int, error) {
+	bytes, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return "", fmt.Errorf("could not upload deployment file: %w", err)
+		return "", 0, fmt.Errorf("could not upload deployment file: %w", err)
 	}
 
-	bytes, err := ioutil.ReadAll(file)
+	hash, err := calcSHA1Hash(bytes)
 	if err != nil {
-		return "", fmt.Errorf("could not upload deployment file: %w", err)
+		return "", 0, fmt.Errorf("could not upload deployment file: %w", err)
 	}
 
 	response, err := request(ctx).
@@ -78,15 +77,15 @@ func UploadDeploymentFile(ctx context.Context, file *os.File) (string, error) {
 		Post(route("v2/now/files"))
 
 	if err != nil {
-		return "", fmt.Errorf("could not upload deployment file: %w", err)
+		return "", 0, fmt.Errorf("could not upload deployment file: %w", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
 	if fail != nil {
-		return "", fmt.Errorf("could not upload deployment file: %w", fail)
+		return "", 0, fmt.Errorf("could not upload deployment file: %w", fail)
 	}
 
-	return hash, nil
+	return hash, len(bytes), nil
 }
 
 // GetDeployment gets the deployment.
@@ -127,13 +126,14 @@ func CancelDeployment(ctx context.Context, deploymentID string) (*Deployment, er
 	return response.Result().(*Deployment), nil
 }
 
-// calcSHA1Hash calculates the SHA1 hash for the given file.
-func calcSHA1Hash(file *os.File) (string, error) {
+// calcSHA1Hash calculates the SHA1 hash for the byte array.
+func calcSHA1Hash(bytes []byte) (string, error) {
 	hasher := sha1.New()
 
-	if _, err := io.Copy(hasher, file); err != nil {
+	_, err := hasher.Write(bytes)
+	if err != nil {
 		return "", err
 	}
 
-	return string(hasher.Sum(nil)[:]), nil
+	return string(hasher.Sum(nil)), nil
 }

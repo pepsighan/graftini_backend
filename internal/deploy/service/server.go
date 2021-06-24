@@ -3,6 +3,9 @@ package service
 import (
 	context "context"
 	"fmt"
+	"io/fs"
+	"path/filepath"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate"
@@ -30,7 +33,7 @@ func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployR
 
 	vercelProj, err := createVercelProjectIfNotExists(ctx, projectID)
 	if err != nil {
-		return nil, fmt.Errorf("could not create a vercel project: %w", err)
+		return nil, fmt.Errorf("could not create a vercel project: %w %v", err, vercelProj)
 	}
 
 	projectPath, err := appgenerate.GenerateCodeBaseForProject(ctx, project)
@@ -38,6 +41,11 @@ func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployR
 
 	if err != nil {
 		return nil, fmt.Errorf("could not generate code base for project: %w", err)
+	}
+
+	projectFiles, err := uploadProjectFiles(ctx, string(projectPath))
+	if err != nil {
+		return nil, fmt.Errorf("could not upload files to vercel: %w %v", err, projectFiles)
 	}
 
 	deployment, err := recordDeployment(ctx, project, s.Ent)
@@ -78,4 +86,48 @@ func recordDeployment(ctx context.Context, project *ent.Project, client *ent.Cli
 // generateProjectName generates a project name with the prefix `app` and its UUID.
 func generateProjectName(projectID uuid.UUID) string {
 	return fmt.Sprintf("app%v", projectID)
+}
+
+// ProjectFile is the metadata of the files that is used to create deployments.
+type ProjectFile struct {
+	file string
+	sha  string
+	size int
+}
+
+// uploadProjectFiles uploads all the files in the project path to vercel.
+func uploadProjectFiles(ctx context.Context, projectPath string) ([]*ProjectFile, error) {
+	files := []*ProjectFile{}
+
+	err := filepath.WalkDir(projectPath, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			// If an error has occurred, just short-circuit it. We have nothing else to
+			// do now.
+			return err
+		}
+
+		if d.IsDir() {
+			// We do not upload a directory. It has no meaning in the context of vercel.
+			return nil
+		}
+
+		hash, size, err := vercel.UploadDeploymentFile(ctx, path)
+		if err != nil {
+			return err
+		}
+
+		files = append(files, &ProjectFile{
+			file: strings.Replace(path, projectPath, "", 1),
+			sha:  hash,
+			size: size,
+		})
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return files, nil
 }
