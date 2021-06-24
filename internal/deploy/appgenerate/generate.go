@@ -58,6 +58,12 @@ func writePageInPath(p *ent.Page, pagesPath string) error {
 	page := templates.Page(p.Name, body)
 	pageFilePath := path.Join(pagesPath, resolvePagePath(p.Route))
 
+	// Create directories leading to the page file.
+	pageDirPath := path.Dir(pageFilePath)
+	if err := os.MkdirAll(pageDirPath, os.ModePerm); err != nil {
+		return err
+	}
+
 	return ioutil.WriteFile(pageFilePath, []byte(page), fs.ModePerm)
 }
 
