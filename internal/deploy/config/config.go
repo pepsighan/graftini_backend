@@ -14,4 +14,5 @@ var (
 	VercelTeamID        = config.RequireEnv("VERCEL_TEAM_ID")
 	Port                = config.Env("PORT", "8888")
 	TemplateNextAppPath = config.RequireEnv("TEMPLATE_NEXT_APP_PATH")
+	GitHubNPMRepoToken  = config.RequireEnv("GITHUB_NPM_REPO_TOKEN")
 )

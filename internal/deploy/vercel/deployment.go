@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io/ioutil"
+
+	"github.com/pepsighan/graftini_backend/internal/deploy/config"
 )
 
 // Deployment is a deployment on Vercel.
@@ -48,6 +50,9 @@ func CreateNewDeployment(ctx context.Context, projectName string, files []*Proje
 				"framework": "nextjs",
 			},
 			"target": "production", // Only allow production vercel deployments.
+			"env": map[string]string{
+				"NPM_RC": config.GitHubNPMRepoToken,
+			},
 		}).
 		SetResult(Deployment{}).
 		SetError(VercelFailure{}).
