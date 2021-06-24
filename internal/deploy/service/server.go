@@ -91,7 +91,7 @@ func recordDeployment(ctx context.Context, vercelDeploymentID string, project *e
 
 // generateProjectName generates a project name with the prefix `app` and its UUID.
 func generateProjectName(projectID uuid.UUID) string {
-	return fmt.Sprintf("app%v", projectID)
+	return fmt.Sprintf("app-%v", projectID)
 }
 
 // uploadProjectFiles uploads all the files in the project path to vercel.
