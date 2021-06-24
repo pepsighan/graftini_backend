@@ -3,7 +3,7 @@ package vercel
 import (
 	"context"
 	"crypto/sha1"
-	"encoding/json"
+	"encoding/hex"
 	"fmt"
 	"io/ioutil"
 )
@@ -40,15 +40,10 @@ type ProjectFile struct {
 
 // CreateNewDeployment creates a new deployment with the given file SHA1 hashes.
 func CreateNewDeployment(ctx context.Context, projectName string, files []*ProjectFile) (*Deployment, error) {
-	bodyFiles, err := json.Marshal(files)
-	if err != nil {
-		return nil, fmt.Errorf("could not convert files to json: %w", err)
-	}
-
 	response, err := request(ctx).
 		SetBody(map[string]interface{}{
 			"name":  projectName,
-			"files": string(bodyFiles),
+			"files": files,
 			"projectSettings": map[string]string{
 				"framework": "nextjs",
 			},
@@ -63,7 +58,7 @@ func CreateNewDeployment(ctx context.Context, projectName string, files []*Proje
 
 	fail, _ := response.Error().(*VercelFailure)
 	if fail != nil {
-		return nil, fmt.Errorf("could not create new deployment: %w", err)
+		return nil, fmt.Errorf("could not create new deployment: %w", fail)
 	}
 
 	return response.Result().(*Deployment), nil
@@ -148,5 +143,5 @@ func calcSHA1Hash(bytes []byte) (string, error) {
 		return "", err
 	}
 
-	return string(hasher.Sum(nil)), nil
+	return hex.EncodeToString(hasher.Sum(nil)), nil
 }
