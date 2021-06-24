@@ -27,7 +27,7 @@ func StreamPageContent(qw422016 *qt422016.Writer, m schema.ComponentMap) {
 return (
   `)
 //line templates/pageContent.qtpl:6
-	streamsubPageContent(qw422016, "ROOT_NODE_ID", m)
+	streamsubPageContent(qw422016, "ROOT", m)
 //line templates/pageContent.qtpl:6
 	qw422016.N().S(`
 );

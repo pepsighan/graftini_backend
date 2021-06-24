@@ -3,7 +3,7 @@
 {% comment %} Generates the React markup for the page based on the component map. {% endcomment %}
 {% func PageContent(m schema.ComponentMap) %}
 return (
-  {%= subPageContent("ROOT_NODE_ID", m) %}
+  {%= subPageContent("ROOT", m) %}
 );
 {% endfunc %}
 
