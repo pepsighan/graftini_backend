@@ -20,12 +20,16 @@ import (
 func init() {
 	deploymentFields := schema.Deployment{}.Fields()
 	_ = deploymentFields
+	// deploymentDescVercelDeploymentID is the schema descriptor for vercel_deployment_id field.
+	deploymentDescVercelDeploymentID := deploymentFields[1].Descriptor()
+	// deployment.DefaultVercelDeploymentID holds the default value on creation for the vercel_deployment_id field.
+	deployment.DefaultVercelDeploymentID = deploymentDescVercelDeploymentID.Default.(string)
 	// deploymentDescCreatedAt is the schema descriptor for created_at field.
-	deploymentDescCreatedAt := deploymentFields[2].Descriptor()
+	deploymentDescCreatedAt := deploymentFields[3].Descriptor()
 	// deployment.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deployment.DefaultCreatedAt = deploymentDescCreatedAt.Default.(func() time.Time)
 	// deploymentDescUpdatedAt is the schema descriptor for updated_at field.
-	deploymentDescUpdatedAt := deploymentFields[3].Descriptor()
+	deploymentDescUpdatedAt := deploymentFields[4].Descriptor()
 	// deployment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
 	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

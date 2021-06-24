@@ -13,6 +13,8 @@ const (
 	Label = "deployment"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldVercelDeploymentID holds the string denoting the vercel_deployment_id field in the database.
+	FieldVercelDeploymentID = "vercel_deployment_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -35,6 +37,7 @@ const (
 // Columns holds all SQL columns for deployment fields.
 var Columns = []string{
 	FieldID,
+	FieldVercelDeploymentID,
 	FieldStatus,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -62,6 +65,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultVercelDeploymentID holds the default value on creation for the "vercel_deployment_id" field.
+	DefaultVercelDeploymentID string
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

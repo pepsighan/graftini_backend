@@ -42,6 +42,7 @@ type DeploymentMutation struct {
 	op                    Op
 	typ                   string
 	id                    *uuid.UUID
+	vercel_deployment_id  *string
 	status                *schema.DeploymentStatus
 	created_at            *time.Time
 	updated_at            *time.Time
@@ -136,6 +137,42 @@ func (m *DeploymentMutation) ID() (id uuid.UUID, exists bool) {
 		return
 	}
 	return *m.id, true
+}
+
+// SetVercelDeploymentID sets the "vercel_deployment_id" field.
+func (m *DeploymentMutation) SetVercelDeploymentID(s string) {
+	m.vercel_deployment_id = &s
+}
+
+// VercelDeploymentID returns the value of the "vercel_deployment_id" field in the mutation.
+func (m *DeploymentMutation) VercelDeploymentID() (r string, exists bool) {
+	v := m.vercel_deployment_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVercelDeploymentID returns the old "vercel_deployment_id" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldVercelDeploymentID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldVercelDeploymentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldVercelDeploymentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVercelDeploymentID: %w", err)
+	}
+	return oldValue.VercelDeploymentID, nil
+}
+
+// ResetVercelDeploymentID resets all changes to the "vercel_deployment_id" field.
+func (m *DeploymentMutation) ResetVercelDeploymentID() {
+	m.vercel_deployment_id = nil
 }
 
 // SetStatus sets the "status" field.
@@ -299,7 +336,10 @@ func (m *DeploymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
+	if m.vercel_deployment_id != nil {
+		fields = append(fields, deployment.FieldVercelDeploymentID)
+	}
 	if m.status != nil {
 		fields = append(fields, deployment.FieldStatus)
 	}
@@ -317,6 +357,8 @@ func (m *DeploymentMutation) Fields() []string {
 // schema.
 func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case deployment.FieldVercelDeploymentID:
+		return m.VercelDeploymentID()
 	case deployment.FieldStatus:
 		return m.Status()
 	case deployment.FieldCreatedAt:
@@ -332,6 +374,8 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case deployment.FieldVercelDeploymentID:
+		return m.OldVercelDeploymentID(ctx)
 	case deployment.FieldStatus:
 		return m.OldStatus(ctx)
 	case deployment.FieldCreatedAt:
@@ -347,6 +391,13 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 // type.
 func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case deployment.FieldVercelDeploymentID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVercelDeploymentID(v)
+		return nil
 	case deployment.FieldStatus:
 		v, ok := value.(schema.DeploymentStatus)
 		if !ok {
@@ -417,6 +468,9 @@ func (m *DeploymentMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *DeploymentMutation) ResetField(name string) error {
 	switch name {
+	case deployment.FieldVercelDeploymentID:
+		m.ResetVercelDeploymentID()
+		return nil
 	case deployment.FieldStatus:
 		m.ResetStatus()
 		return nil

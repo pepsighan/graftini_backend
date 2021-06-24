@@ -19,9 +19,9 @@ type Deployment struct {
 func (Deployment) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
+		// This is required when creating. Default value is for existing ones.
+		field.String("vercel_deployment_id").Default(""),
 		field.String("status").GoType(DeploymentStatus("")),
-		// These are newly added fields, so will require a default value for older
-		// rows, hence `CURRENT_TIMESTAMP`.
 		field.Time("created_at").Default(time.Now).Immutable().
 			Annotations(&entsql.Annotation{
 				Default: "CURRENT_TIMESTAMP",

@@ -30,6 +30,20 @@ func (du *DeploymentUpdate) Where(ps ...predicate.Deployment) *DeploymentUpdate 
 	return du
 }
 
+// SetVercelDeploymentID sets the "vercel_deployment_id" field.
+func (du *DeploymentUpdate) SetVercelDeploymentID(s string) *DeploymentUpdate {
+	du.mutation.SetVercelDeploymentID(s)
+	return du
+}
+
+// SetNillableVercelDeploymentID sets the "vercel_deployment_id" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableVercelDeploymentID(s *string) *DeploymentUpdate {
+	if s != nil {
+		du.SetVercelDeploymentID(*s)
+	}
+	return du
+}
+
 // SetStatus sets the "status" field.
 func (du *DeploymentUpdate) SetStatus(ss schema.DeploymentStatus) *DeploymentUpdate {
 	du.mutation.SetStatus(ss)
@@ -150,6 +164,13 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := du.mutation.VercelDeploymentID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldVercelDeploymentID,
+		})
+	}
 	if value, ok := du.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -216,6 +237,20 @@ type DeploymentUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *DeploymentMutation
+}
+
+// SetVercelDeploymentID sets the "vercel_deployment_id" field.
+func (duo *DeploymentUpdateOne) SetVercelDeploymentID(s string) *DeploymentUpdateOne {
+	duo.mutation.SetVercelDeploymentID(s)
+	return duo
+}
+
+// SetNillableVercelDeploymentID sets the "vercel_deployment_id" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableVercelDeploymentID(s *string) *DeploymentUpdateOne {
+	if s != nil {
+		duo.SetVercelDeploymentID(*s)
+	}
+	return duo
 }
 
 // SetStatus sets the "status" field.
@@ -361,6 +396,13 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := duo.mutation.VercelDeploymentID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldVercelDeploymentID,
+		})
 	}
 	if value, ok := duo.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

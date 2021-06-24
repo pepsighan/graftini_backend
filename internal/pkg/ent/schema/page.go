@@ -29,8 +29,6 @@ func (Page) Fields() []ent.Field {
 				// It is valid only if it can be read into the schema.
 				return json.Unmarshal([]byte(s), &compMap)
 			}),
-		// These are newly added fields, so will require a default value for older
-		// rows, hence `CURRENT_TIMESTAMP`.
 		field.Time("created_at").Default(time.Now).Immutable().
 			Annotations(&entsql.Annotation{
 				Default: "CURRENT_TIMESTAMP",

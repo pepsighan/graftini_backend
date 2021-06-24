@@ -23,6 +23,20 @@ type DeploymentCreate struct {
 	hooks    []Hook
 }
 
+// SetVercelDeploymentID sets the "vercel_deployment_id" field.
+func (dc *DeploymentCreate) SetVercelDeploymentID(s string) *DeploymentCreate {
+	dc.mutation.SetVercelDeploymentID(s)
+	return dc
+}
+
+// SetNillableVercelDeploymentID sets the "vercel_deployment_id" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableVercelDeploymentID(s *string) *DeploymentCreate {
+	if s != nil {
+		dc.SetVercelDeploymentID(*s)
+	}
+	return dc
+}
+
 // SetStatus sets the "status" field.
 func (dc *DeploymentCreate) SetStatus(ss schema.DeploymentStatus) *DeploymentCreate {
 	dc.mutation.SetStatus(ss)
@@ -134,6 +148,10 @@ func (dc *DeploymentCreate) SaveX(ctx context.Context) *Deployment {
 
 // defaults sets the default values of the builder before save.
 func (dc *DeploymentCreate) defaults() {
+	if _, ok := dc.mutation.VercelDeploymentID(); !ok {
+		v := deployment.DefaultVercelDeploymentID
+		dc.mutation.SetVercelDeploymentID(v)
+	}
 	if _, ok := dc.mutation.CreatedAt(); !ok {
 		v := deployment.DefaultCreatedAt()
 		dc.mutation.SetCreatedAt(v)
@@ -150,6 +168,9 @@ func (dc *DeploymentCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (dc *DeploymentCreate) check() error {
+	if _, ok := dc.mutation.VercelDeploymentID(); !ok {
+		return &ValidationError{Name: "vercel_deployment_id", err: errors.New("ent: missing required field \"vercel_deployment_id\"")}
+	}
 	if _, ok := dc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New("ent: missing required field \"status\"")}
 	}
@@ -187,6 +208,14 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 	if id, ok := dc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := dc.mutation.VercelDeploymentID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldVercelDeploymentID,
+		})
+		_node.VercelDeploymentID = value
 	}
 	if value, ok := dc.mutation.Status(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

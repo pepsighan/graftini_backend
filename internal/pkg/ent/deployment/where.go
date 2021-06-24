@@ -95,6 +95,13 @@ func IDLTE(id uuid.UUID) predicate.Deployment {
 	})
 }
 
+// VercelDeploymentID applies equality check predicate on the "vercel_deployment_id" field. It's identical to VercelDeploymentIDEQ.
+func VercelDeploymentID(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldVercelDeploymentID), v))
+	})
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v schema.DeploymentStatus) predicate.Deployment {
 	vc := string(v)
@@ -114,6 +121,117 @@ func CreatedAt(v time.Time) predicate.Deployment {
 func UpdatedAt(v time.Time) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// VercelDeploymentIDEQ applies the EQ predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDEQ(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldVercelDeploymentID), v))
+	})
+}
+
+// VercelDeploymentIDNEQ applies the NEQ predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDNEQ(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldVercelDeploymentID), v))
+	})
+}
+
+// VercelDeploymentIDIn applies the In predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDIn(vs ...string) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldVercelDeploymentID), v...))
+	})
+}
+
+// VercelDeploymentIDNotIn applies the NotIn predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDNotIn(vs ...string) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldVercelDeploymentID), v...))
+	})
+}
+
+// VercelDeploymentIDGT applies the GT predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDGT(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldVercelDeploymentID), v))
+	})
+}
+
+// VercelDeploymentIDGTE applies the GTE predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDGTE(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldVercelDeploymentID), v))
+	})
+}
+
+// VercelDeploymentIDLT applies the LT predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDLT(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldVercelDeploymentID), v))
+	})
+}
+
+// VercelDeploymentIDLTE applies the LTE predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDLTE(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldVercelDeploymentID), v))
+	})
+}
+
+// VercelDeploymentIDContains applies the Contains predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDContains(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldVercelDeploymentID), v))
+	})
+}
+
+// VercelDeploymentIDHasPrefix applies the HasPrefix predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDHasPrefix(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldVercelDeploymentID), v))
+	})
+}
+
+// VercelDeploymentIDHasSuffix applies the HasSuffix predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDHasSuffix(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldVercelDeploymentID), v))
+	})
+}
+
+// VercelDeploymentIDEqualFold applies the EqualFold predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDEqualFold(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldVercelDeploymentID), v))
+	})
+}
+
+// VercelDeploymentIDContainsFold applies the ContainsFold predicate on the "vercel_deployment_id" field.
+func VercelDeploymentIDContainsFold(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldVercelDeploymentID), v))
 	})
 }
 

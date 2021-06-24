@@ -292,12 +292,12 @@ func (dq *DeploymentQuery) WithDeploymentsOf(opts ...func(*ProjectQuery)) *Deplo
 // Example:
 //
 //	var v []struct {
-//		Status schema.DeploymentStatus `json:"status,omitempty"`
+//		VercelDeploymentID string `json:"vercel_deployment_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Deployment.Query().
-//		GroupBy(deployment.FieldStatus).
+//		GroupBy(deployment.FieldVercelDeploymentID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -319,11 +319,11 @@ func (dq *DeploymentQuery) GroupBy(field string, fields ...string) *DeploymentGr
 // Example:
 //
 //	var v []struct {
-//		Status schema.DeploymentStatus `json:"status,omitempty"`
+//		VercelDeploymentID string `json:"vercel_deployment_id,omitempty"`
 //	}
 //
 //	client.Deployment.Query().
-//		Select(deployment.FieldStatus).
+//		Select(deployment.FieldVercelDeploymentID).
 //		Scan(ctx, &v)
 //
 func (dq *DeploymentQuery) Select(field string, fields ...string) *DeploymentSelect {
