@@ -25,7 +25,12 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewPr
 
 	// Do not create a page if project fails.
 	err := db.WithTx(ctx, r.Ent, func(tx *ent.Tx) error {
-		defaultPage, err := r.Ent.Page.Create().SetName("Default").SetRoute("/").Save(ctx)
+		defaultPage, err := r.Ent.Page.
+			Create().
+			SetName("Default").
+			SetRoute("/").
+			SetComponentMap(input.DefaultPageComponentMap).
+			Save(ctx)
 		if err != nil {
 			return err
 		}
@@ -157,6 +162,7 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model1.NewPage)
 	return r.Ent.Page.Create().
 		SetName(input.Name).
 		SetRoute(input.Route).
+		SetComponentMap(input.ComponentMap).
 		SetPageOf(prj).
 		Save(ctx)
 }
