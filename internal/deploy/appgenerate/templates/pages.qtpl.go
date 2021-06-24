@@ -30,7 +30,7 @@ export default function `)
 	qw422016.N().S(`() {
 	`)
 //line templates/pages.qtpl:6
-	qw422016.E().V(componentBody)
+	qw422016.N().S(componentBody)
 //line templates/pages.qtpl:6
 	qw422016.N().S(`
 }

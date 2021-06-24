@@ -3,6 +3,6 @@
 import { Box, Text } from '@graftini/bricks';
 
 export default function {%s name %}() {
-	{%v componentBody %}
+	{%s= componentBody %}
 }
 {% endfunc %}
