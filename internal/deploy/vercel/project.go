@@ -14,6 +14,29 @@ type Project struct {
 	UpdatedAt int    `json:"updatedAt"`
 }
 
+// GetProject gets a project if it exists otherwise returns nil.
+func GetProject(ctx context.Context, name string) (*Project, error) {
+	response, err := request(ctx).
+		SetResult(Project{}).
+		SetError(VercelFailure{}).
+		Get(route(fmt.Sprintf("v8/projects/%v", name)))
+
+	if err != nil {
+		return nil, fmt.Errorf("could not get the project: %w", err)
+	}
+
+	fail, _ := response.Error().(*VercelFailure)
+	if fail != nil {
+		if fail.VercelError.Code == "not_found" {
+			return nil, nil
+		}
+
+		return nil, fmt.Errorf("could not get the project: %w", fail)
+	}
+
+	return response.Result().(*Project), nil
+}
+
 // CreateProject creates a new vercel project.
 func CreateProject(ctx context.Context, name string) (*Project, error) {
 	response, err := request(ctx).
