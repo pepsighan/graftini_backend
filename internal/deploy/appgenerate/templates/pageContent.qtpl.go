@@ -27,7 +27,7 @@ func StreamPageContent(qw422016 *qt422016.Writer, m schema.ComponentMap) {
 return (
   `)
 //line templates/pageContent.qtpl:6
-	streamsubPageContent(qw422016, "ROOT", m)
+	streamrootContent(qw422016, m)
 //line templates/pageContent.qtpl:6
 	qw422016.N().S(`
 );
@@ -62,70 +62,121 @@ func PageContent(m schema.ComponentMap) string {
 }
 
 //line templates/pageContent.qtpl:12
-func streamsubPageContent(qw422016 *qt422016.Writer, id string, m schema.ComponentMap) {
+func streamrootContent(qw422016 *qt422016.Writer, m schema.ComponentMap) {
 //line templates/pageContent.qtpl:12
 	qw422016.N().S(`
-  <`)
-//line templates/pageContent.qtpl:13
-	qw422016.E().V(m[id].Type)
-//line templates/pageContent.qtpl:13
-	qw422016.N().S(`>
+  <>
     `)
 //line templates/pageContent.qtpl:14
-	if m[id].IsCanvas == true {
+	for _, childID := range m["ROOT"].ChildrenNodes {
 //line templates/pageContent.qtpl:14
 		qw422016.N().S(`
       `)
 //line templates/pageContent.qtpl:15
-		for _, childID := range m[id].ChildrenNodes {
+		streamsubPageContent(qw422016, childID, m)
 //line templates/pageContent.qtpl:15
+		qw422016.N().S(`
+    `)
+//line templates/pageContent.qtpl:16
+	}
+//line templates/pageContent.qtpl:16
+	qw422016.N().S(`
+  </>
+`)
+//line templates/pageContent.qtpl:18
+}
+
+//line templates/pageContent.qtpl:18
+func writerootContent(qq422016 qtio422016.Writer, m schema.ComponentMap) {
+//line templates/pageContent.qtpl:18
+	qw422016 := qt422016.AcquireWriter(qq422016)
+//line templates/pageContent.qtpl:18
+	streamrootContent(qw422016, m)
+//line templates/pageContent.qtpl:18
+	qt422016.ReleaseWriter(qw422016)
+//line templates/pageContent.qtpl:18
+}
+
+//line templates/pageContent.qtpl:18
+func rootContent(m schema.ComponentMap) string {
+//line templates/pageContent.qtpl:18
+	qb422016 := qt422016.AcquireByteBuffer()
+//line templates/pageContent.qtpl:18
+	writerootContent(qb422016, m)
+//line templates/pageContent.qtpl:18
+	qs422016 := string(qb422016.B)
+//line templates/pageContent.qtpl:18
+	qt422016.ReleaseByteBuffer(qb422016)
+//line templates/pageContent.qtpl:18
+	return qs422016
+//line templates/pageContent.qtpl:18
+}
+
+//line templates/pageContent.qtpl:23
+func streamsubPageContent(qw422016 *qt422016.Writer, id string, m schema.ComponentMap) {
+//line templates/pageContent.qtpl:23
+	qw422016.N().S(`
+  <`)
+//line templates/pageContent.qtpl:24
+	qw422016.E().V(m[id].Type)
+//line templates/pageContent.qtpl:24
+	qw422016.N().S(`>
+    `)
+//line templates/pageContent.qtpl:25
+	if m[id].IsCanvas == true {
+//line templates/pageContent.qtpl:25
+		qw422016.N().S(`
+      `)
+//line templates/pageContent.qtpl:26
+		for _, childID := range m[id].ChildrenNodes {
+//line templates/pageContent.qtpl:26
 			qw422016.N().S(`
         `)
-//line templates/pageContent.qtpl:16
+//line templates/pageContent.qtpl:27
 			streamsubPageContent(qw422016, childID, m)
-//line templates/pageContent.qtpl:16
+//line templates/pageContent.qtpl:27
 			qw422016.N().S(`
       `)
-//line templates/pageContent.qtpl:17
+//line templates/pageContent.qtpl:28
 		}
-//line templates/pageContent.qtpl:17
+//line templates/pageContent.qtpl:28
 		qw422016.N().S(`
     `)
-//line templates/pageContent.qtpl:18
+//line templates/pageContent.qtpl:29
 	}
-//line templates/pageContent.qtpl:18
+//line templates/pageContent.qtpl:29
 	qw422016.N().S(`
   </`)
-//line templates/pageContent.qtpl:19
+//line templates/pageContent.qtpl:30
 	qw422016.E().V(m[id].Type)
-//line templates/pageContent.qtpl:19
+//line templates/pageContent.qtpl:30
 	qw422016.N().S(`>
 `)
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 }
 
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 func writesubPageContent(qq422016 qtio422016.Writer, id string, m schema.ComponentMap) {
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 	qw422016 := qt422016.AcquireWriter(qq422016)
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 	streamsubPageContent(qw422016, id, m)
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 	qt422016.ReleaseWriter(qw422016)
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 }
 
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 func subPageContent(id string, m schema.ComponentMap) string {
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 	qb422016 := qt422016.AcquireByteBuffer()
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 	writesubPageContent(qb422016, id, m)
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 	qs422016 := string(qb422016.B)
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 	qt422016.ReleaseByteBuffer(qb422016)
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 	return qs422016
-//line templates/pageContent.qtpl:20
+//line templates/pageContent.qtpl:31
 }

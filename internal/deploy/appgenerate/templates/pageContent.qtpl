@@ -3,9 +3,20 @@
 {% comment %} Generates the React markup for the page based on the component map. {% endcomment %}
 {% func PageContent(m schema.ComponentMap) %}
 return (
-  {%= subPageContent("ROOT", m) %}
+  {%= rootContent(m) %}
 );
 {% endfunc %}
+
+
+{% comment %} The following generates the markup for the root component. {% endcomment %}
+{% func rootContent(m schema.ComponentMap) %}
+  <>
+    {% for _, childID := range m["ROOT"].ChildrenNodes %}
+      {%= subPageContent(childID, m) %}
+    {% endfor %}
+  </>
+{% endfunc %}
+
 
 
 {% comment %} The following recursively generates the markup for each component node and its children. {% endcomment %}
