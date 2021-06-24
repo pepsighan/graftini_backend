@@ -50,8 +50,10 @@ func CreateNewDeployment(ctx context.Context, projectName string, files []*Proje
 				"framework": "nextjs",
 			},
 			"target": "production", // Only allow production vercel deployments.
-			"env": map[string]string{
-				"NPM_RC": config.GitHubNPMRepoToken,
+			"build": map[string]interface{}{
+				"env": map[string]string{
+					"NPM_RC": config.GitHubNPMRepoToken,
+				},
 			},
 		}).
 		SetResult(Deployment{}).

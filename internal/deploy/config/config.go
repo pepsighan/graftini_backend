@@ -1,6 +1,8 @@
 package config
 
 import (
+	"strings"
+
 	"github.com/pepsighan/graftini_backend/internal/pkg/config"
 )
 
@@ -14,5 +16,5 @@ var (
 	VercelTeamID        = config.RequireEnv("VERCEL_TEAM_ID")
 	Port                = config.Env("PORT", "8888")
 	TemplateNextAppPath = config.RequireEnv("TEMPLATE_NEXT_APP_PATH")
-	GitHubNPMRepoToken  = config.RequireEnv("GITHUB_NPM_REPO_TOKEN")
+	GitHubNPMRepoToken  = strings.Replace(config.RequireEnv("GITHUB_NPM_REPO_TOKEN"), "\\n", "\n", 1) // Replace \n with actual new line.
 )
