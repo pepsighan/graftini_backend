@@ -81,6 +81,11 @@ type CodeBasePath string
 
 // newCodeBasePath creates a new code base path for a project to be generated in.
 func newCodeBasePath() (CodeBasePath, error) {
+	err := os.MkdirAll("deployApps", os.ModePerm)
+	if err != nil {
+		return "", err
+	}
+
 	path, err := ioutil.TempDir("deployApps", "app")
 	if err != nil {
 		return "", err

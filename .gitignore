@@ -27,3 +27,6 @@
 
 # Firebase Admin SDK Credentials
 /adminsdk-credentials.json
+
+# Temporary directory during deploy.
+/deployApps
