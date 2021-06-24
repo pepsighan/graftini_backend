@@ -120,6 +120,10 @@ func streamsubPageContent(qw422016 *qt422016.Writer, id string, m schema.Compone
 //line templates/pageContent.qtpl:24
 	qw422016.E().V(m[id].Type)
 //line templates/pageContent.qtpl:24
+	qw422016.N().S(` `)
+//line templates/pageContent.qtpl:24
+	streamspreadProps(qw422016, m[id].Props)
+//line templates/pageContent.qtpl:24
 	qw422016.N().S(`>
     `)
 //line templates/pageContent.qtpl:25
@@ -179,4 +183,57 @@ func subPageContent(id string, m schema.ComponentMap) string {
 //line templates/pageContent.qtpl:31
 	return qs422016
 //line templates/pageContent.qtpl:31
+}
+
+//line templates/pageContent.qtpl:35
+func streamspreadProps(qw422016 *qt422016.Writer, props map[string]interface{}) {
+//line templates/pageContent.qtpl:35
+	qw422016.N().S(`
+  `)
+//line templates/pageContent.qtpl:36
+	for k, v := range props {
+//line templates/pageContent.qtpl:36
+		qw422016.N().S(`
+    `)
+//line templates/pageContent.qtpl:37
+		qw422016.N().S(k)
+//line templates/pageContent.qtpl:37
+		qw422016.N().S(`={`)
+//line templates/pageContent.qtpl:37
+		streamstringify(qw422016, v)
+//line templates/pageContent.qtpl:37
+		qw422016.N().S(`}
+  `)
+//line templates/pageContent.qtpl:38
+	}
+//line templates/pageContent.qtpl:38
+	qw422016.N().S(`
+`)
+//line templates/pageContent.qtpl:39
+}
+
+//line templates/pageContent.qtpl:39
+func writespreadProps(qq422016 qtio422016.Writer, props map[string]interface{}) {
+//line templates/pageContent.qtpl:39
+	qw422016 := qt422016.AcquireWriter(qq422016)
+//line templates/pageContent.qtpl:39
+	streamspreadProps(qw422016, props)
+//line templates/pageContent.qtpl:39
+	qt422016.ReleaseWriter(qw422016)
+//line templates/pageContent.qtpl:39
+}
+
+//line templates/pageContent.qtpl:39
+func spreadProps(props map[string]interface{}) string {
+//line templates/pageContent.qtpl:39
+	qb422016 := qt422016.AcquireByteBuffer()
+//line templates/pageContent.qtpl:39
+	writespreadProps(qb422016, props)
+//line templates/pageContent.qtpl:39
+	qs422016 := string(qb422016.B)
+//line templates/pageContent.qtpl:39
+	qt422016.ReleaseByteBuffer(qb422016)
+//line templates/pageContent.qtpl:39
+	return qs422016
+//line templates/pageContent.qtpl:39
 }

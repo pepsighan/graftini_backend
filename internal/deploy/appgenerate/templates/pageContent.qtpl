@@ -21,7 +21,7 @@ return (
 
 {% comment %} The following recursively generates the markup for each component node and its children. {% endcomment %}
 {% func subPageContent(id string, m schema.ComponentMap) %}
-  <{%v m[id].Type %}>
+  <{%v m[id].Type %} {%= spreadProps(m[id].Props) %}>
     {% if m[id].IsCanvas == true %}
       {% for _, childID := range m[id].ChildrenNodes %}
         {%= subPageContent(childID, m) %}
@@ -30,3 +30,10 @@ return (
   </{%v m[id].Type %}>
 {% endfunc %}
 
+
+{% comment %} It spreads the props using attribute assignment. {% endcomment %}
+{% func spreadProps(props map[string]interface{}) %}
+  {% for k, v := range props %}
+    {%s= k %}={{%= stringify(v) %}}
+  {% endfor %}
+{% endfunc %}
