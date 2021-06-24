@@ -53,7 +53,7 @@ func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployR
 		return nil, fmt.Errorf("could not create a deployment on vercel: %w", err)
 	}
 
-	deployment, err := recordDeployment(ctx, project, s.Ent)
+	deployment, err := recordDeployment(ctx, vercelDeployment.ID, project, s.Ent)
 	if err != nil {
 		return nil, fmt.Errorf("could not record the deployment: %w", err)
 	}
@@ -81,8 +81,9 @@ func createVercelProjectIfNotExists(ctx context.Context, projectID uuid.UUID) (*
 }
 
 // recordDeployment records the deployment to be tracked later.
-func recordDeployment(ctx context.Context, project *ent.Project, client *ent.Client) (*ent.Deployment, error) {
+func recordDeployment(ctx context.Context, vercelDeploymentID string, project *ent.Project, client *ent.Client) (*ent.Deployment, error) {
 	return client.Deployment.Create().
+		SetVercelDeploymentID(vercelDeploymentID).
 		SetStatus(schema.DeploymentInitializing).
 		SetDeploymentsOf(project).
 		Save(ctx)
