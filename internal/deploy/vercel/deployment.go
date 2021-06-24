@@ -3,6 +3,7 @@ package vercel
 import (
 	"context"
 	"crypto/sha1"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 )
@@ -30,12 +31,24 @@ const (
 	DeploymentCancelled    DeploymentReadyState = "CANCELED"
 )
 
+// ProjectFile is the metadata of the files that is used to create deployments.
+type ProjectFile struct {
+	File string `json:"file"`
+	SHA  string `json:"sha"`
+	Size int    `json:"size"`
+}
+
 // CreateNewDeployment creates a new deployment with the given file SHA1 hashes.
-func CreateNewDeployment(ctx context.Context, projectName string, fileSHAs []string) (*Deployment, error) {
+func CreateNewDeployment(ctx context.Context, projectName string, files []*ProjectFile) (*Deployment, error) {
+	bodyFiles, err := json.Marshal(files)
+	if err != nil {
+		return nil, fmt.Errorf("could not convert files to json: %w", err)
+	}
+
 	response, err := request(ctx).
 		SetBody(map[string]interface{}{
 			"name":  projectName,
-			"files": fileSHAs,
+			"files": string(bodyFiles),
 			"projectSettings": map[string]string{
 				"framework": "nextjs",
 			},

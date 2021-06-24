@@ -33,7 +33,7 @@ func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployR
 
 	vercelProj, err := createVercelProjectIfNotExists(ctx, projectID)
 	if err != nil {
-		return nil, fmt.Errorf("could not create a vercel project: %w %v", err, vercelProj)
+		return nil, fmt.Errorf("could not create a vercel project: %w", err)
 	}
 
 	projectPath, err := appgenerate.GenerateCodeBaseForProject(ctx, project)
@@ -45,7 +45,12 @@ func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployR
 
 	projectFiles, err := uploadProjectFiles(ctx, string(projectPath))
 	if err != nil {
-		return nil, fmt.Errorf("could not upload files to vercel: %w %v", err, projectFiles)
+		return nil, fmt.Errorf("could not upload files to vercel: %w", err)
+	}
+
+	vercelDeployment, err := vercel.CreateNewDeployment(ctx, vercelProj.Name, projectFiles)
+	if err != nil {
+		return nil, fmt.Errorf("could not create a deployment on vercel: %w", err)
 	}
 
 	deployment, err := recordDeployment(ctx, project, s.Ent)
@@ -88,16 +93,9 @@ func generateProjectName(projectID uuid.UUID) string {
 	return fmt.Sprintf("app%v", projectID)
 }
 
-// ProjectFile is the metadata of the files that is used to create deployments.
-type ProjectFile struct {
-	file string
-	sha  string
-	size int
-}
-
 // uploadProjectFiles uploads all the files in the project path to vercel.
-func uploadProjectFiles(ctx context.Context, projectPath string) ([]*ProjectFile, error) {
-	files := []*ProjectFile{}
+func uploadProjectFiles(ctx context.Context, projectPath string) ([]*vercel.ProjectFile, error) {
+	files := []*vercel.ProjectFile{}
 
 	err := filepath.WalkDir(projectPath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -116,10 +114,10 @@ func uploadProjectFiles(ctx context.Context, projectPath string) ([]*ProjectFile
 			return err
 		}
 
-		files = append(files, &ProjectFile{
-			file: strings.Replace(path, projectPath, "", 1),
-			sha:  hash,
-			size: size,
+		files = append(files, &vercel.ProjectFile{
+			File: strings.Replace(path, projectPath, "", 1),
+			SHA:  hash,
+			Size: size,
 		})
 
 		return nil
