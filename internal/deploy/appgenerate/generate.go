@@ -50,11 +50,7 @@ func GenerateCodeBaseForProject(ctx context.Context, project *ent.Project) (Code
 
 // writePageInPath writes a page component based on the given page information.
 func writePageInPath(p *ent.Page, pagesPath string) error {
-	if p.ComponentMap == nil {
-		return nil
-	}
-
-	body, err := generateComponentBody(*p.ComponentMap)
+	body, err := generateComponentBody(p.ComponentMap)
 	if err != nil {
 		return err
 	}
