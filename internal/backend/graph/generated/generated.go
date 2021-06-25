@@ -39,6 +39,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Deployment() DeploymentResolver
 	Mutation() MutationResolver
 	Project() ProjectResolver
 	Query() QueryResolver
@@ -50,7 +51,8 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Deployment struct {
-		ID func(childComplexity int) int
+		ID     func(childComplexity int) int
+		Status func(childComplexity int) int
 	}
 
 	GraphQLQuery struct {
@@ -87,9 +89,10 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Me         func(childComplexity int) int
-		MyProject  func(childComplexity int, id uuid.UUID) int
-		MyProjects func(childComplexity int) int
+		Me           func(childComplexity int) int
+		MyDeployment func(childComplexity int, deploymentID uuid.UUID, projectID uuid.UUID) int
+		MyProject    func(childComplexity int, id uuid.UUID) int
+		MyProjects   func(childComplexity int) int
 	}
 
 	User struct {
@@ -101,6 +104,9 @@ type ComplexityRoot struct {
 	}
 }
 
+type DeploymentResolver interface {
+	Status(ctx context.Context, obj *ent.Deployment) (string, error)
+}
 type MutationResolver interface {
 	CreateProject(ctx context.Context, input model.NewProject) (*ent.Project, error)
 	UpdateProject(ctx context.Context, input model.UpdateProject) (*ent.Project, error)
@@ -120,6 +126,7 @@ type QueryResolver interface {
 	Me(ctx context.Context) (*ent.User, error)
 	MyProjects(ctx context.Context) ([]*ent.Project, error)
 	MyProject(ctx context.Context, id uuid.UUID) (*ent.Project, error)
+	MyDeployment(ctx context.Context, deploymentID uuid.UUID, projectID uuid.UUID) (*ent.Deployment, error)
 }
 
 type executableSchema struct {
@@ -143,6 +150,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Deployment.ID(childComplexity), true
+
+	case "Deployment.status":
+		if e.complexity.Deployment.Status == nil {
+			break
+		}
+
+		return e.complexity.Deployment.Status(childComplexity), true
 
 	case "GraphQLQuery.gqlAst":
 		if e.complexity.GraphQLQuery.GqlAst == nil {
@@ -343,6 +357,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Me(childComplexity), true
 
+	case "Query.myDeployment":
+		if e.complexity.Query.MyDeployment == nil {
+			break
+		}
+
+		args, err := ec.field_Query_myDeployment_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.MyDeployment(childComplexity, args["deploymentId"].(uuid.UUID), args["projectId"].(uuid.UUID)), true
+
 	case "Query.myProject":
 		if e.complexity.Query.MyProject == nil {
 			break
@@ -500,6 +526,7 @@ type Page {
 
 type Deployment {
   id: ID!
+  status: String!
 }
 
 type GraphQLQuery {
@@ -522,6 +549,10 @@ type Query {
   Gets the project by ID for the logged in user.
   """
   myProject(id: ID!): Project! @isAuthenticated
+  """
+  Gets the deployment with the given id.
+  """
+  myDeployment(deploymentId: ID!, projectId: ID!): Deployment! @isAuthenticated
 }
 
 # --------------------------------------
@@ -779,6 +810,30 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_myDeployment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 uuid.UUID
+	if tmp, ok := rawArgs["deploymentId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deploymentId"))
+		arg0, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["deploymentId"] = arg0
+	var arg1 uuid.UUID
+	if tmp, ok := rawArgs["projectId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+		arg1, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["projectId"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_myProject_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -865,6 +920,41 @@ func (ec *executionContext) _Deployment_id(ctx context.Context, field graphql.Co
 	res := resTmp.(uuid.UUID)
 	fc.Result = res
 	return ec.marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Deployment_status(ctx context.Context, field graphql.CollectedField, obj *ent.Deployment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Deployment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Deployment().Status(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _GraphQLQuery_id(ctx context.Context, field graphql.CollectedField, obj *ent.GraphQLQuery) (ret graphql.Marshaler) {
@@ -1989,6 +2079,68 @@ func (ec *executionContext) _Query_myProject(ctx context.Context, field graphql.
 	res := resTmp.(*ent.Project)
 	fc.Result = res
 	return ec.marshalNProject2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐProject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_myDeployment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_myDeployment_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Query().MyDeployment(rctx, args["deploymentId"].(uuid.UUID), args["projectId"].(uuid.UUID))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.Deployment); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/graftini_backend/internal/pkg/ent.Deployment`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Deployment)
+	fc.Result = res
+	return ec.marshalNDeployment2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐDeployment(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3540,8 +3692,22 @@ func (ec *executionContext) _Deployment(ctx context.Context, sel ast.SelectionSe
 		case "id":
 			out.Values[i] = ec._Deployment_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
+		case "status":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Deployment_status(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -3814,6 +3980,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_myProject(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "myDeployment":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_myDeployment(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

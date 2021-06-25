@@ -18,6 +18,10 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 )
 
+func (r *deploymentResolver) Status(ctx context.Context, obj *ent.Deployment) (string, error) {
+	return string(obj.Status), nil
+}
+
 func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewProject) (*ent.Project, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 
@@ -268,6 +272,27 @@ func (r *queryResolver) MyProject(ctx context.Context, id uuid.UUID) (*ent.Proje
 		First(ctx)
 }
 
+func (r *queryResolver) MyDeployment(ctx context.Context, deploymentID uuid.UUID, projectID uuid.UUID) (*ent.Deployment, error) {
+	owner := auth.RequiredAuthenticatedUser(ctx)
+
+	project, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(projectID, owner.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	deployment, err := project.QueryDeployments().First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return deployment, nil
+}
+
+// Deployment returns generated.DeploymentResolver implementation.
+func (r *Resolver) Deployment() generated.DeploymentResolver { return &deploymentResolver{r} }
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
@@ -277,6 +302,7 @@ func (r *Resolver) Project() generated.ProjectResolver { return &projectResolver
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+type deploymentResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type projectResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
