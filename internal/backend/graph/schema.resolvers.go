@@ -14,8 +14,10 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/db"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
 
 func (r *deploymentResolver) Status(ctx context.Context, obj *ent.Deployment) (string, error) {
@@ -282,12 +284,30 @@ func (r *queryResolver) MyDeployment(ctx context.Context, deploymentID uuid.UUID
 		return nil, err
 	}
 
-	deployment, err := project.QueryDeployments().First(ctx)
+	deployment, err := project.QueryDeployments().
+		Where(deployment.IDEQ(deploymentID)).
+		First(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return deployment, nil
+	// If the status has settled return the deployment.
+	if deployment.Status == schema.DeploymentCancelled || deployment.Status == schema.DeploymentError || deployment.Status == schema.DeploymentReady {
+		return deployment, nil
+	}
+
+	deploymentIDBytes, err := deployment.ID.MarshalBinary()
+	if err != nil {
+		return nil, err
+	}
+
+	// Otherwise, fetch the current status.
+	_, err = r.Deploy.CheckStatus(ctx, &service.StatusRequest{DeploymentID: deploymentIDBytes})
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Ent.Deployment.Get(ctx, deploymentID)
 }
 
 // Deployment returns generated.DeploymentResolver implementation.
