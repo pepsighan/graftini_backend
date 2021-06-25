@@ -14,9 +14,15 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/db"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
+
+func (r *deploymentResolver) Status(ctx context.Context, obj *ent.Deployment) (string, error) {
+	return string(obj.Status), nil
+}
 
 func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewProject) (*ent.Project, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
@@ -268,6 +274,51 @@ func (r *queryResolver) MyProject(ctx context.Context, id uuid.UUID) (*ent.Proje
 		First(ctx)
 }
 
+func (r *queryResolver) MyLastDeployment(ctx context.Context, projectID uuid.UUID) (*ent.Deployment, error) {
+	owner := auth.RequiredAuthenticatedUser(ctx)
+
+	project, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(projectID, owner.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the last deployment.
+	deployment, err := project.QueryDeployments().
+		Order(ent.Desc(deployment.FieldCreatedAt)).
+		First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			// The project has never been deployed.
+			return nil, nil
+		}
+
+		return nil, err
+	}
+
+	// If the status has settled return the deployment.
+	if deployment.Status == schema.DeploymentCancelled || deployment.Status == schema.DeploymentError || deployment.Status == schema.DeploymentReady {
+		return deployment, nil
+	}
+
+	deploymentIDBytes, err := deployment.ID.MarshalBinary()
+	if err != nil {
+		return nil, err
+	}
+
+	// Otherwise, fetch the current status.
+	_, err = r.Deploy.CheckStatus(ctx, &service.StatusRequest{DeploymentID: deploymentIDBytes})
+	if err != nil {
+		return nil, err
+	}
+
+	return r.Ent.Deployment.Get(ctx, deployment.ID)
+}
+
+// Deployment returns generated.DeploymentResolver implementation.
+func (r *Resolver) Deployment() generated.DeploymentResolver { return &deploymentResolver{r} }
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
@@ -277,6 +328,7 @@ func (r *Resolver) Project() generated.ProjectResolver { return &projectResolver
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+type deploymentResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type projectResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

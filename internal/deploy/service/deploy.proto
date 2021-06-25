@@ -7,6 +7,7 @@ package service;
 // The deploy service definition.
 service Deploy {
   rpc DeployProject(DeployRequest) returns (DeployReply) {}
+  rpc CheckStatus(StatusRequest) returns (StatusReply) {}
 }
 
 message DeployRequest {
@@ -14,5 +15,13 @@ message DeployRequest {
 }
 
 message DeployReply {
+  bytes deploymentID = 1;
+}
+
+message StatusRequest {
+  bytes deploymentID = 1;
+}
+
+message StatusReply {
   bytes deploymentID = 1;
 }

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/labstack/gommon/log"
 	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate"
 	"github.com/pepsighan/graftini_backend/internal/deploy/vercel"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
@@ -31,7 +32,25 @@ func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployR
 		return nil, fmt.Errorf("could not find the project: %w", err)
 	}
 
-	vercelProj, err := createVercelProjectIfNotExists(ctx, projectID)
+	deployment, err := recordNewDeployment(ctx, project, s.Ent)
+	if err != nil {
+		return nil, fmt.Errorf("could not create the deployment: %w", err)
+	}
+
+	reply, err := deployProject(ctx, project, deployment)
+	if err != nil {
+		if _, err := updateDeployment(ctx, deployment, "", schema.DeploymentError); err != nil {
+			log.Errorf("failed to mark deployment as failed manually: %v", err)
+		}
+
+		return nil, err
+	}
+
+	return reply, nil
+}
+
+func deployProject(ctx context.Context, project *ent.Project, deployment *ent.Deployment) (*DeployReply, error) {
+	vercelProj, err := createVercelProjectIfNotExists(ctx, project.ID)
 	if err != nil {
 		return nil, fmt.Errorf("could not create a vercel project: %w", err)
 	}
@@ -53,7 +72,7 @@ func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployR
 		return nil, fmt.Errorf("could not create a deployment on vercel: %w", err)
 	}
 
-	deployment, err := recordDeployment(ctx, vercelDeployment.ID, project, s.Ent)
+	_, err = updateDeployment(ctx, deployment, vercelDeployment.ID, schema.DeploymentStatus(vercelDeployment.ReadyState))
 	if err != nil {
 		return nil, fmt.Errorf("could not record the deployment: %w", err)
 	}
@@ -81,11 +100,19 @@ func createVercelProjectIfNotExists(ctx context.Context, projectID uuid.UUID) (*
 }
 
 // recordDeployment records the deployment to be tracked later.
-func recordDeployment(ctx context.Context, vercelDeploymentID string, project *ent.Project, client *ent.Client) (*ent.Deployment, error) {
+func recordNewDeployment(ctx context.Context, project *ent.Project, client *ent.Client) (*ent.Deployment, error) {
 	return client.Deployment.Create().
-		SetVercelDeploymentID(vercelDeploymentID).
+		SetVercelDeploymentID(""). // We do not have a deployment ID.
 		SetStatus(schema.DeploymentInitializing).
 		SetDeploymentsOf(project).
+		Save(ctx)
+}
+
+// updateDeployment updates the deployment with the final status.
+func updateDeployment(ctx context.Context, deployment *ent.Deployment, vercelDeploymentID string, status schema.DeploymentStatus) (*ent.Deployment, error) {
+	return deployment.Update().
+		SetVercelDeploymentID(vercelDeploymentID).
+		SetStatus(status).
 		Save(ctx)
 }
 
@@ -129,4 +156,40 @@ func uploadProjectFiles(ctx context.Context, projectPath string) ([]*vercel.Proj
 	}
 
 	return files, nil
+}
+
+// CheckStatus checks the status of the deployment.
+func (s *Server) CheckStatus(ctx context.Context, in *StatusRequest) (*StatusReply, error) {
+	deploymentID, err := uuid.FromBytes(in.GetDeploymentID())
+	if err != nil {
+		return nil, fmt.Errorf("could not get the deployment id: %w", err)
+	}
+
+	deployment, err := s.Ent.Deployment.Get(ctx, deploymentID)
+	if err != nil {
+		return nil, fmt.Errorf("could not find the deployment: %w", err)
+	}
+
+	// The deployment has not taken place yet or never will because it failed.
+	if deployment.VercelDeploymentID == "" {
+		// No new status to be found.
+		return &StatusReply{DeploymentID: in.DeploymentID}, nil
+	}
+
+	vercelDeployment, err := vercel.GetDeployment(ctx, deployment.VercelDeploymentID)
+	if err != nil {
+		return nil, fmt.Errorf("could not get vercel deployment: %w", err)
+	}
+
+	// Update the status if it has changed.
+	if deployment.Status != schema.DeploymentStatus(vercelDeployment.ReadyState) {
+		_, err = deployment.Update().
+			SetStatus(schema.DeploymentStatus(vercelDeployment.ReadyState)).
+			Save(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("could not update the deployment status")
+		}
+	}
+
+	return &StatusReply{DeploymentID: in.DeploymentID}, nil
 }

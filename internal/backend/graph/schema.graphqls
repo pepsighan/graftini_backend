@@ -37,6 +37,7 @@ type Page {
 
 type Deployment {
   id: ID!
+  status: String!
 }
 
 type GraphQLQuery {
@@ -59,6 +60,10 @@ type Query {
   Gets the project by ID for the logged in user.
   """
   myProject(id: ID!): Project! @isAuthenticated
+  """
+  Gets the last deployment for the given project.
+  """
+  myLastDeployment(projectId: ID!): Deployment @isAuthenticated
 }
 
 # --------------------------------------

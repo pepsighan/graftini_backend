@@ -24,10 +24,13 @@ type Deployment struct {
 type DeploymentReadyState string
 
 const (
+	DeploymentQueued       DeploymentReadyState = "QUEUED"
 	DeploymentInitializing DeploymentReadyState = "INITIALIZING"
 	DeploymentAnalyzing    DeploymentReadyState = "ANALYZING"
 	DeploymentBuilding     DeploymentReadyState = "BUILDING"
+	DeploymentUploading    DeploymentReadyState = "UPLOADING"
 	DeploymentDeploying    DeploymentReadyState = "DEPLOYING"
+	DeploymentArchived     DeploymentReadyState = "ARCHIVED"
 	DeploymentReady        DeploymentReadyState = "READY"
 	DeploymentError        DeploymentReadyState = "ERROR"
 	DeploymentCancelled    DeploymentReadyState = "CANCELED"
@@ -109,7 +112,7 @@ func GetDeployment(ctx context.Context, deploymentID string) (*Deployment, error
 	response, err := request(ctx).
 		SetResult(Deployment{}).
 		SetError(VercelFailure{}).
-		Get(fmt.Sprintf("v11/now/deployments/%v", deploymentID))
+		Get(route(fmt.Sprintf("v11/now/deployments/%v", deploymentID)))
 
 	if err != nil {
 		return nil, fmt.Errorf("could not get deployment: %w", err)
