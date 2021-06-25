@@ -109,7 +109,7 @@ func GetDeployment(ctx context.Context, deploymentID string) (*Deployment, error
 	response, err := request(ctx).
 		SetResult(Deployment{}).
 		SetError(VercelFailure{}).
-		Get(fmt.Sprintf("v11/now/deployments/%v", deploymentID))
+		Get(route(fmt.Sprintf("v11/now/deployments/%v", deploymentID)))
 
 	if err != nil {
 		return nil, fmt.Errorf("could not get deployment: %w", err)
