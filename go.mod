@@ -12,16 +12,15 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/labstack/echo v3.3.10+incompatible
-	github.com/labstack/gommon v0.3.0 // indirect
+	github.com/labstack/gommon v0.3.0
 	github.com/lib/pq v1.10.2
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/otiai10/copy v1.6.0
 	github.com/pkg/errors v0.9.1
 	github.com/urfave/cli/v2 v2.3.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
-	github.com/valyala/quicktemplate v1.6.3
 	github.com/vektah/gqlparser/v2 v2.1.0
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
-	google.golang.org/grpc v1.35.0 // indirect
-	google.golang.org/protobuf v1.25.0 // indirect
+	google.golang.org/grpc v1.35.0
+	google.golang.org/protobuf v1.25.0
 )
