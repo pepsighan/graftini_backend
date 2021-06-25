@@ -170,6 +170,12 @@ func (s *Server) CheckStatus(ctx context.Context, in *StatusRequest) (*StatusRep
 		return nil, fmt.Errorf("could not find the deployment: %w", err)
 	}
 
+	// The deployment has not taken place yet or never will because it failed.
+	if deployment.VercelDeploymentID == "" {
+		// No new status to be found.
+		return &StatusReply{DeploymentID: in.DeploymentID}, nil
+	}
+
 	vercelDeployment, err := vercel.GetDeployment(ctx, deployment.VercelDeploymentID)
 	if err != nil {
 		return nil, fmt.Errorf("could not get vercel deployment: %w", err)
