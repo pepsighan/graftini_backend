@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@graftini/bricks": "^0.2.1",
+    "@graftini/bricks": "^0.2.2",
     "next": "11.0.0",
     "react": "17.0.2",
     "react-dom": "17.0.2"
