@@ -24,10 +24,13 @@ type Deployment struct {
 type DeploymentReadyState string
 
 const (
+	DeploymentQueued       DeploymentReadyState = "QUEUED"
 	DeploymentInitializing DeploymentReadyState = "INITIALIZING"
 	DeploymentAnalyzing    DeploymentReadyState = "ANALYZING"
 	DeploymentBuilding     DeploymentReadyState = "BUILDING"
+	DeploymentUploading    DeploymentReadyState = "UPLOADING"
 	DeploymentDeploying    DeploymentReadyState = "DEPLOYING"
+	DeploymentArchived     DeploymentReadyState = "ARCHIVED"
 	DeploymentReady        DeploymentReadyState = "READY"
 	DeploymentError        DeploymentReadyState = "ERROR"
 	DeploymentCancelled    DeploymentReadyState = "CANCELED"
