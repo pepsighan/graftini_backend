@@ -130,3 +130,33 @@ func uploadProjectFiles(ctx context.Context, projectPath string) ([]*vercel.Proj
 
 	return files, nil
 }
+
+// CheckStatus checks the status of the deployment.
+func (s *Server) CheckStatus(ctx context.Context, in *StatusRequest) (*StatusReply, error) {
+	deploymentID, err := uuid.FromBytes(in.GetDeploymentID())
+	if err != nil {
+		return nil, fmt.Errorf("could not get the deployment id: %w", err)
+	}
+
+	deployment, err := s.Ent.Deployment.Get(ctx, deploymentID)
+	if err != nil {
+		return nil, fmt.Errorf("could not find the deployment: %w", err)
+	}
+
+	vercelDeployment, err := vercel.GetDeployment(ctx, deployment.VercelDeploymentID)
+	if err != nil {
+		return nil, fmt.Errorf("could not get vercel deployment: %w", err)
+	}
+
+	// Update the status if it has changed.
+	if deployment.Status != schema.DeploymentStatus(vercelDeployment.ReadyState) {
+		_, err = deployment.Update().
+			SetStatus(schema.DeploymentStatus(vercelDeployment.ReadyState)).
+			Save(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("could not update the deployment status")
+		}
+	}
+
+	return &StatusReply{DeploymentID: in.DeploymentID}, nil
+}
