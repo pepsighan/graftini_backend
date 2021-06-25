@@ -4,17 +4,14 @@ package appgenerate
 
 import (
 	"context"
-	"encoding/json"
 	"io/fs"
 	"io/ioutil"
 	"os"
 	"path"
 
 	"github.com/otiai10/copy"
-	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate/templates"
 	"github.com/pepsighan/graftini_backend/internal/deploy/config"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
-	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
 
 // GenerateProject generates a code base for the project and returns the file path in which
@@ -50,12 +47,6 @@ func GenerateCodeBaseForProject(ctx context.Context, project *ent.Project) (Code
 
 // writePageInPath writes a page component based on the given page information.
 func writePageInPath(p *ent.Page, pagesPath string) error {
-	body, err := generateComponentBody(p.ComponentMap)
-	if err != nil {
-		return err
-	}
-
-	page := templates.Page(p.Name, body)
 	pageFilePath := path.Join(pagesPath, resolvePagePath(p.Route))
 
 	// Create directories leading to the page file.
@@ -64,17 +55,12 @@ func writePageInPath(p *ent.Page, pagesPath string) error {
 		return err
 	}
 
-	return ioutil.WriteFile(pageFilePath, []byte(page), fs.ModePerm)
-}
-
-func generateComponentBody(c string) (string, error) {
-	componentMap := schema.ComponentMap{}
-	err := json.Unmarshal([]byte(c), &componentMap)
+	page, err := buildPage(p)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return templates.PageContent(componentMap), nil
+	return ioutil.WriteFile(pageFilePath, []byte(page), fs.ModePerm)
 }
 
 // CodeBasePath is the path within which a project is generated.
