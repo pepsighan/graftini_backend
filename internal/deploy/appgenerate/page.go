@@ -18,8 +18,8 @@ func buildPage(pg *ent.Page) (string, error) {
 	var sb strings.Builder
 	sb.WriteString("import { Box, Text } from '@graftini/bricks';\n\n")
 
-	sb.WriteString("export default function ")
-	// Name the page component with the UUID. This is not user-readable anyways.
+	sb.WriteString("export default function Page")
+	// Name the page component with Page followed by UUID. This is not user-readable anyways.
 	// Make it simple and unique to implement.
 	sb.WriteString(strings.ReplaceAll(pg.ID.String(), "-", ""))
 	sb.WriteString("() {\n")
@@ -28,7 +28,7 @@ func buildPage(pg *ent.Page) (string, error) {
 		return "", err
 	}
 
-	sb.WriteString("}")
+	sb.WriteString("\n}")
 	return sb.String(), nil
 }
 
@@ -61,7 +61,7 @@ func buildSubTreeMarkup(sb *strings.Builder, componentID string, componentMap sc
 		return err
 	}
 
-	sb.WriteString(">")
+	sb.WriteString(">\n")
 
 	// Render the children components.
 	if comp.IsCanvas {
@@ -71,7 +71,7 @@ func buildSubTreeMarkup(sb *strings.Builder, componentID string, componentMap sc
 	}
 
 	// End tag of the component.
-	sb.WriteString("</")
+	sb.WriteString("\n</")
 	sb.WriteString(comp.Type)
 	sb.WriteString(">")
 
