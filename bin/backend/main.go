@@ -24,6 +24,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/backoff"
 )
 
 func firebaseAuth() *authFirebase.Client {
@@ -46,7 +47,21 @@ func grpcClient() (service.DeployClient, *grpc.ClientConn) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	conn, err := grpc.DialContext(ctx, config.DeployEndpoint, grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.DialContext(
+		ctx,
+		config.DeployEndpoint,
+		grpc.WithInsecure(),
+		grpc.WithBlock(),
+		// Try to reconnect as soon as possible.
+		grpc.WithConnectParams(grpc.ConnectParams{
+			Backoff: backoff.Config{
+				BaseDelay:  1.0 * time.Second,
+				Multiplier: 1.6,
+				Jitter:     0.2,
+				MaxDelay:   10 * time.Second,
+			},
+		}),
+	)
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
