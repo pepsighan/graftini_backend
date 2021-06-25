@@ -30,3 +30,6 @@
 
 # Temporary directory during deploy.
 /deployApps
+
+# Miscellaneous
+.DS_Store
