@@ -274,7 +274,7 @@ func (r *queryResolver) MyProject(ctx context.Context, id uuid.UUID) (*ent.Proje
 		First(ctx)
 }
 
-func (r *queryResolver) MyDeployment(ctx context.Context, deploymentID uuid.UUID, projectID uuid.UUID) (*ent.Deployment, error) {
+func (r *queryResolver) MyLastDeployment(ctx context.Context, projectID uuid.UUID) (*ent.Deployment, error) {
 	owner := auth.RequiredAuthenticatedUser(ctx)
 
 	project, err := r.Ent.Project.Query().
@@ -284,10 +284,16 @@ func (r *queryResolver) MyDeployment(ctx context.Context, deploymentID uuid.UUID
 		return nil, err
 	}
 
+	// Get the last deployment.
 	deployment, err := project.QueryDeployments().
-		Where(deployment.IDEQ(deploymentID)).
+		Order(ent.Desc(deployment.FieldCreatedAt)).
 		First(ctx)
 	if err != nil {
+		if ent.IsNotFound(err) {
+			// The project has never been deployed.
+			return nil, nil
+		}
+
 		return nil, err
 	}
 
@@ -307,7 +313,7 @@ func (r *queryResolver) MyDeployment(ctx context.Context, deploymentID uuid.UUID
 		return nil, err
 	}
 
-	return r.Ent.Deployment.Get(ctx, deploymentID)
+	return r.Ent.Deployment.Get(ctx, deployment.ID)
 }
 
 // Deployment returns generated.DeploymentResolver implementation.

@@ -61,9 +61,9 @@ type Query {
   """
   myProject(id: ID!): Project! @isAuthenticated
   """
-  Gets the deployment with the given id.
+  Gets the last deployment for the given project.
   """
-  myDeployment(deploymentId: ID!, projectId: ID!): Deployment! @isAuthenticated
+  myLastDeployment(projectId: ID!): Deployment @isAuthenticated
 }
 
 # --------------------------------------
