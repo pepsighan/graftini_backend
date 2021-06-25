@@ -29,14 +29,42 @@ func buildPage(pg *ent.Page) (string, error) {
 }
 
 // buildPageMarkup generates the rendering markup for the page.
-func buildPageMarkup(sb *strings.Builder, componentMap *schema.ComponentMap) {
-	sb.WriteString("return (")
+func buildPageMarkup(sb *strings.Builder, componentMap schema.ComponentMap) {
+	sb.WriteString("return (<>")
 
-	sb.WriteString(");")
+	// Build the markup from the root.
+	root := componentMap["ROOT"]
+	for _, childID := range root.ChildrenNodes {
+		buildSubTreeMarkup(sb, childID, componentMap)
+	}
+
+	sb.WriteString("</>);")
+}
+
+// buildSubTreeMarkup generates the markup for the component and its children.
+func buildSubTreeMarkup(sb *strings.Builder, componentID string, componentMap schema.ComponentMap) {
+	comp := componentMap[componentID]
+
+	// Start tag of the component.
+	sb.WriteString("<")
+	sb.WriteString(comp.Type)
+	sb.WriteString(">")
+
+	// Render the children components.
+	if comp.IsCanvas {
+		for _, childID := range comp.ChildrenNodes {
+			buildSubTreeMarkup(sb, childID, componentMap)
+		}
+	}
+
+	// End tag of the component.
+	sb.WriteString("</")
+	sb.WriteString(comp.Type)
+	sb.WriteString(">")
 }
 
 // parseComponentMap parses the string to a component map.
-func parseComponentMap(c string) (*schema.ComponentMap, error) {
+func parseComponentMap(c string) (schema.ComponentMap, error) {
 	componentMap := schema.ComponentMap{}
 
 	err := json.Unmarshal([]byte(c), &componentMap)
@@ -44,5 +72,5 @@ func parseComponentMap(c string) (*schema.ComponentMap, error) {
 		return nil, err
 	}
 
-	return &componentMap, nil
+	return componentMap, nil
 }
