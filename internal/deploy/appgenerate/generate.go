@@ -26,6 +26,12 @@ func GenerateCodeBaseForProject(ctx context.Context, project *ent.Project) (Code
 		return "", err
 	}
 
+	// Remove the node modules, we may have downloaded it locally during development.
+	err = removeNodeModulesIfExists(config.TemplateNextAppPath)
+	if err != nil {
+		return "", err
+	}
+
 	// Copy the template next app in the temp location. We are going to build on top of it.
 	err = copy.Copy(config.TemplateNextAppPath, string(projectPath))
 	if err != nil {
@@ -104,4 +110,12 @@ func resolvePagePath(route string) string {
 	// If 2 and 3 were to happen at once, it can be much simpler to organize
 	// and define the routes by appending index.js.
 	return path.Join(route, "index.js")
+}
+
+// removeNodeModulesIfExists removes node modules if it exists.
+// This is only useful during development. During production, node_modules
+// does not exist.
+func removeNodeModulesIfExists(templatePath string) error {
+	nodeModules := path.Join(templatePath, "node_modules")
+	return os.RemoveAll(nodeModules)
 }

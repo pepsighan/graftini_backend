@@ -4,8 +4,6 @@ import (
 	context "context"
 	"fmt"
 	"io/fs"
-	"os"
-	"path"
 	"path/filepath"
 	"strings"
 
@@ -98,10 +96,6 @@ func generateProjectName(projectID uuid.UUID) string {
 
 // uploadProjectFiles uploads all the files in the project path to vercel.
 func uploadProjectFiles(ctx context.Context, projectPath string) ([]*vercel.ProjectFile, error) {
-	if err := removeNodeModulesIfExists(projectPath); err != nil {
-		return nil, err
-	}
-
 	files := []*vercel.ProjectFile{}
 
 	err := filepath.WalkDir(projectPath, func(path string, d fs.DirEntry, err error) error {
@@ -135,12 +129,4 @@ func uploadProjectFiles(ctx context.Context, projectPath string) ([]*vercel.Proj
 	}
 
 	return files, nil
-}
-
-// removeNodeModulesIfExists removes node modules if it exists.
-// This is only useful during development. During production, node_modules
-// does not exist.
-func removeNodeModulesIfExists(projectPath string) error {
-	nodeModules := path.Join(projectPath, "node_modules")
-	return os.RemoveAll(nodeModules)
 }

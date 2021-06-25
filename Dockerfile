@@ -34,8 +34,6 @@ COPY --from=builder /app/backend /app/backend
 COPY --from=builder /app/migrate /app/migrate
 COPY --from=builder /app/bin/generate/migrations /app/bin/generate/migrations
 
-# TODO: Copy the nextapp when deploying `deploy` and delete node_modules if it exists.
-
 # Run the migrations 
 
 # First run the migrations and after it completes run the backend on container startup.
