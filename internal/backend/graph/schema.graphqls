@@ -26,6 +26,7 @@ type Project {
   graphqlEndpoint: String
   pages: [Page!]!
   queries: [GraphQLQuery!]!
+  deployedUrl: String
 }
 
 type Page {

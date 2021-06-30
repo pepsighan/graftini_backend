@@ -256,6 +256,15 @@ func (r *projectResolver) Queries(ctx context.Context, obj *ent.Project) ([]*ent
 	return obj.QueryQueries().All(ctx)
 }
 
+func (r *projectResolver) DeployedURL(ctx context.Context, obj *ent.Project) (*string, error) {
+	if obj.RefID == nil {
+		return nil, nil
+	}
+
+	url := service.GenerateDomainNameFromRefID(*obj.RefID)
+	return &url, nil
+}
+
 func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {
 	// This will return nil if there is no logged in user.
 	return auth.GetUserFromBearerAuthInContext(ctx, r.Ent, r.FirebaseAuth)
