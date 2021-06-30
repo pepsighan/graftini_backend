@@ -401,12 +401,12 @@ func (pq *ProjectQuery) WithDeployments(opts ...func(*DeploymentQuery)) *Project
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		RefID string `json:"ref_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Project.Query().
-//		GroupBy(project.FieldName).
+//		GroupBy(project.FieldRefID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -428,11 +428,11 @@ func (pq *ProjectQuery) GroupBy(field string, fields ...string) *ProjectGroupBy 
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		RefID string `json:"ref_id,omitempty"`
 //	}
 //
 //	client.Project.Query().
-//		Select(project.FieldName).
+//		Select(project.FieldRefID).
 //		Scan(ctx, &v)
 //
 func (pq *ProjectQuery) Select(field string, fields ...string) *ProjectSelect {

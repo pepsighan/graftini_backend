@@ -25,6 +25,20 @@ type ProjectCreate struct {
 	hooks    []Hook
 }
 
+// SetRefID sets the "ref_id" field.
+func (pc *ProjectCreate) SetRefID(s string) *ProjectCreate {
+	pc.mutation.SetRefID(s)
+	return pc
+}
+
+// SetNillableRefID sets the "ref_id" field if the given value is not nil.
+func (pc *ProjectCreate) SetNillableRefID(s *string) *ProjectCreate {
+	if s != nil {
+		pc.SetRefID(*s)
+	}
+	return pc
+}
+
 // SetName sets the "name" field.
 func (pc *ProjectCreate) SetName(s string) *ProjectCreate {
 	pc.mutation.SetName(s)
@@ -248,6 +262,14 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 	if id, ok := pc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := pc.mutation.RefID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: project.FieldRefID,
+		})
+		_node.RefID = &value
 	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

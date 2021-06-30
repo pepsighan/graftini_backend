@@ -94,6 +94,13 @@ func IDLTE(id uuid.UUID) predicate.Project {
 	})
 }
 
+// RefID applies equality check predicate on the "ref_id" field. It's identical to RefIDEQ.
+func RefID(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRefID), v))
+	})
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
@@ -119,6 +126,131 @@ func CreatedAt(v time.Time) predicate.Project {
 func UpdatedAt(v time.Time) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// RefIDEQ applies the EQ predicate on the "ref_id" field.
+func RefIDEQ(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRefID), v))
+	})
+}
+
+// RefIDNEQ applies the NEQ predicate on the "ref_id" field.
+func RefIDNEQ(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRefID), v))
+	})
+}
+
+// RefIDIn applies the In predicate on the "ref_id" field.
+func RefIDIn(vs ...string) predicate.Project {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Project(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRefID), v...))
+	})
+}
+
+// RefIDNotIn applies the NotIn predicate on the "ref_id" field.
+func RefIDNotIn(vs ...string) predicate.Project {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Project(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRefID), v...))
+	})
+}
+
+// RefIDGT applies the GT predicate on the "ref_id" field.
+func RefIDGT(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRefID), v))
+	})
+}
+
+// RefIDGTE applies the GTE predicate on the "ref_id" field.
+func RefIDGTE(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRefID), v))
+	})
+}
+
+// RefIDLT applies the LT predicate on the "ref_id" field.
+func RefIDLT(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRefID), v))
+	})
+}
+
+// RefIDLTE applies the LTE predicate on the "ref_id" field.
+func RefIDLTE(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRefID), v))
+	})
+}
+
+// RefIDContains applies the Contains predicate on the "ref_id" field.
+func RefIDContains(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRefID), v))
+	})
+}
+
+// RefIDHasPrefix applies the HasPrefix predicate on the "ref_id" field.
+func RefIDHasPrefix(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRefID), v))
+	})
+}
+
+// RefIDHasSuffix applies the HasSuffix predicate on the "ref_id" field.
+func RefIDHasSuffix(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRefID), v))
+	})
+}
+
+// RefIDIsNil applies the IsNil predicate on the "ref_id" field.
+func RefIDIsNil() predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRefID)))
+	})
+}
+
+// RefIDNotNil applies the NotNil predicate on the "ref_id" field.
+func RefIDNotNil() predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRefID)))
+	})
+}
+
+// RefIDEqualFold applies the EqualFold predicate on the "ref_id" field.
+func RefIDEqualFold(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRefID), v))
+	})
+}
+
+// RefIDContainsFold applies the ContainsFold predicate on the "ref_id" field.
+func RefIDContainsFold(v string) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRefID), v))
 	})
 }
 
