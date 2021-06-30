@@ -19,12 +19,22 @@ type Project struct {
 func (Project) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
+		// An ID that the user will be able to set. This ID will be
+		// used to create unique free sub-domains on graftini.app.
+		field.String("ref_id").
+			Optional().
+			Nillable().
+			Unique(),
 		field.String("name"),
 		field.String("graphql_endpoint").
 			Optional().
 			Nillable(),
-		field.Time("created_at").Default(time.Now).Immutable(),
-		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
+		field.Time("created_at").
+			Default(time.Now).
+			Immutable(),
+		field.Time("updated_at").
+			Default(time.Now).
+			UpdateDefault(time.Now),
 	}
 }
 

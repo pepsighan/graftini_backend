@@ -13,6 +13,8 @@ const (
 	Label = "project"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldRefID holds the string denoting the ref_id field in the database.
+	FieldRefID = "ref_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldGraphqlEndpoint holds the string denoting the graphql_endpoint field in the database.
@@ -64,6 +66,7 @@ const (
 // Columns holds all SQL columns for project fields.
 var Columns = []string{
 	FieldID,
+	FieldRefID,
 	FieldName,
 	FieldGraphqlEndpoint,
 	FieldCreatedAt,

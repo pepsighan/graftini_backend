@@ -32,6 +32,26 @@ func (pu *ProjectUpdate) Where(ps ...predicate.Project) *ProjectUpdate {
 	return pu
 }
 
+// SetRefID sets the "ref_id" field.
+func (pu *ProjectUpdate) SetRefID(s string) *ProjectUpdate {
+	pu.mutation.SetRefID(s)
+	return pu
+}
+
+// SetNillableRefID sets the "ref_id" field if the given value is not nil.
+func (pu *ProjectUpdate) SetNillableRefID(s *string) *ProjectUpdate {
+	if s != nil {
+		pu.SetRefID(*s)
+	}
+	return pu
+}
+
+// ClearRefID clears the value of the "ref_id" field.
+func (pu *ProjectUpdate) ClearRefID() *ProjectUpdate {
+	pu.mutation.ClearRefID()
+	return pu
+}
+
 // SetName sets the "name" field.
 func (pu *ProjectUpdate) SetName(s string) *ProjectUpdate {
 	pu.mutation.SetName(s)
@@ -280,6 +300,19 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := pu.mutation.RefID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: project.FieldRefID,
+		})
+	}
+	if pu.mutation.RefIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: project.FieldRefID,
+		})
+	}
 	if value, ok := pu.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -521,6 +554,26 @@ type ProjectUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *ProjectMutation
+}
+
+// SetRefID sets the "ref_id" field.
+func (puo *ProjectUpdateOne) SetRefID(s string) *ProjectUpdateOne {
+	puo.mutation.SetRefID(s)
+	return puo
+}
+
+// SetNillableRefID sets the "ref_id" field if the given value is not nil.
+func (puo *ProjectUpdateOne) SetNillableRefID(s *string) *ProjectUpdateOne {
+	if s != nil {
+		puo.SetRefID(*s)
+	}
+	return puo
+}
+
+// ClearRefID clears the value of the "ref_id" field.
+func (puo *ProjectUpdateOne) ClearRefID() *ProjectUpdateOne {
+	puo.mutation.ClearRefID()
+	return puo
 }
 
 // SetName sets the "name" field.
@@ -794,6 +847,19 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := puo.mutation.RefID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: project.FieldRefID,
+		})
+	}
+	if puo.mutation.RefIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: project.FieldRefID,
+		})
 	}
 	if value, ok := puo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{

@@ -1668,6 +1668,7 @@ type ProjectMutation struct {
 	op                 Op
 	typ                string
 	id                 *uuid.UUID
+	ref_id             *string
 	name               *string
 	graphql_endpoint   *string
 	created_at         *time.Time
@@ -1772,6 +1773,55 @@ func (m *ProjectMutation) ID() (id uuid.UUID, exists bool) {
 		return
 	}
 	return *m.id, true
+}
+
+// SetRefID sets the "ref_id" field.
+func (m *ProjectMutation) SetRefID(s string) {
+	m.ref_id = &s
+}
+
+// RefID returns the value of the "ref_id" field in the mutation.
+func (m *ProjectMutation) RefID() (r string, exists bool) {
+	v := m.ref_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRefID returns the old "ref_id" field's value of the Project entity.
+// If the Project object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectMutation) OldRefID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldRefID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldRefID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRefID: %w", err)
+	}
+	return oldValue.RefID, nil
+}
+
+// ClearRefID clears the value of the "ref_id" field.
+func (m *ProjectMutation) ClearRefID() {
+	m.ref_id = nil
+	m.clearedFields[project.FieldRefID] = struct{}{}
+}
+
+// RefIDCleared returns if the "ref_id" field was cleared in this mutation.
+func (m *ProjectMutation) RefIDCleared() bool {
+	_, ok := m.clearedFields[project.FieldRefID]
+	return ok
+}
+
+// ResetRefID resets all changes to the "ref_id" field.
+func (m *ProjectMutation) ResetRefID() {
+	m.ref_id = nil
+	delete(m.clearedFields, project.FieldRefID)
 }
 
 // SetName sets the "name" field.
@@ -2143,7 +2193,10 @@ func (m *ProjectMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProjectMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
+	if m.ref_id != nil {
+		fields = append(fields, project.FieldRefID)
+	}
 	if m.name != nil {
 		fields = append(fields, project.FieldName)
 	}
@@ -2164,6 +2217,8 @@ func (m *ProjectMutation) Fields() []string {
 // schema.
 func (m *ProjectMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case project.FieldRefID:
+		return m.RefID()
 	case project.FieldName:
 		return m.Name()
 	case project.FieldGraphqlEndpoint:
@@ -2181,6 +2236,8 @@ func (m *ProjectMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *ProjectMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case project.FieldRefID:
+		return m.OldRefID(ctx)
 	case project.FieldName:
 		return m.OldName(ctx)
 	case project.FieldGraphqlEndpoint:
@@ -2198,6 +2255,13 @@ func (m *ProjectMutation) OldField(ctx context.Context, name string) (ent.Value,
 // type.
 func (m *ProjectMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case project.FieldRefID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRefID(v)
+		return nil
 	case project.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -2256,6 +2320,9 @@ func (m *ProjectMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *ProjectMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(project.FieldRefID) {
+		fields = append(fields, project.FieldRefID)
+	}
 	if m.FieldCleared(project.FieldGraphqlEndpoint) {
 		fields = append(fields, project.FieldGraphqlEndpoint)
 	}
@@ -2273,6 +2340,9 @@ func (m *ProjectMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *ProjectMutation) ClearField(name string) error {
 	switch name {
+	case project.FieldRefID:
+		m.ClearRefID()
+		return nil
 	case project.FieldGraphqlEndpoint:
 		m.ClearGraphqlEndpoint()
 		return nil
@@ -2284,6 +2354,9 @@ func (m *ProjectMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *ProjectMutation) ResetField(name string) error {
 	switch name {
+	case project.FieldRefID:
+		m.ResetRefID()
+		return nil
 	case project.FieldName:
 		m.ResetName()
 		return nil

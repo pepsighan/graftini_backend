@@ -16,6 +16,18 @@ var (
 	EnvProduction  Environment = "production"
 )
 
+func (e Environment) IsLocal() bool {
+	return e == EnvLocal
+}
+
+func (e Environment) IsDevelopment() bool {
+	return e == EnvDevelopment
+}
+
+func (e Environment) IsProduction() bool {
+	return e == EnvProduction
+}
+
 // LoadEnvFile loads the environment file if present. This function
 // needs to run before any environment is read.
 func LoadEnvFile(filename string) bool {

@@ -18,6 +18,8 @@ type Project struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uuid.UUID `json:"id,omitempty"`
+	// RefID holds the value of the "ref_id" field.
+	RefID *string `json:"ref_id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// GraphqlEndpoint holds the value of the "graphql_endpoint" field.
@@ -93,7 +95,7 @@ func (*Project) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case project.FieldName, project.FieldGraphqlEndpoint:
+		case project.FieldRefID, project.FieldName, project.FieldGraphqlEndpoint:
 			values[i] = new(sql.NullString)
 		case project.FieldCreatedAt, project.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -121,6 +123,13 @@ func (pr *Project) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				pr.ID = *value
+			}
+		case project.FieldRefID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ref_id", values[i])
+			} else if value.Valid {
+				pr.RefID = new(string)
+				*pr.RefID = value.String
 			}
 		case project.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -201,6 +210,10 @@ func (pr *Project) String() string {
 	var builder strings.Builder
 	builder.WriteString("Project(")
 	builder.WriteString(fmt.Sprintf("id=%v", pr.ID))
+	if v := pr.RefID; v != nil {
+		builder.WriteString(", ref_id=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", name=")
 	builder.WriteString(pr.Name)
 	if v := pr.GraphqlEndpoint; v != nil {
