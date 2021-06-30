@@ -1,0 +1,3 @@
+BEGIN;
+ALTER TABLE "projects" ADD COLUMN "ref_id" varchar UNIQUE NULL;
+COMMIT;
