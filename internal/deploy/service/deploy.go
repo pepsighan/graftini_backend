@@ -13,6 +13,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate"
 	"github.com/pepsighan/graftini_backend/internal/deploy/config"
 	"github.com/pepsighan/graftini_backend/internal/deploy/vercel"
+	"github.com/pepsighan/graftini_backend/internal/pkg/domain"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
@@ -156,7 +157,7 @@ func attachGraftiniSubdomain(ctx context.Context, project *ent.Project) error {
 // getDomainNameForProject generates a new subdomain if it is not already.
 func getDomainNameForProject(ctx context.Context, project *ent.Project) (string, error) {
 	if project.RefID != nil {
-		return GenerateDomainNameFromRefID(*project.RefID), nil
+		return domain.GenerateDomainNameFromRefID(*project.RefID, config.Env), nil
 	}
 
 	// Try to generate until there is a valid refID.
@@ -179,26 +180,8 @@ func getDomainNameForProject(ctx context.Context, project *ent.Project) (string,
 			return "", err
 		}
 
-		return GenerateDomainNameFromRefID(*saved.RefID), nil
+		return domain.GenerateDomainNameFromRefID(*saved.RefID, config.Env), nil
 	}
-}
-
-// GenerateDomainNameFromRefID generates a full domain name from the Ref ID of the project.
-func GenerateDomainNameFromRefID(refID string) string {
-	return fmt.Sprintf("%v.%v", refID, suffixDomainName())
-}
-
-const graftiniAppDomain string = "graftini.app"
-
-// suffixDomainName gives the domain suffix to use. We use [graftiniaAppDomain]
-// for production and for others we append with development & local.
-func suffixDomainName() string {
-	if config.Env.IsProduction() {
-		// This is hard-coded for the app. There is no other domain we use.
-		return graftiniAppDomain
-	}
-
-	return fmt.Sprintf("%v.%v", config.Env, graftiniAppDomain)
 }
 
 // invalidSubdomainChars is any characters not alphanumeric and -.

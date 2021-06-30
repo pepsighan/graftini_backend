@@ -9,10 +9,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pepsighan/graftini_backend/internal/backend/auth"
+	"github.com/pepsighan/graftini_backend/internal/backend/config"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
 	model1 "github.com/pepsighan/graftini_backend/internal/backend/graph/model"
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/db"
+	"github.com/pepsighan/graftini_backend/internal/pkg/domain"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
@@ -261,7 +263,7 @@ func (r *projectResolver) AppURL(ctx context.Context, obj *ent.Project) (*string
 		return nil, nil
 	}
 
-	url := service.GenerateDomainNameFromRefID(*obj.RefID)
+	url := domain.GenerateDomainNameFromRefID(*obj.RefID, config.Env)
 	return &url, nil
 }
 
