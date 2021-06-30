@@ -256,7 +256,7 @@ func (r *projectResolver) Queries(ctx context.Context, obj *ent.Project) ([]*ent
 	return obj.QueryQueries().All(ctx)
 }
 
-func (r *projectResolver) DeployedURL(ctx context.Context, obj *ent.Project) (*string, error) {
+func (r *projectResolver) AppURL(ctx context.Context, obj *ent.Project) (*string, error) {
 	if obj.RefID == nil {
 		return nil, nil
 	}

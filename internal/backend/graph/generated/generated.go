@@ -81,7 +81,7 @@ type ComplexityRoot struct {
 	}
 
 	Project struct {
-		DeployedURL     func(childComplexity int) int
+		AppURL          func(childComplexity int) int
 		GraphqlEndpoint func(childComplexity int) int
 		ID              func(childComplexity int) int
 		Name            func(childComplexity int) int
@@ -122,7 +122,7 @@ type MutationResolver interface {
 type ProjectResolver interface {
 	Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error)
 	Queries(ctx context.Context, obj *ent.Project) ([]*ent.GraphQLQuery, error)
-	DeployedURL(ctx context.Context, obj *ent.Project) (*string, error)
+	AppURL(ctx context.Context, obj *ent.Project) (*string, error)
 }
 type QueryResolver interface {
 	Me(ctx context.Context) (*ent.User, error)
@@ -317,12 +317,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Page.Route(childComplexity), true
 
-	case "Project.deployedUrl":
-		if e.complexity.Project.DeployedURL == nil {
+	case "Project.appUrl":
+		if e.complexity.Project.AppURL == nil {
 			break
 		}
 
-		return e.complexity.Project.DeployedURL(childComplexity), true
+		return e.complexity.Project.AppURL(childComplexity), true
 
 	case "Project.graphqlEndpoint":
 		if e.complexity.Project.GraphqlEndpoint == nil {
@@ -524,7 +524,7 @@ type Project {
   graphqlEndpoint: String
   pages: [Page!]!
   queries: [GraphQLQuery!]!
-  deployedUrl: String
+  appUrl: String
 }
 
 type Page {
@@ -1933,7 +1933,7 @@ func (ec *executionContext) _Project_queries(ctx context.Context, field graphql.
 	return ec.marshalNGraphQLQuery2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐGraphQLQueryᚄ(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Project_deployedUrl(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+func (ec *executionContext) _Project_appUrl(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1951,7 +1951,7 @@ func (ec *executionContext) _Project_deployedUrl(ctx context.Context, field grap
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Project().DeployedURL(rctx, obj)
+		return ec.resolvers.Project().AppURL(rctx, obj)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3950,7 +3950,7 @@ func (ec *executionContext) _Project(ctx context.Context, sel ast.SelectionSet, 
 				}
 				return res
 			})
-		case "deployedUrl":
+		case "appUrl":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -3958,7 +3958,7 @@ func (ec *executionContext) _Project(ctx context.Context, sel ast.SelectionSet, 
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Project_deployedUrl(ctx, field, obj)
+				res = ec._Project_appUrl(ctx, field, obj)
 				return res
 			})
 		default:
