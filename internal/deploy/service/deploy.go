@@ -155,7 +155,9 @@ func attachGraftiniSubdomain(ctx context.Context, project *ent.Project) error {
 
 // getDomainNameForProject generates a new subdomain if it is not already.
 func getDomainNameForProject(ctx context.Context, project *ent.Project) (string, error) {
-	refID := project.RefID
+	if project.RefID != nil {
+		return generateDomainNameFromRefID(*project.RefID), nil
+	}
 
 	// Try to generate until there is a valid refID.
 	for {
@@ -177,11 +179,13 @@ func getDomainNameForProject(ctx context.Context, project *ent.Project) (string,
 			return "", err
 		}
 
-		refID = saved.RefID
-		break
+		return generateDomainNameFromRefID(*saved.RefID), nil
 	}
+}
 
-	return fmt.Sprintf("%v.%v", *refID, suffixDomainName()), nil
+// generateDomainNameFromRefID generates a full domain name from the Ref ID of the project.
+func generateDomainNameFromRefID(refID string) string {
+	return fmt.Sprintf("%v.%v", refID, suffixDomainName())
 }
 
 const graftiniAppDomain string = "graftini.app"
