@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
+	"github.com/pepsighan/graftini_backend/internal/backend/config"
 	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate"
 	"github.com/pepsighan/graftini_backend/internal/deploy/vercel"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
@@ -116,9 +117,9 @@ func updateDeployment(ctx context.Context, deployment *ent.Deployment, vercelDep
 		Save(ctx)
 }
 
-// generateProjectName generates a project name with the prefix `app` and its UUID.
+// generateProjectName generates a project name with the prefix `{env}-graftini-app` and its UUID.
 func generateProjectName(projectID uuid.UUID) string {
-	return fmt.Sprintf("app-%v", projectID)
+	return fmt.Sprintf("%v-graftini-app-%v", config.Env, projectID)
 }
 
 // uploadProjectFiles uploads all the files in the project path to vercel.
