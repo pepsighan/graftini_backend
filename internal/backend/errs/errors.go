@@ -6,11 +6,13 @@ import (
 	"errors"
 
 	"github.com/labstack/gommon/log"
+	"github.com/pepsighan/graftini_backend/internal/pkg/storage"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 var ErrUnauthorizedAccess = newGQLError("unauthorized_access", "you are not authorized to access")
-var ErrServerError = newGQLError("server_error", "Server error")
+var ErrServerError = newGQLError("server_error", "server error")
+var ErrUnsupportedMimeType = newGQLError("unsupported_mime_type", "file of unsupported mime type uploaded")
 
 func newGQLError(kind, message string) *gqlerror.Error {
 	return &gqlerror.Error{
@@ -29,6 +31,12 @@ func ErrorPresenter(ctx context.Context, err error) *gqlerror.Error {
 	// shown to the users. They are user safe.
 	if errors.Is(err, ErrUnauthorizedAccess) {
 		return err.(*gqlerror.Error)
+	}
+
+	// Some errors may not be exactly in the above format. For those transform them
+	// to above format.
+	if errors.Is(err, storage.ErrUnsupportedMimeType) {
+		return ErrUnsupportedMimeType
 	}
 
 	log.Errorf("server errored due to: %v", err)
