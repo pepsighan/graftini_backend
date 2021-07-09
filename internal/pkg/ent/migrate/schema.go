@@ -31,6 +31,21 @@ var (
 			},
 		},
 	}
+	// FilesColumns holds the columns for the "files" table.
+	FilesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "kind", Type: field.TypeEnum, Enums: []string{"image"}},
+		{Name: "mime_type", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// FilesTable holds the schema information for the "files" table.
+	FilesTable = &schema.Table{
+		Name:        "files",
+		Columns:     FilesColumns,
+		PrimaryKey:  []*schema.Column{FilesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
 	// GraphQlQueriesColumns holds the columns for the "graph_ql_queries" table.
 	GraphQlQueriesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -122,6 +137,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		DeploymentsTable,
+		FilesTable,
 		GraphQlQueriesTable,
 		PagesTable,
 		ProjectsTable,

@@ -11,6 +11,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/migrate"
 
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/file"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/project"
@@ -28,6 +29,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Deployment is the client for interacting with the Deployment builders.
 	Deployment *DeploymentClient
+	// File is the client for interacting with the File builders.
+	File *FileClient
 	// GraphQLQuery is the client for interacting with the GraphQLQuery builders.
 	GraphQLQuery *GraphQLQueryClient
 	// Page is the client for interacting with the Page builders.
@@ -50,6 +53,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Deployment = NewDeploymentClient(c.config)
+	c.File = NewFileClient(c.config)
 	c.GraphQLQuery = NewGraphQLQueryClient(c.config)
 	c.Page = NewPageClient(c.config)
 	c.Project = NewProjectClient(c.config)
@@ -88,6 +92,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:          ctx,
 		config:       cfg,
 		Deployment:   NewDeploymentClient(cfg),
+		File:         NewFileClient(cfg),
 		GraphQLQuery: NewGraphQLQueryClient(cfg),
 		Page:         NewPageClient(cfg),
 		Project:      NewProjectClient(cfg),
@@ -111,6 +116,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:       cfg,
 		Deployment:   NewDeploymentClient(cfg),
+		File:         NewFileClient(cfg),
 		GraphQLQuery: NewGraphQLQueryClient(cfg),
 		Page:         NewPageClient(cfg),
 		Project:      NewProjectClient(cfg),
@@ -145,6 +151,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Deployment.Use(hooks...)
+	c.File.Use(hooks...)
 	c.GraphQLQuery.Use(hooks...)
 	c.Page.Use(hooks...)
 	c.Project.Use(hooks...)
@@ -255,6 +262,96 @@ func (c *DeploymentClient) QueryDeploymentsOf(d *Deployment) *ProjectQuery {
 // Hooks returns the client hooks.
 func (c *DeploymentClient) Hooks() []Hook {
 	return c.hooks.Deployment
+}
+
+// FileClient is a client for the File schema.
+type FileClient struct {
+	config
+}
+
+// NewFileClient returns a client for the File from the given config.
+func NewFileClient(c config) *FileClient {
+	return &FileClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `file.Hooks(f(g(h())))`.
+func (c *FileClient) Use(hooks ...Hook) {
+	c.hooks.File = append(c.hooks.File, hooks...)
+}
+
+// Create returns a create builder for File.
+func (c *FileClient) Create() *FileCreate {
+	mutation := newFileMutation(c.config, OpCreate)
+	return &FileCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of File entities.
+func (c *FileClient) CreateBulk(builders ...*FileCreate) *FileCreateBulk {
+	return &FileCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for File.
+func (c *FileClient) Update() *FileUpdate {
+	mutation := newFileMutation(c.config, OpUpdate)
+	return &FileUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FileClient) UpdateOne(f *File) *FileUpdateOne {
+	mutation := newFileMutation(c.config, OpUpdateOne, withFile(f))
+	return &FileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FileClient) UpdateOneID(id uuid.UUID) *FileUpdateOne {
+	mutation := newFileMutation(c.config, OpUpdateOne, withFileID(id))
+	return &FileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for File.
+func (c *FileClient) Delete() *FileDelete {
+	mutation := newFileMutation(c.config, OpDelete)
+	return &FileDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *FileClient) DeleteOne(f *File) *FileDeleteOne {
+	return c.DeleteOneID(f.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *FileClient) DeleteOneID(id uuid.UUID) *FileDeleteOne {
+	builder := c.Delete().Where(file.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FileDeleteOne{builder}
+}
+
+// Query returns a query builder for File.
+func (c *FileClient) Query() *FileQuery {
+	return &FileQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a File entity by its id.
+func (c *FileClient) Get(ctx context.Context, id uuid.UUID) (*File, error) {
+	return c.Query().Where(file.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FileClient) GetX(ctx context.Context, id uuid.UUID) *File {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *FileClient) Hooks() []Hook {
+	return c.hooks.File
 }
 
 // GraphQLQueryClient is a client for the GraphQLQuery schema.

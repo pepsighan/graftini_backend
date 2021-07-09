@@ -3,6 +3,7 @@ module github.com/pepsighan/graftini_backend
 go 1.16
 
 require (
+	cloud.google.com/go/storage v1.10.0 // indirect
 	entgo.io/ent v0.8.0
 	firebase.google.com/go/v4 v4.6.0
 	github.com/99designs/gqlgen v0.13.0
@@ -22,6 +23,7 @@ require (
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/vektah/gqlparser/v2 v2.1.0
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
+	golang.org/x/oauth2 v0.0.0-20210628180205-a41e5a781914 // indirect
 	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
 )

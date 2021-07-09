@@ -9,6 +9,9 @@ import (
 // Deployment is the predicate function for deployment builders.
 type Deployment func(*sql.Selector)
 
+// File is the predicate function for file builders.
+type File func(*sql.Selector)
+
 // GraphQLQuery is the predicate function for graphqlquery builders.
 type GraphQLQuery func(*sql.Selector)
 

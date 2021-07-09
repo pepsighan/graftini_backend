@@ -11,12 +11,13 @@ import (
 var _ = config.LoadEnvFile(".backend.env")
 
 var (
-	Env            = config.Environment(config.RequireEnv("ENV"))
-	Port           = config.Env("PORT", "1323")
-	DatabaseURL    = config.DatabaseURL(Env)
-	AllowedOrigins = allowedOrigins()
-	MaxBodySize    = config.Env("MAX_BODY_SIZE", "2M")
-	DeployEndpoint = config.RequireEnv("DEPLOY_ENDPOINT")
+	Env                      = config.Environment(config.RequireEnv("ENV"))
+	Port                     = config.Env("PORT", "1323")
+	DatabaseURL              = config.DatabaseURL(Env)
+	AllowedOrigins           = allowedOrigins()
+	MaxBodySize              = config.Env("MAX_BODY_SIZE", "2M")
+	DeployEndpoint           = config.RequireEnv("DEPLOY_ENDPOINT")
+	GoogleCloudStorageBucket = config.RequireEnv("GOOGLE_CLOUD_STORAGE_BUCKET")
 )
 
 func allowedOrigins() []string {
