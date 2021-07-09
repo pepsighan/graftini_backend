@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4"
 	authFirebase "firebase.google.com/go/v4/auth"
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -43,6 +44,17 @@ func firebaseAuth() *authFirebase.Client {
 	return client
 }
 
+func storageClient() *storage.Client {
+	// The storage client will use default application credentials.
+	client, err := storage.NewClient(context.Background())
+	if err != nil {
+		log.Panicf("could not initialize the google cloud storage client: %v", err)
+
+	}
+
+	return client
+}
+
 func grpcClient() (service.DeployClient, *grpc.ClientConn) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -71,9 +83,10 @@ func grpcClient() (service.DeployClient, *grpc.ClientConn) {
 
 func graphqlHandler(client *ent.Client, deployClient service.DeployClient) echo.HandlerFunc {
 	firebaseClient := firebaseAuth()
+	storageClient := storageClient()
 
 	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
-		Resolvers:  graph.NewResolver(client, firebaseClient, deployClient),
+		Resolvers:  graph.NewResolver(client, firebaseClient, storageClient, deployClient),
 		Directives: graph.NewDirective(client, firebaseClient),
 	}))
 	h.SetErrorPresenter(errs.ErrorPresenter)
