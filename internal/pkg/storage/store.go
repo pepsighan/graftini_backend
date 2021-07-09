@@ -35,7 +35,16 @@ func UploadFile(ctx context.Context, reader io.Reader, mimeType string, storageC
 		return nil, fmt.Errorf("could not upload file: %w", err)
 	}
 
-	return nil, nil
+	fileRecord, err := entClient.File.Create().
+		SetID(fileID).
+		SetKind(kind).
+		SetMimeType(mimeType).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("could not save the record for uploaded file: %w", err)
+	}
+
+	return fileRecord, nil
 }
 
 // uploadFileName generates a file name for the object in the GCP bucket.
