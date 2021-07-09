@@ -21,6 +21,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
+	"github.com/pepsighan/graftini_backend/internal/pkg/storage"
 )
 
 func (r *deploymentResolver) Status(ctx context.Context, obj *ent.Deployment) (string, error) {
@@ -254,7 +255,7 @@ func (r *mutationResolver) DeleteQuery(ctx context.Context, projectID uuid.UUID,
 }
 
 func (r *mutationResolver) UploadFile(ctx context.Context, file graphql.Upload) (*ent.File, error) {
-	return nil, nil
+	return storage.UploadFile(ctx, file.File, file.ContentType, r.Storage, r.Ent)
 }
 
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {

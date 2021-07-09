@@ -3,6 +3,7 @@ module github.com/pepsighan/graftini_backend
 go 1.16
 
 require (
+	cloud.google.com/go/storage v1.10.0 // indirect
 	entgo.io/ent v0.8.0
 	firebase.google.com/go/v4 v4.6.0
 	github.com/99designs/gqlgen v0.13.0
