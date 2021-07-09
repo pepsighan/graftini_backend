@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Deployment is the client for interacting with the Deployment builders.
 	Deployment *DeploymentClient
+	// File is the client for interacting with the File builders.
+	File *FileClient
 	// GraphQLQuery is the client for interacting with the GraphQLQuery builders.
 	GraphQLQuery *GraphQLQueryClient
 	// Page is the client for interacting with the Page builders.
@@ -158,6 +160,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Deployment = NewDeploymentClient(tx.config)
+	tx.File = NewFileClient(tx.config)
 	tx.GraphQLQuery = NewGraphQLQueryClient(tx.config)
 	tx.Page = NewPageClient(tx.config)
 	tx.Project = NewProjectClient(tx.config)
