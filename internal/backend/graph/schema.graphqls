@@ -9,6 +9,15 @@ the authenticated user into the request context.
 directive @isAuthenticated on FIELD_DEFINITION
 
 # --------------------------------------
+# Scalar values are declared below.
+# --------------------------------------
+
+"""
+Upload represents an uploaded file.
+"""
+scalar Upload
+
+# --------------------------------------
 # Queries are written below.
 # --------------------------------------
 
@@ -47,6 +56,12 @@ type GraphQLQuery {
   gqlAst: String!
 }
 
+type File {
+  id: ID!
+  mimeType: String!
+  fileUrl: String!
+}
+
 type Query {
   """
   The currently logged in user if the request is authenticated. It will return
@@ -65,6 +80,10 @@ type Query {
   Gets the last deployment for the given project.
   """
   myLastDeployment(projectId: ID!): Deployment @isAuthenticated
+  """
+  Gets the file pointed by the ID.
+  """
+  file(fileId: ID!): File! @isAuthenticated
 }
 
 # --------------------------------------
@@ -145,4 +164,8 @@ type Mutation {
   Delete a query from a project.
   """
   deleteQuery(projectId: ID!, queryId: ID!): GraphQLQuery! @isAuthenticated
+  """
+  Upload a file. Only image files are supported. Images of type JPEG, PNG, WebP.
+  """
+  uploadFile(file: Upload!): File! @isAuthenticated
 }

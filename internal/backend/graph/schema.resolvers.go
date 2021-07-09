@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/99designs/gqlgen/graphql"
 	"github.com/google/uuid"
 	"github.com/pepsighan/graftini_backend/internal/backend/auth"
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
@@ -24,6 +25,10 @@ import (
 
 func (r *deploymentResolver) Status(ctx context.Context, obj *ent.Deployment) (string, error) {
 	return string(obj.Status), nil
+}
+
+func (r *fileResolver) FileURL(ctx context.Context, obj *ent.File) (string, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewProject) (*ent.Project, error) {
@@ -248,6 +253,10 @@ func (r *mutationResolver) DeleteQuery(ctx context.Context, projectID uuid.UUID,
 	return query, err
 }
 
+func (r *mutationResolver) UploadFile(ctx context.Context, file graphql.Upload) (*ent.File, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {
 	return obj.QueryPages().
 		Order(ent.Asc(page.FieldCreatedAt)).
@@ -327,8 +336,15 @@ func (r *queryResolver) MyLastDeployment(ctx context.Context, projectID uuid.UUI
 	return r.Ent.Deployment.Get(ctx, deployment.ID)
 }
 
+func (r *queryResolver) File(ctx context.Context, fileID uuid.UUID) (*ent.File, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 // Deployment returns generated.DeploymentResolver implementation.
 func (r *Resolver) Deployment() generated.DeploymentResolver { return &deploymentResolver{r} }
+
+// File returns generated.FileResolver implementation.
+func (r *Resolver) File() generated.FileResolver { return &fileResolver{r} }
 
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
@@ -340,6 +356,7 @@ func (r *Resolver) Project() generated.ProjectResolver { return &projectResolver
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type deploymentResolver struct{ *Resolver }
+type fileResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type projectResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
