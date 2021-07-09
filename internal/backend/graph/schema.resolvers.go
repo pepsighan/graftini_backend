@@ -254,7 +254,7 @@ func (r *mutationResolver) DeleteQuery(ctx context.Context, projectID uuid.UUID,
 }
 
 func (r *mutationResolver) UploadFile(ctx context.Context, file graphql.Upload) (*ent.File, error) {
-	panic(fmt.Errorf("not implemented"))
+	return nil, nil
 }
 
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {
