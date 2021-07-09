@@ -29,7 +29,7 @@ func (r *deploymentResolver) Status(ctx context.Context, obj *ent.Deployment) (s
 }
 
 func (r *fileResolver) FileURL(ctx context.Context, obj *ent.File) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	return storage.FileURL(ctx, obj, r.Storage)
 }
 
 func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewProject) (*ent.Project, error) {
