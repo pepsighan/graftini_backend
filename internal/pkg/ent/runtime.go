@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/earlyaccess"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/file"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
@@ -39,6 +40,18 @@ func init() {
 	deploymentDescID := deploymentFields[0].Descriptor()
 	// deployment.DefaultID holds the default value on creation for the id field.
 	deployment.DefaultID = deploymentDescID.Default.(func() uuid.UUID)
+	earlyaccessFields := schema.EarlyAccess{}.Fields()
+	_ = earlyaccessFields
+	// earlyaccessDescCreatedAt is the schema descriptor for created_at field.
+	earlyaccessDescCreatedAt := earlyaccessFields[1].Descriptor()
+	// earlyaccess.DefaultCreatedAt holds the default value on creation for the created_at field.
+	earlyaccess.DefaultCreatedAt = earlyaccessDescCreatedAt.Default.(func() time.Time)
+	// earlyaccessDescUpdatedAt is the schema descriptor for updated_at field.
+	earlyaccessDescUpdatedAt := earlyaccessFields[2].Descriptor()
+	// earlyaccess.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	earlyaccess.DefaultUpdatedAt = earlyaccessDescUpdatedAt.Default.(func() time.Time)
+	// earlyaccess.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	earlyaccess.UpdateDefaultUpdatedAt = earlyaccessDescUpdatedAt.UpdateDefault.(func() time.Time)
 	fileFields := schema.File{}.Fields()
 	_ = fileFields
 	// fileDescCreatedAt is the schema descriptor for created_at field.

@@ -22,6 +22,19 @@ func (f DeploymentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The EarlyAccessFunc type is an adapter to allow the use of ordinary
+// function as EarlyAccess mutator.
+type EarlyAccessFunc func(context.Context, *ent.EarlyAccessMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EarlyAccessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EarlyAccessMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EarlyAccessMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The FileFunc type is an adapter to allow the use of ordinary
 // function as File mutator.
 type FileFunc func(context.Context, *ent.FileMutation) (ent.Value, error)

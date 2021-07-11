@@ -18,6 +18,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/domain"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/earlyaccess"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
@@ -256,6 +257,12 @@ func (r *mutationResolver) DeleteQuery(ctx context.Context, projectID uuid.UUID,
 
 func (r *mutationResolver) UploadFile(ctx context.Context, file graphql.Upload) (*ent.File, error) {
 	return storage.UploadFile(ctx, file.File, file.ContentType, r.Storage, r.Ent)
+}
+
+func (r *mutationResolver) IsEarlyAccessAllowed(ctx context.Context, email string) (bool, error) {
+	return r.Ent.EarlyAccess.Query().
+		Where(earlyaccess.EmailEQ(email)).
+		Exist(ctx)
 }
 
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {

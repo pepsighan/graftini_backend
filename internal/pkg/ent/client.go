@@ -11,6 +11,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/migrate"
 
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/earlyaccess"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/file"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
@@ -29,6 +30,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Deployment is the client for interacting with the Deployment builders.
 	Deployment *DeploymentClient
+	// EarlyAccess is the client for interacting with the EarlyAccess builders.
+	EarlyAccess *EarlyAccessClient
 	// File is the client for interacting with the File builders.
 	File *FileClient
 	// GraphQLQuery is the client for interacting with the GraphQLQuery builders.
@@ -53,6 +56,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Deployment = NewDeploymentClient(c.config)
+	c.EarlyAccess = NewEarlyAccessClient(c.config)
 	c.File = NewFileClient(c.config)
 	c.GraphQLQuery = NewGraphQLQueryClient(c.config)
 	c.Page = NewPageClient(c.config)
@@ -92,6 +96,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:          ctx,
 		config:       cfg,
 		Deployment:   NewDeploymentClient(cfg),
+		EarlyAccess:  NewEarlyAccessClient(cfg),
 		File:         NewFileClient(cfg),
 		GraphQLQuery: NewGraphQLQueryClient(cfg),
 		Page:         NewPageClient(cfg),
@@ -116,6 +121,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:       cfg,
 		Deployment:   NewDeploymentClient(cfg),
+		EarlyAccess:  NewEarlyAccessClient(cfg),
 		File:         NewFileClient(cfg),
 		GraphQLQuery: NewGraphQLQueryClient(cfg),
 		Page:         NewPageClient(cfg),
@@ -151,6 +157,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Deployment.Use(hooks...)
+	c.EarlyAccess.Use(hooks...)
 	c.File.Use(hooks...)
 	c.GraphQLQuery.Use(hooks...)
 	c.Page.Use(hooks...)
@@ -262,6 +269,96 @@ func (c *DeploymentClient) QueryDeploymentsOf(d *Deployment) *ProjectQuery {
 // Hooks returns the client hooks.
 func (c *DeploymentClient) Hooks() []Hook {
 	return c.hooks.Deployment
+}
+
+// EarlyAccessClient is a client for the EarlyAccess schema.
+type EarlyAccessClient struct {
+	config
+}
+
+// NewEarlyAccessClient returns a client for the EarlyAccess from the given config.
+func NewEarlyAccessClient(c config) *EarlyAccessClient {
+	return &EarlyAccessClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `earlyaccess.Hooks(f(g(h())))`.
+func (c *EarlyAccessClient) Use(hooks ...Hook) {
+	c.hooks.EarlyAccess = append(c.hooks.EarlyAccess, hooks...)
+}
+
+// Create returns a create builder for EarlyAccess.
+func (c *EarlyAccessClient) Create() *EarlyAccessCreate {
+	mutation := newEarlyAccessMutation(c.config, OpCreate)
+	return &EarlyAccessCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EarlyAccess entities.
+func (c *EarlyAccessClient) CreateBulk(builders ...*EarlyAccessCreate) *EarlyAccessCreateBulk {
+	return &EarlyAccessCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EarlyAccess.
+func (c *EarlyAccessClient) Update() *EarlyAccessUpdate {
+	mutation := newEarlyAccessMutation(c.config, OpUpdate)
+	return &EarlyAccessUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EarlyAccessClient) UpdateOne(ea *EarlyAccess) *EarlyAccessUpdateOne {
+	mutation := newEarlyAccessMutation(c.config, OpUpdateOne, withEarlyAccess(ea))
+	return &EarlyAccessUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EarlyAccessClient) UpdateOneID(id int) *EarlyAccessUpdateOne {
+	mutation := newEarlyAccessMutation(c.config, OpUpdateOne, withEarlyAccessID(id))
+	return &EarlyAccessUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EarlyAccess.
+func (c *EarlyAccessClient) Delete() *EarlyAccessDelete {
+	mutation := newEarlyAccessMutation(c.config, OpDelete)
+	return &EarlyAccessDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EarlyAccessClient) DeleteOne(ea *EarlyAccess) *EarlyAccessDeleteOne {
+	return c.DeleteOneID(ea.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EarlyAccessClient) DeleteOneID(id int) *EarlyAccessDeleteOne {
+	builder := c.Delete().Where(earlyaccess.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EarlyAccessDeleteOne{builder}
+}
+
+// Query returns a query builder for EarlyAccess.
+func (c *EarlyAccessClient) Query() *EarlyAccessQuery {
+	return &EarlyAccessQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EarlyAccess entity by its id.
+func (c *EarlyAccessClient) Get(ctx context.Context, id int) (*EarlyAccess, error) {
+	return c.Query().Where(earlyaccess.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EarlyAccessClient) GetX(ctx context.Context, id int) *EarlyAccess {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *EarlyAccessClient) Hooks() []Hook {
+	return c.hooks.EarlyAccess
 }
 
 // FileClient is a client for the File schema.

@@ -31,6 +31,20 @@ var (
 			},
 		},
 	}
+	// EarlyAccessesColumns holds the columns for the "early_accesses" table.
+	EarlyAccessesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// EarlyAccessesTable holds the schema information for the "early_accesses" table.
+	EarlyAccessesTable = &schema.Table{
+		Name:        "early_accesses",
+		Columns:     EarlyAccessesColumns,
+		PrimaryKey:  []*schema.Column{EarlyAccessesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
 	// FilesColumns holds the columns for the "files" table.
 	FilesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -137,6 +151,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		DeploymentsTable,
+		EarlyAccessesTable,
 		FilesTable,
 		GraphQlQueriesTable,
 		PagesTable,
