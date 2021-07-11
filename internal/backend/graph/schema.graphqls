@@ -168,4 +168,8 @@ type Mutation {
   Upload a file. Only image files are supported. Images of type JPEG, PNG, WebP.
   """
   uploadFile(file: Upload!): File! @isAuthenticated
+  """
+  Is the email allowed for early access.
+  """
+  isEarlyAccessAllowed(email: String!): Boolean!
 }

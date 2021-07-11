@@ -69,16 +69,17 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreatePage          func(childComplexity int, input model.NewPage) int
-		CreateProject       func(childComplexity int, input model.NewProject) int
-		CreateQuery         func(childComplexity int, input model.NewGraphQLQuery) int
-		DeletePage          func(childComplexity int, projectID uuid.UUID, pageID uuid.UUID) int
-		DeleteProject       func(childComplexity int, projectID uuid.UUID) int
-		DeleteQuery         func(childComplexity int, projectID uuid.UUID, queryID uuid.UUID) int
-		DeployProject       func(childComplexity int, projectID uuid.UUID) int
-		UpdateProject       func(childComplexity int, input model.UpdateProject) int
-		UpdateProjectDesign func(childComplexity int, input model.UpdateProjectDesign) int
-		UploadFile          func(childComplexity int, file graphql.Upload) int
+		CreatePage           func(childComplexity int, input model.NewPage) int
+		CreateProject        func(childComplexity int, input model.NewProject) int
+		CreateQuery          func(childComplexity int, input model.NewGraphQLQuery) int
+		DeletePage           func(childComplexity int, projectID uuid.UUID, pageID uuid.UUID) int
+		DeleteProject        func(childComplexity int, projectID uuid.UUID) int
+		DeleteQuery          func(childComplexity int, projectID uuid.UUID, queryID uuid.UUID) int
+		DeployProject        func(childComplexity int, projectID uuid.UUID) int
+		IsEarlyAccessAllowed func(childComplexity int, email string) int
+		UpdateProject        func(childComplexity int, input model.UpdateProject) int
+		UpdateProjectDesign  func(childComplexity int, input model.UpdateProjectDesign) int
+		UploadFile           func(childComplexity int, file graphql.Upload) int
 	}
 
 	Page struct {
@@ -131,6 +132,7 @@ type MutationResolver interface {
 	CreateQuery(ctx context.Context, input model.NewGraphQLQuery) (*ent.GraphQLQuery, error)
 	DeleteQuery(ctx context.Context, projectID uuid.UUID, queryID uuid.UUID) (*ent.GraphQLQuery, error)
 	UploadFile(ctx context.Context, file graphql.Upload) (*ent.File, error)
+	IsEarlyAccessAllowed(ctx context.Context, email string) (bool, error)
 }
 type ProjectResolver interface {
 	Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error)
@@ -299,6 +301,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeployProject(childComplexity, args["projectId"].(uuid.UUID)), true
+
+	case "Mutation.isEarlyAccessAllowed":
+		if e.complexity.Mutation.IsEarlyAccessAllowed == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_isEarlyAccessAllowed_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.IsEarlyAccessAllowed(childComplexity, args["email"].(string)), true
 
 	case "Mutation.updateProject":
 		if e.complexity.Mutation.UpdateProject == nil {
@@ -725,6 +739,10 @@ type Mutation {
   Upload a file. Only image files are supported. Images of type JPEG, PNG, WebP.
   """
   uploadFile(file: Upload!): File! @isAuthenticated
+  """
+  Is the email allowed for early access.
+  """
+  isEarlyAccessAllowed(email: String!): Boolean!
 }
 `, BuiltIn: false},
 }
@@ -854,6 +872,21 @@ func (ec *executionContext) field_Mutation_deployProject_args(ctx context.Contex
 		}
 	}
 	args["projectId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_isEarlyAccessAllowed_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["email"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["email"] = arg0
 	return args, nil
 }
 
@@ -1898,6 +1931,48 @@ func (ec *executionContext) _Mutation_uploadFile(ctx context.Context, field grap
 	res := resTmp.(*ent.File)
 	fc.Result = res
 	return ec.marshalNFile2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐFile(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_isEarlyAccessAllowed(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_isEarlyAccessAllowed_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().IsEarlyAccessAllowed(rctx, args["email"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Page_id(ctx context.Context, field graphql.CollectedField, obj *ent.Page) (ret graphql.Marshaler) {
@@ -4235,6 +4310,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "uploadFile":
 			out.Values[i] = ec._Mutation_uploadFile(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "isEarlyAccessAllowed":
+			out.Values[i] = ec._Mutation_isEarlyAccessAllowed(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
