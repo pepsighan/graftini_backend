@@ -9,6 +9,9 @@ import (
 // Deployment is the predicate function for deployment builders.
 type Deployment func(*sql.Selector)
 
+// EarlyAccess is the predicate function for earlyaccess builders.
+type EarlyAccess func(*sql.Selector)
+
 // File is the predicate function for file builders.
 type File func(*sql.Selector)
 
