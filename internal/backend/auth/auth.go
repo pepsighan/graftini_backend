@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/pepsighan/graftini_backend/internal/backend/errs"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/earlyaccess"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/user"
 )
 
@@ -47,6 +48,11 @@ func (a *AuthContext) user(ctx context.Context, entClient *ent.Client, firebaseA
 
 		if len(userRecord.ProviderUserInfo) == 0 {
 			return nil, fmt.Errorf("no provider user info found: %w", err)
+		}
+
+		// TODO: Remove this once we are out of early access program.
+		if err := checkIfUserAllowedForEarlyAccess(ctx, userRecord.ProviderUserInfo[0].Email, entClient); err != nil {
+			return nil, fmt.Errorf("could not login the user because they are not allowed to access: %w", err)
 		}
 
 		// Store the user in the database for later. This is probably the first login.
@@ -108,3 +114,12 @@ type contextKey string
 
 const authContextKey contextKey = "authContext"
 const authUserContextKey contextKey = "authUserContext"
+
+// checkIfUserAllowedForEarlyAccess checks if the user is allowed for early access.
+// If not then this returns an error.
+func checkIfUserAllowedForEarlyAccess(ctx context.Context, email string, entClient *ent.Client) error {
+	_, err := entClient.EarlyAccess.Query().
+		Where(earlyaccess.EmailEQ(email)).
+		First(ctx)
+	return err
+}
