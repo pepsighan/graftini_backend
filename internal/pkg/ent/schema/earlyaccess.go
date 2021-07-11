@@ -13,6 +13,8 @@ type EarlyAccess struct {
 }
 
 // Fields of the EarlyAccess.
+// The early acccess table only lists the emails that are allowed to access
+// the app. We will add the list of emails we see fit to this table.
 func (EarlyAccess) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("email").Unique(),
