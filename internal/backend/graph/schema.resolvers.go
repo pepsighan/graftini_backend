@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/pepsighan/graftini_backend/internal/backend/auth"
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
+	"github.com/pepsighan/graftini_backend/internal/backend/deployclient"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
 	model1 "github.com/pepsighan/graftini_backend/internal/backend/graph/model"
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
@@ -104,6 +105,12 @@ func (r *mutationResolver) DeleteProject(ctx context.Context, projectID uuid.UUI
 func (r *mutationResolver) DeployProject(ctx context.Context, projectID uuid.UUID) (*ent.Deployment, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 
+	deploy, grpc, err := deployclient.GrpcClient()
+	if err != nil {
+		return nil, err
+	}
+	defer grpc.Close()
+
 	prj, err := r.Ent.Project.Query().
 		ByIDAndOwnedBy(projectID, user.ID).
 		First(ctx)
@@ -116,7 +123,7 @@ func (r *mutationResolver) DeployProject(ctx context.Context, projectID uuid.UUI
 		return nil, err
 	}
 
-	reply, err := r.Deploy.DeployProject(ctx, &service.DeployRequest{
+	reply, err := deploy.DeployProject(ctx, &service.DeployRequest{
 		ProjectID: projectIDBytes,
 	})
 	if err != nil {
@@ -305,6 +312,12 @@ func (r *queryResolver) MyProject(ctx context.Context, id uuid.UUID) (*ent.Proje
 func (r *queryResolver) MyLastDeployment(ctx context.Context, projectID uuid.UUID) (*ent.Deployment, error) {
 	owner := auth.RequiredAuthenticatedUser(ctx)
 
+	deploy, grpc, err := deployclient.GrpcClient()
+	if err != nil {
+		return nil, err
+	}
+	defer grpc.Close()
+
 	project, err := r.Ent.Project.Query().
 		ByIDAndOwnedBy(projectID, owner.ID).
 		First(ctx)
@@ -336,7 +349,7 @@ func (r *queryResolver) MyLastDeployment(ctx context.Context, projectID uuid.UUI
 	}
 
 	// Otherwise, fetch the current status.
-	_, err = r.Deploy.CheckStatus(ctx, &service.StatusRequest{DeploymentID: deploymentIDBytes})
+	_, err = deploy.CheckStatus(ctx, &service.StatusRequest{DeploymentID: deploymentIDBytes})
 	if err != nil {
 		return nil, err
 	}

@@ -3,7 +3,6 @@ package graph
 import (
 	"cloud.google.com/go/storage"
 	"firebase.google.com/go/v4/auth"
-	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 )
 
@@ -17,14 +16,12 @@ type Resolver struct {
 	Ent          *ent.Client
 	FirebaseAuth *auth.Client
 	Storage      *storage.Client
-	Deploy       service.DeployClient
 }
 
-func NewResolver(client *ent.Client, auth *auth.Client, storage *storage.Client, deploy service.DeployClient) *Resolver {
+func NewResolver(client *ent.Client, auth *auth.Client, storage *storage.Client) *Resolver {
 	return &Resolver{
 		Ent:          client,
 		FirebaseAuth: auth,
 		Storage:      storage,
-		Deploy:       deploy,
 	}
 }
