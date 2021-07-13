@@ -1,4 +1,4 @@
-package service
+package server
 
 import (
 	context "context"
@@ -12,13 +12,14 @@ import (
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate"
 	"github.com/pepsighan/graftini_backend/internal/deploy/config"
+	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/deploy/vercel"
 	"github.com/pepsighan/graftini_backend/internal/pkg/domain"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
 
-func deployProject(ctx context.Context, project *ent.Project, deployment *ent.Deployment) (*DeployReply, error) {
+func deployProject(ctx context.Context, project *ent.Project, deployment *ent.Deployment) (*service.DeployReply, error) {
 	vercelProj, err := createVercelProjectIfNotExists(ctx, project.ID)
 	if err != nil {
 		return nil, fmt.Errorf("could not create a vercel project: %w", err)
@@ -55,7 +56,7 @@ func deployProject(ctx context.Context, project *ent.Project, deployment *ent.De
 	if err != nil {
 		return nil, fmt.Errorf("could not get the deployment id: %w", err)
 	}
-	return &DeployReply{DeploymentID: deployID}, nil
+	return &service.DeployReply{DeploymentID: deployID}, nil
 }
 
 // createVercelProjectIfNotExists creates a vercel project if it does not exist.

@@ -1,4 +1,4 @@
-package service
+package server
 
 import (
 	context "context"
@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
+	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/deploy/vercel"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
@@ -13,11 +14,11 @@ import (
 
 // Server is used to implement the GRPC deploy service.
 type Server struct {
-	UnimplementedDeployServer
+	service.UnimplementedDeployServer
 	Ent *ent.Client
 }
 
-func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployReply, error) {
+func (s *Server) DeployProject(ctx context.Context, in *service.DeployRequest) (*service.DeployReply, error) {
 	projectID, err := uuid.FromBytes(in.GetProjectID())
 	if err != nil {
 		return nil, fmt.Errorf("could not get the project id: %w", err)
@@ -46,7 +47,7 @@ func (s *Server) DeployProject(ctx context.Context, in *DeployRequest) (*DeployR
 }
 
 // CheckStatus checks the status of the deployment.
-func (s *Server) CheckStatus(ctx context.Context, in *StatusRequest) (*StatusReply, error) {
+func (s *Server) CheckStatus(ctx context.Context, in *service.StatusRequest) (*service.StatusReply, error) {
 	deploymentID, err := uuid.FromBytes(in.GetDeploymentID())
 	if err != nil {
 		return nil, fmt.Errorf("could not get the deployment id: %w", err)
@@ -60,7 +61,7 @@ func (s *Server) CheckStatus(ctx context.Context, in *StatusRequest) (*StatusRep
 	// The deployment has not taken place yet or never will because it failed.
 	if deployment.VercelDeploymentID == "" {
 		// No new status to be found.
-		return &StatusReply{DeploymentID: in.DeploymentID}, nil
+		return &service.StatusReply{DeploymentID: in.DeploymentID}, nil
 	}
 
 	vercelDeployment, err := vercel.GetDeployment(ctx, deployment.VercelDeploymentID)
@@ -78,5 +79,5 @@ func (s *Server) CheckStatus(ctx context.Context, in *StatusRequest) (*StatusRep
 		}
 	}
 
-	return &StatusReply{DeploymentID: in.DeploymentID}, nil
+	return &service.StatusReply{DeploymentID: in.DeploymentID}, nil
 }

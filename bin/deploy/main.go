@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/pepsighan/graftini_backend/internal/deploy/config"
+	"github.com/pepsighan/graftini_backend/internal/deploy/server"
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"google.golang.org/grpc"
@@ -24,7 +25,7 @@ func main() {
 	defer client.Close()
 
 	s := grpc.NewServer()
-	service.RegisterDeployServer(s, &service.Server{
+	service.RegisterDeployServer(s, &server.Server{
 		Ent: client,
 	})
 
