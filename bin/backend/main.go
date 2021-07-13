@@ -22,10 +22,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/backend/errs"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
-	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/backoff"
 )
 
 func firebaseAuth() *authFirebase.Client {
@@ -55,38 +52,12 @@ func storageClient() *storage.Client {
 	return client
 }
 
-func grpcClient() (service.DeployClient, *grpc.ClientConn) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	conn, err := grpc.DialContext(
-		ctx,
-		config.DeployEndpoint,
-		grpc.WithInsecure(),
-		grpc.WithBlock(),
-		// Try to reconnect as soon as possible.
-		grpc.WithConnectParams(grpc.ConnectParams{
-			Backoff: backoff.Config{
-				BaseDelay:  1.0 * time.Second,
-				Multiplier: 1.6,
-				Jitter:     0.2,
-				MaxDelay:   10 * time.Second,
-			},
-		}),
-	)
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-
-	return service.NewDeployClient(conn), conn
-}
-
-func graphqlHandler(client *ent.Client, deployClient service.DeployClient) echo.HandlerFunc {
+func graphqlHandler(client *ent.Client) echo.HandlerFunc {
 	firebaseClient := firebaseAuth()
 	storageClient := storageClient()
 
 	h := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{
-		Resolvers:  graph.NewResolver(client, firebaseClient, storageClient, deployClient),
+		Resolvers:  graph.NewResolver(client, firebaseClient, storageClient),
 		Directives: graph.NewDirective(client, firebaseClient),
 	}))
 	h.SetErrorPresenter(errs.ErrorPresenter)
@@ -115,9 +86,6 @@ func main() {
 	}
 	defer client.Close()
 
-	deployClient, grpcConn := grpcClient()
-	defer grpcConn.Close()
-
 	e := echo.New()
 
 	// Recover from panics within route handlers. This saves the app from crashes.
@@ -139,7 +107,7 @@ func main() {
 	// limit DoS attacks by file uploads.
 	e.Use(middleware.BodyLimit(config.MaxBodySize))
 
-	e.POST("/query", graphqlHandler(client, deployClient))
+	e.POST("/query", graphqlHandler(client))
 	e.GET("/", playgroundHandler())
 
 	// Start server
