@@ -62,7 +62,7 @@ func Env(key string, defaultVal string) string {
 
 // DatabaseURL gets the database URL to connect to based on the environment.
 func DatabaseURL(env Environment) string {
-	if env == EnvLocal {
+	if env.IsLocal() {
 		return RequireEnv("POSTGRES_URL")
 	}
 

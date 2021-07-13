@@ -2,8 +2,6 @@ package deployclient
 
 import (
 	"context"
-	"crypto/tls"
-	"crypto/x509"
 	"fmt"
 	"time"
 
@@ -11,7 +9,6 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/backoff"
-	"google.golang.org/grpc/credentials"
 )
 
 func grpcConn() (*grpc.ClientConn, error) {
@@ -23,31 +20,31 @@ func grpcConn() (*grpc.ClientConn, error) {
 
 	var opts []grpc.DialOption
 
-	if config.Env.IsLocal() {
-		opts = append(
-			opts,
-			grpc.WithInsecure(),
-			// Try to reconnect as soon as possible.
-			grpc.WithConnectParams(grpc.ConnectParams{
-				Backoff: backoff.Config{
-					BaseDelay:  1.0 * time.Second,
-					Multiplier: 1.6,
-					Jitter:     0.2,
-					MaxDelay:   10 * time.Second,
-				},
-			}),
-		)
-	} else {
-		// Enable SSL connections.
-		systemRoots, err := x509.SystemCertPool()
-		if err != nil {
-			return nil, err
-		}
-		cred := credentials.NewTLS(&tls.Config{
-			RootCAs: systemRoots,
-		})
-		opts = append(opts, grpc.WithTransportCredentials(cred))
-	}
+	// if config.Env.IsLocal() {
+	opts = append(
+		opts,
+		grpc.WithInsecure(),
+		// Try to reconnect as soon as possible.
+		grpc.WithConnectParams(grpc.ConnectParams{
+			Backoff: backoff.Config{
+				BaseDelay:  1.0 * time.Second,
+				Multiplier: 1.6,
+				Jitter:     0.2,
+				MaxDelay:   10 * time.Second,
+			},
+		}),
+	)
+	// } else {
+	// 	// Enable SSL connections.
+	// 	systemRoots, err := x509.SystemCertPool()
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	cred := credentials.NewTLS(&tls.Config{
+	// 		RootCAs: systemRoots,
+	// 	})
+	// 	opts = append(opts, grpc.WithTransportCredentials(cred))
+	// }
 
 	conn, err := grpc.DialContext(
 		ctx,
