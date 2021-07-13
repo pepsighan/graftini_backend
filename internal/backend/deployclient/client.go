@@ -24,6 +24,8 @@ func grpcConn() (*grpc.ClientConn, error) {
 	opts = append(
 		opts,
 		grpc.WithInsecure(),
+		// Wait until a connection is established.
+		grpc.WithBlock(),
 		// Try to reconnect as soon as possible.
 		grpc.WithConnectParams(grpc.ConnectParams{
 			Backoff: backoff.Config{
