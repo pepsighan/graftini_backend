@@ -66,7 +66,7 @@ const (
 // DeploymentSnapshot is a snapshot of a project when deployed.
 type DeploymentSnapshot struct {
 	Project *ProjectSnapshot `json:"project"`
-	Pages   []*Page          `json:"pages"`
+	Pages   []*PageSnapshot  `json:"pages"`
 }
 
 type ProjectSnapshot struct {
@@ -74,9 +74,9 @@ type ProjectSnapshot struct {
 	Name  string `json:"name"`
 }
 
-type PageArtifact struct {
-	ID           string        `json:"id"`
-	Name         string        `json:"name"`
-	Route        string        `json:"route"`
-	ComponentMap *ComponentMap `json:"componentMap"`
+type PageSnapshot struct {
+	ID           string       `json:"id"`
+	Name         string       `json:"name"`
+	Route        string       `json:"route"`
+	ComponentMap ComponentMap `json:"componentMap"`
 }

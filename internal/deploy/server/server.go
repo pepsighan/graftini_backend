@@ -29,7 +29,7 @@ func (s *Server) DeployProject(ctx context.Context, in *service.DeployRequest) (
 		return nil, fmt.Errorf("could not find the project: %w", err)
 	}
 
-	deployment, err := createSnapshotOfProject(ctx, project, s.Ent)
+	deployment, snapshot, err := initializeDeployment(ctx, project, s.Ent)
 	if err != nil {
 		return nil, fmt.Errorf("could not create the deployment: %w", err)
 	}
