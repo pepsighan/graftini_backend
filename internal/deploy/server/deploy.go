@@ -74,15 +74,6 @@ func createVercelProjectIfNotExists(ctx context.Context, projectID uuid.UUID) (*
 	return vercel.CreateProject(ctx, projectName)
 }
 
-// recordDeployment records the deployment to be tracked later.
-func recordNewDeployment(ctx context.Context, project *ent.Project, client *ent.Client) (*ent.Deployment, error) {
-	return client.Deployment.Create().
-		SetVercelDeploymentID(""). // We do not have a deployment ID.
-		SetStatus(schema.DeploymentInitializing).
-		SetDeploymentsOf(project).
-		Save(ctx)
-}
-
 // updateDeployment updates the deployment with the final status.
 func updateDeployment(ctx context.Context, deployment *ent.Deployment, vercelDeploymentID string, status schema.DeploymentStatus) (*ent.Deployment, error) {
 	return deployment.Update().
