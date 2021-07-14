@@ -11,7 +11,7 @@ import (
 var _ = config.LoadEnvFile(".backend.env")
 
 var (
-	Env                      = config.Environment(config.RequireEnv("ENV"))
+	Env                      = config.RequireEnvENV()
 	Port                     = config.Env("PORT", "1323")
 	DatabaseURL              = config.DatabaseURL(Env)
 	AllowedOrigins           = allowedOrigins()
