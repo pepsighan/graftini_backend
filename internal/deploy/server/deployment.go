@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	gonanoid "github.com/matoous/go-nanoid"
+	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )

@@ -4,27 +4,21 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
 
 // buildPage generates the NextJS page component.
-func buildPage(pg *ent.Page) (string, error) {
-	componentMap, err := parseComponentMap(pg.ComponentMap)
-	if err != nil {
-		return "", err
-	}
-
+func buildPage(pg *schema.PageSnapshot) (string, error) {
 	var sb strings.Builder
 	sb.WriteString("import { Box, Text } from '@graftini/bricks';\n\n")
 
 	sb.WriteString("export default function Page")
 	// Name the page component with Page followed by UUID. This is not user-readable anyways.
 	// Make it simple and unique to implement.
-	sb.WriteString(strings.ReplaceAll(pg.ID.String(), "-", ""))
+	sb.WriteString(strings.ReplaceAll(pg.ID, "-", ""))
 	sb.WriteString("() {\n")
 
-	if err := buildPageMarkup(&sb, componentMap); err != nil {
+	if err := buildPageMarkup(&sb, pg.ComponentMap); err != nil {
 		return "", err
 	}
 
@@ -96,16 +90,4 @@ func buildProps(sb *strings.Builder, comp *schema.ComponentNode) error {
 	}
 
 	return nil
-}
-
-// parseComponentMap parses the string to a component map.
-func parseComponentMap(c string) (schema.ComponentMap, error) {
-	componentMap := schema.ComponentMap{}
-
-	err := json.Unmarshal([]byte(c), &componentMap)
-	if err != nil {
-		return nil, err
-	}
-
-	return componentMap, nil
 }

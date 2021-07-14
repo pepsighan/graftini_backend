@@ -34,7 +34,7 @@ func (s *Server) DeployProject(ctx context.Context, in *service.DeployRequest) (
 		return nil, fmt.Errorf("could not create the deployment: %w", err)
 	}
 
-	reply, err := deployProject(ctx, project, deployment)
+	reply, err := deployProject(ctx, project.ID.String(), deployment, snapshot)
 	if err != nil {
 		if _, err := updateDeployment(ctx, deployment, "", schema.DeploymentError); err != nil {
 			log.Errorf("failed to mark deployment as failed manually: %v", err)

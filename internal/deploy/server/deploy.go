@@ -5,11 +5,8 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
-	"regexp"
 	"strings"
 
-	"github.com/google/uuid"
-	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate"
 	"github.com/pepsighan/graftini_backend/internal/deploy/config"
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
@@ -19,18 +16,18 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
 
-func deployProject(ctx context.Context, project *ent.Project, deployment *ent.Deployment) (*service.DeployReply, error) {
-	vercelProj, err := createVercelProjectIfNotExists(ctx, project.ID)
+func deployProject(ctx context.Context, projectID string, deployment *ent.Deployment, snapshot *schema.DeploymentSnapshot) (*service.DeployReply, error) {
+	vercelProj, err := createVercelProjectIfNotExists(ctx, projectID)
 	if err != nil {
 		return nil, fmt.Errorf("could not create a vercel project: %w", err)
 	}
 
-	err = attachGraftiniSubdomain(ctx, project)
+	err = attachGraftiniSubdomain(ctx, projectID, snapshot.Project)
 	if err != nil {
 		return nil, fmt.Errorf("could not attach a graftini subdomain: %w", err)
 	}
 
-	projectPath, err := appgenerate.GenerateCodeBaseForProject(ctx, project)
+	projectPath, err := appgenerate.GenerateCodeBaseForProject(ctx, snapshot.Pages)
 	defer projectPath.Cleanup() // Cleanup the folder regardless of the error.
 
 	if err != nil {
@@ -60,7 +57,7 @@ func deployProject(ctx context.Context, project *ent.Project, deployment *ent.De
 }
 
 // createVercelProjectIfNotExists creates a vercel project if it does not exist.
-func createVercelProjectIfNotExists(ctx context.Context, projectID uuid.UUID) (*vercel.Project, error) {
+func createVercelProjectIfNotExists(ctx context.Context, projectID string) (*vercel.Project, error) {
 	projectName := generateVercelProjectName(projectID)
 	project, err := vercel.GetProject(ctx, projectName)
 	if err != nil {
@@ -84,7 +81,7 @@ func updateDeployment(ctx context.Context, deployment *ent.Deployment, vercelDep
 
 // generateVercelProjectName generates a vercel project name with the prefix `{env}-graftini-app` and
 // its UUID.
-func generateVercelProjectName(projectID uuid.UUID) string {
+func generateVercelProjectName(projectID string) string {
 	return fmt.Sprintf("%v-graftini-app-%v", config.Env, projectID)
 }
 
@@ -127,13 +124,10 @@ func uploadProjectFiles(ctx context.Context, projectPath string) ([]*vercel.Proj
 
 // attachGraftiniSubdomain attaches a graftini.app subdomain to the project if it is
 // not already attached.
-func attachGraftiniSubdomain(ctx context.Context, project *ent.Project) error {
-	domainName, err := getDomainNameForProject(ctx, project)
-	if err != nil {
-		return err
-	}
+func attachGraftiniSubdomain(ctx context.Context, projectID string, snapshot *schema.ProjectSnapshot) error {
+	domainName := domain.GenerateDomainNameFromRefID(snapshot.RefID, config.Env)
 
-	vercelProjectName := generateVercelProjectName(project.ID)
+	vercelProjectName := generateVercelProjectName(projectID)
 	isAttached, err := vercel.DoesDomainExistInProject(ctx, vercelProjectName, domainName)
 	if err != nil {
 		return err
@@ -144,63 +138,4 @@ func attachGraftiniSubdomain(ctx context.Context, project *ent.Project) error {
 	}
 
 	return vercel.AddDomainToProject(ctx, vercelProjectName, domainName)
-}
-
-// getDomainNameForProject generates a new subdomain if it is not already.
-func getDomainNameForProject(ctx context.Context, project *ent.Project) (string, error) {
-	if project.RefID != nil {
-		return domain.GenerateDomainNameFromRefID(*project.RefID, config.Env), nil
-	}
-
-	// Try to generate until there is a valid refID.
-	for {
-		newRefID, err := subdomainFromString(project.Name)
-		if err != nil {
-			return "", err
-		}
-
-		saved, err := project.Update().
-			SetRefID(newRefID).
-			Save(ctx)
-
-		if ent.IsConstraintError(err) {
-			// If the refID was not unique, regenerate it.
-			continue
-		}
-
-		if err != nil {
-			return "", err
-		}
-
-		return domain.GenerateDomainNameFromRefID(*saved.RefID, config.Env), nil
-	}
-}
-
-// invalidSubdomainChars is any characters not alphanumeric and -.
-var invalidSubdomainChars = regexp.MustCompile("[^a-zA-Z0-9-]+")
-
-// invalidStartingDash is any - character in the start.
-var invalidStartingDash = regexp.MustCompile("^-+")
-
-// invalidEndingDash is any - character in the end.
-var invalidEndingDash = regexp.MustCompile("-+$")
-
-const nanoidCharacterSpace = "abcdefghijklmnopqrstuvwxyz0123456789"
-const suffixLength = 8
-
-// subdomainFromString gets a valid subdomain using the given string.
-// It removes any invalid characters from the given name.
-func subdomainFromString(name string) (string, error) {
-	subdomain := invalidSubdomainChars.ReplaceAllString(name, "")
-	subdomain = invalidStartingDash.ReplaceAllString(subdomain, "")
-	subdomain = invalidEndingDash.ReplaceAllString(subdomain, "")
-
-	subdomain = strings.ToLower(subdomain)
-
-	randomSuffix, err := gonanoid.Generate(nanoidCharacterSpace, suffixLength)
-	if err != nil {
-		return "", fmt.Errorf("could not generate a random suffix: %w", err)
-	}
-
-	return fmt.Sprintf("%v-%v", subdomain, randomSuffix), nil
 }
