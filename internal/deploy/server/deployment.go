@@ -3,7 +3,11 @@ package server
 import (
 	context "context"
 	"encoding/json"
+	"fmt"
+	"regexp"
+	"strings"
 
+	gonanoid "github.com/matoous/go-nanoid"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
@@ -48,9 +52,26 @@ func createDeploymentSnapshot(ctx context.Context, project *ent.Project) (*schem
 
 	snapshot := &schema.DeploymentSnapshot{
 		Project: &schema.ProjectSnapshot{
-			RefID: *project.RefID, // Generate ref id here.
-			Name:  project.Name,
+			Name: project.Name,
 		},
+	}
+
+	// Assign a new ref ID if it does not exist in the project.
+	if project.RefID == nil {
+		subdomain, err := subdomainFromString(project.Name)
+		if err != nil {
+			return nil, err
+		}
+
+		snapshot.Project.RefID = subdomain
+
+		// Save the subdomain for later deployments too.
+		_, err = project.Update().
+			SetRefID(subdomain).
+			Save(ctx)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	for _, page := range pages {
@@ -78,4 +99,33 @@ func convertSnapshotToJSON(snapshot *schema.DeploymentSnapshot) (string, error) 
 	}
 
 	return string(bytes), nil
+}
+
+// invalidSubdomainChars is any characters not alphanumeric and -.
+var invalidSubdomainChars = regexp.MustCompile("[^a-zA-Z0-9-]+")
+
+// invalidStartingDash is any - character in the start.
+var invalidStartingDash = regexp.MustCompile("^-+")
+
+// invalidEndingDash is any - character in the end.
+var invalidEndingDash = regexp.MustCompile("-+$")
+
+const nanoidCharacterSpace = "abcdefghijklmnopqrstuvwxyz0123456789"
+const suffixLength = 8
+
+// subdomainFromString gets a valid subdomain using the given string.
+// It removes any invalid characters from the given name.
+func subdomainFromString(name string) (string, error) {
+	subdomain := invalidSubdomainChars.ReplaceAllString(name, "")
+	subdomain = invalidStartingDash.ReplaceAllString(subdomain, "")
+	subdomain = invalidEndingDash.ReplaceAllString(subdomain, "")
+
+	subdomain = strings.ToLower(subdomain)
+
+	randomSuffix, err := gonanoid.Generate(nanoidCharacterSpace, suffixLength)
+	if err != nil {
+		return "", fmt.Errorf("could not generate a random suffix: %w", err)
+	}
+
+	return fmt.Sprintf("%v-%v", subdomain, randomSuffix), nil
 }
