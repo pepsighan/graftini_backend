@@ -17,6 +17,8 @@ const (
 	FieldVercelDeploymentID = "vercel_deployment_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldProjectSnapshot holds the string denoting the project_snapshot field in the database.
+	FieldProjectSnapshot = "project_snapshot"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -39,6 +41,7 @@ var Columns = []string{
 	FieldID,
 	FieldVercelDeploymentID,
 	FieldStatus,
+	FieldProjectSnapshot,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -67,6 +70,10 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultVercelDeploymentID holds the default value on creation for the "vercel_deployment_id" field.
 	DefaultVercelDeploymentID string
+	// DefaultProjectSnapshot holds the default value on creation for the "project_snapshot" field.
+	DefaultProjectSnapshot string
+	// ProjectSnapshotValidator is a validator for the "project_snapshot" field. It is called by the builders before save.
+	ProjectSnapshotValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

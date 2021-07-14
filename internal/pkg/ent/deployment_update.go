@@ -50,6 +50,20 @@ func (du *DeploymentUpdate) SetStatus(ss schema.DeploymentStatus) *DeploymentUpd
 	return du
 }
 
+// SetProjectSnapshot sets the "project_snapshot" field.
+func (du *DeploymentUpdate) SetProjectSnapshot(s string) *DeploymentUpdate {
+	du.mutation.SetProjectSnapshot(s)
+	return du
+}
+
+// SetNillableProjectSnapshot sets the "project_snapshot" field if the given value is not nil.
+func (du *DeploymentUpdate) SetNillableProjectSnapshot(s *string) *DeploymentUpdate {
+	if s != nil {
+		du.SetProjectSnapshot(*s)
+	}
+	return du
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (du *DeploymentUpdate) SetUpdatedAt(t time.Time) *DeploymentUpdate {
 	du.mutation.SetUpdatedAt(t)
@@ -94,12 +108,18 @@ func (du *DeploymentUpdate) Save(ctx context.Context) (int, error) {
 	)
 	du.defaults()
 	if len(du.hooks) == 0 {
+		if err = du.check(); err != nil {
+			return 0, err
+		}
 		affected, err = du.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*DeploymentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = du.check(); err != nil {
+				return 0, err
 			}
 			du.mutation = mutation
 			affected, err = du.sqlSave(ctx)
@@ -146,6 +166,16 @@ func (du *DeploymentUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (du *DeploymentUpdate) check() error {
+	if v, ok := du.mutation.ProjectSnapshot(); ok {
+		if err := deployment.ProjectSnapshotValidator(v); err != nil {
+			return &ValidationError{Name: "project_snapshot", err: fmt.Errorf("ent: validator failed for field \"project_snapshot\": %w", err)}
+		}
+	}
+	return nil
+}
+
 func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -176,6 +206,13 @@ func (du *DeploymentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: deployment.FieldStatus,
+		})
+	}
+	if value, ok := du.mutation.ProjectSnapshot(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldProjectSnapshot,
 		})
 	}
 	if value, ok := du.mutation.UpdatedAt(); ok {
@@ -259,6 +296,20 @@ func (duo *DeploymentUpdateOne) SetStatus(ss schema.DeploymentStatus) *Deploymen
 	return duo
 }
 
+// SetProjectSnapshot sets the "project_snapshot" field.
+func (duo *DeploymentUpdateOne) SetProjectSnapshot(s string) *DeploymentUpdateOne {
+	duo.mutation.SetProjectSnapshot(s)
+	return duo
+}
+
+// SetNillableProjectSnapshot sets the "project_snapshot" field if the given value is not nil.
+func (duo *DeploymentUpdateOne) SetNillableProjectSnapshot(s *string) *DeploymentUpdateOne {
+	if s != nil {
+		duo.SetProjectSnapshot(*s)
+	}
+	return duo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (duo *DeploymentUpdateOne) SetUpdatedAt(t time.Time) *DeploymentUpdateOne {
 	duo.mutation.SetUpdatedAt(t)
@@ -310,12 +361,18 @@ func (duo *DeploymentUpdateOne) Save(ctx context.Context) (*Deployment, error) {
 	)
 	duo.defaults()
 	if len(duo.hooks) == 0 {
+		if err = duo.check(); err != nil {
+			return nil, err
+		}
 		node, err = duo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*DeploymentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = duo.check(); err != nil {
+				return nil, err
 			}
 			duo.mutation = mutation
 			node, err = duo.sqlSave(ctx)
@@ -360,6 +417,16 @@ func (duo *DeploymentUpdateOne) defaults() {
 		v := deployment.UpdateDefaultUpdatedAt()
 		duo.mutation.SetUpdatedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (duo *DeploymentUpdateOne) check() error {
+	if v, ok := duo.mutation.ProjectSnapshot(); ok {
+		if err := deployment.ProjectSnapshotValidator(v); err != nil {
+			return &ValidationError{Name: "project_snapshot", err: fmt.Errorf("ent: validator failed for field \"project_snapshot\": %w", err)}
+		}
+	}
+	return nil
 }
 
 func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment, err error) {
@@ -409,6 +476,13 @@ func (duo *DeploymentUpdateOne) sqlSave(ctx context.Context) (_node *Deployment,
 			Type:   field.TypeString,
 			Value:  value,
 			Column: deployment.FieldStatus,
+		})
+	}
+	if value, ok := duo.mutation.ProjectSnapshot(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldProjectSnapshot,
 		})
 	}
 	if value, ok := duo.mutation.UpdatedAt(); ok {

@@ -13,6 +13,7 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "vercel_deployment_id", Type: field.TypeString, Default: ""},
 		{Name: "status", Type: field.TypeString},
+		{Name: "project_snapshot", Type: field.TypeString, Default: ""},
 		{Name: "created_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
 		{Name: "updated_at", Type: field.TypeTime, Default: "CURRENT_TIMESTAMP"},
 		{Name: "project_deployments", Type: field.TypeUUID, Nullable: true},
@@ -25,7 +26,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deployments_projects_deployments",
-				Columns:    []*schema.Column{DeploymentsColumns[5]},
+				Columns:    []*schema.Column{DeploymentsColumns[6]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},

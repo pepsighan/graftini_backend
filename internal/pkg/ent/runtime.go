@@ -26,12 +26,18 @@ func init() {
 	deploymentDescVercelDeploymentID := deploymentFields[1].Descriptor()
 	// deployment.DefaultVercelDeploymentID holds the default value on creation for the vercel_deployment_id field.
 	deployment.DefaultVercelDeploymentID = deploymentDescVercelDeploymentID.Default.(string)
+	// deploymentDescProjectSnapshot is the schema descriptor for project_snapshot field.
+	deploymentDescProjectSnapshot := deploymentFields[3].Descriptor()
+	// deployment.DefaultProjectSnapshot holds the default value on creation for the project_snapshot field.
+	deployment.DefaultProjectSnapshot = deploymentDescProjectSnapshot.Default.(string)
+	// deployment.ProjectSnapshotValidator is a validator for the "project_snapshot" field. It is called by the builders before save.
+	deployment.ProjectSnapshotValidator = deploymentDescProjectSnapshot.Validators[0].(func(string) error)
 	// deploymentDescCreatedAt is the schema descriptor for created_at field.
-	deploymentDescCreatedAt := deploymentFields[3].Descriptor()
+	deploymentDescCreatedAt := deploymentFields[4].Descriptor()
 	// deployment.DefaultCreatedAt holds the default value on creation for the created_at field.
 	deployment.DefaultCreatedAt = deploymentDescCreatedAt.Default.(func() time.Time)
 	// deploymentDescUpdatedAt is the schema descriptor for updated_at field.
-	deploymentDescUpdatedAt := deploymentFields[4].Descriptor()
+	deploymentDescUpdatedAt := deploymentFields[5].Descriptor()
 	// deployment.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	deployment.DefaultUpdatedAt = deploymentDescUpdatedAt.Default.(func() time.Time)
 	// deployment.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

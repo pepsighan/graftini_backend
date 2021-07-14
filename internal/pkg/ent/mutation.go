@@ -48,6 +48,7 @@ type DeploymentMutation struct {
 	id                    *uuid.UUID
 	vercel_deployment_id  *string
 	status                *schema.DeploymentStatus
+	project_snapshot      *string
 	created_at            *time.Time
 	updated_at            *time.Time
 	clearedFields         map[string]struct{}
@@ -215,6 +216,42 @@ func (m *DeploymentMutation) ResetStatus() {
 	m.status = nil
 }
 
+// SetProjectSnapshot sets the "project_snapshot" field.
+func (m *DeploymentMutation) SetProjectSnapshot(s string) {
+	m.project_snapshot = &s
+}
+
+// ProjectSnapshot returns the value of the "project_snapshot" field in the mutation.
+func (m *DeploymentMutation) ProjectSnapshot() (r string, exists bool) {
+	v := m.project_snapshot
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProjectSnapshot returns the old "project_snapshot" field's value of the Deployment entity.
+// If the Deployment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeploymentMutation) OldProjectSnapshot(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldProjectSnapshot is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldProjectSnapshot requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProjectSnapshot: %w", err)
+	}
+	return oldValue.ProjectSnapshot, nil
+}
+
+// ResetProjectSnapshot resets all changes to the "project_snapshot" field.
+func (m *DeploymentMutation) ResetProjectSnapshot() {
+	m.project_snapshot = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *DeploymentMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -340,12 +377,15 @@ func (m *DeploymentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeploymentMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.vercel_deployment_id != nil {
 		fields = append(fields, deployment.FieldVercelDeploymentID)
 	}
 	if m.status != nil {
 		fields = append(fields, deployment.FieldStatus)
+	}
+	if m.project_snapshot != nil {
+		fields = append(fields, deployment.FieldProjectSnapshot)
 	}
 	if m.created_at != nil {
 		fields = append(fields, deployment.FieldCreatedAt)
@@ -365,6 +405,8 @@ func (m *DeploymentMutation) Field(name string) (ent.Value, bool) {
 		return m.VercelDeploymentID()
 	case deployment.FieldStatus:
 		return m.Status()
+	case deployment.FieldProjectSnapshot:
+		return m.ProjectSnapshot()
 	case deployment.FieldCreatedAt:
 		return m.CreatedAt()
 	case deployment.FieldUpdatedAt:
@@ -382,6 +424,8 @@ func (m *DeploymentMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldVercelDeploymentID(ctx)
 	case deployment.FieldStatus:
 		return m.OldStatus(ctx)
+	case deployment.FieldProjectSnapshot:
+		return m.OldProjectSnapshot(ctx)
 	case deployment.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case deployment.FieldUpdatedAt:
@@ -408,6 +452,13 @@ func (m *DeploymentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
+		return nil
+	case deployment.FieldProjectSnapshot:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProjectSnapshot(v)
 		return nil
 	case deployment.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -477,6 +528,9 @@ func (m *DeploymentMutation) ResetField(name string) error {
 		return nil
 	case deployment.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case deployment.FieldProjectSnapshot:
+		m.ResetProjectSnapshot()
 		return nil
 	case deployment.FieldCreatedAt:
 		m.ResetCreatedAt()

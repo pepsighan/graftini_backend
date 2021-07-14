@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"time"
 
 	"entgo.io/ent"
@@ -22,6 +23,13 @@ func (Deployment) Fields() []ent.Field {
 		// This is required when creating. Default value is for existing ones.
 		field.String("vercel_deployment_id").Default(""),
 		field.String("status").GoType(DeploymentStatus("")),
+		// This is actually a required field. Default value is for existing fields.
+		field.String("project_snapshot").Default("").
+			Validate(func(s string) error {
+				var artifacts DeploymentSnapshot
+				// It is valid only if it can be read into the schema.
+				return json.Unmarshal([]byte(s), &artifacts)
+			}),
 		field.Time("created_at").Default(time.Now).Immutable().
 			Annotations(&entsql.Annotation{
 				Default: "CURRENT_TIMESTAMP",
@@ -54,3 +62,21 @@ const (
 	DeploymentError        DeploymentStatus = "ERROR"
 	DeploymentCancelled    DeploymentStatus = "CANCELED"
 )
+
+// DeploymentSnapshot is a snapshot of a project when deployed.
+type DeploymentSnapshot struct {
+	Project *ProjectSnapshot `json:"project"`
+	Pages   []*PageSnapshot  `json:"pages"`
+}
+
+type ProjectSnapshot struct {
+	RefID string `json:"refId"`
+	Name  string `json:"name"`
+}
+
+type PageSnapshot struct {
+	ID           string       `json:"id"`
+	Name         string       `json:"name"`
+	Route        string       `json:"route"`
+	ComponentMap ComponentMap `json:"componentMap"`
+}

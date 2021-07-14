@@ -9,17 +9,12 @@ import (
 
 	"github.com/otiai10/copy"
 	"github.com/pepsighan/graftini_backend/internal/deploy/config"
-	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
 
 // GenerateProject generates a code base for the project and returns the file path in which
 // it was generated in.
-func GenerateCodeBaseForProject(ctx context.Context, project *ent.Project) (CodeBasePath, error) {
-	pages, err := project.QueryPages().All(ctx)
-	if err != nil {
-		return "", err
-	}
-
+func GenerateCodeBaseForProject(ctx context.Context, pages []*schema.PageSnapshot) (CodeBasePath, error) {
 	// Create a temporary directory on which a new project is to be generated.
 	projectPath, err := newCodeBasePath()
 	if err != nil {
@@ -50,7 +45,7 @@ func GenerateCodeBaseForProject(ctx context.Context, project *ent.Project) (Code
 }
 
 // writePageInPath writes a page component based on the given page information.
-func writePageInPath(p *ent.Page, pagesPath string) error {
+func writePageInPath(p *schema.PageSnapshot, pagesPath string) error {
 	pageFilePath := path.Join(pagesPath, resolvePagePath(p.Route))
 
 	// Create directories leading to the page file.
