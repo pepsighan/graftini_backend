@@ -183,6 +183,16 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model1.NewPage)
 	}
 
 	route := sanitize.CleanRoute(input.Route)
+	pageExists, err := prj.QueryPages().
+		Where(page.RouteEQ(route)).
+		Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if pageExists {
+		return nil, fmt.Errorf("cannot create a duplicate page")
+	}
 
 	return r.Ent.Page.Create().
 		SetName(input.Name).
