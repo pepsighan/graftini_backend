@@ -14,6 +14,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/backend/deployclient"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
 	model1 "github.com/pepsighan/graftini_backend/internal/backend/graph/model"
+	"github.com/pepsighan/graftini_backend/internal/backend/sanitize"
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/db"
 	"github.com/pepsighan/graftini_backend/internal/pkg/domain"
@@ -181,9 +182,21 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model1.NewPage)
 		return nil, err
 	}
 
+	route := sanitize.CleanRoute(input.Route)
+	pageExists, err := prj.QueryPages().
+		Where(page.RouteEQ(route)).
+		Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if pageExists {
+		return nil, fmt.Errorf("cannot create a duplicate page")
+	}
+
 	return r.Ent.Page.Create().
 		SetName(input.Name).
-		SetRoute(input.Route).
+		SetRoute(route).
 		SetComponentMap(input.ComponentMap).
 		SetPageOf(prj).
 		Save(ctx)
