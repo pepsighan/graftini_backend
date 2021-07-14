@@ -23,6 +23,8 @@ type Deployment struct {
 	VercelDeploymentID string `json:"vercel_deployment_id,omitempty"`
 	// Status holds the value of the "status" field.
 	Status schema.DeploymentStatus `json:"status,omitempty"`
+	// ProjectSnapshot holds the value of the "project_snapshot" field.
+	ProjectSnapshot string `json:"project_snapshot,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -61,7 +63,7 @@ func (*Deployment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deployment.FieldVercelDeploymentID, deployment.FieldStatus:
+		case deployment.FieldVercelDeploymentID, deployment.FieldStatus, deployment.FieldProjectSnapshot:
 			values[i] = new(sql.NullString)
 		case deployment.FieldCreatedAt, deployment.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -101,6 +103,12 @@ func (d *Deployment) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
 				d.Status = schema.DeploymentStatus(value.String)
+			}
+		case deployment.FieldProjectSnapshot:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field project_snapshot", values[i])
+			} else if value.Valid {
+				d.ProjectSnapshot = value.String
 			}
 		case deployment.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -157,6 +165,8 @@ func (d *Deployment) String() string {
 	builder.WriteString(d.VercelDeploymentID)
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", d.Status))
+	builder.WriteString(", project_snapshot=")
+	builder.WriteString(d.ProjectSnapshot)
 	builder.WriteString(", created_at=")
 	builder.WriteString(d.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

@@ -43,6 +43,20 @@ func (dc *DeploymentCreate) SetStatus(ss schema.DeploymentStatus) *DeploymentCre
 	return dc
 }
 
+// SetProjectSnapshot sets the "project_snapshot" field.
+func (dc *DeploymentCreate) SetProjectSnapshot(s string) *DeploymentCreate {
+	dc.mutation.SetProjectSnapshot(s)
+	return dc
+}
+
+// SetNillableProjectSnapshot sets the "project_snapshot" field if the given value is not nil.
+func (dc *DeploymentCreate) SetNillableProjectSnapshot(s *string) *DeploymentCreate {
+	if s != nil {
+		dc.SetProjectSnapshot(*s)
+	}
+	return dc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dc *DeploymentCreate) SetCreatedAt(t time.Time) *DeploymentCreate {
 	dc.mutation.SetCreatedAt(t)
@@ -152,6 +166,10 @@ func (dc *DeploymentCreate) defaults() {
 		v := deployment.DefaultVercelDeploymentID
 		dc.mutation.SetVercelDeploymentID(v)
 	}
+	if _, ok := dc.mutation.ProjectSnapshot(); !ok {
+		v := deployment.DefaultProjectSnapshot
+		dc.mutation.SetProjectSnapshot(v)
+	}
 	if _, ok := dc.mutation.CreatedAt(); !ok {
 		v := deployment.DefaultCreatedAt()
 		dc.mutation.SetCreatedAt(v)
@@ -173,6 +191,14 @@ func (dc *DeploymentCreate) check() error {
 	}
 	if _, ok := dc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New("ent: missing required field \"status\"")}
+	}
+	if _, ok := dc.mutation.ProjectSnapshot(); !ok {
+		return &ValidationError{Name: "project_snapshot", err: errors.New("ent: missing required field \"project_snapshot\"")}
+	}
+	if v, ok := dc.mutation.ProjectSnapshot(); ok {
+		if err := deployment.ProjectSnapshotValidator(v); err != nil {
+			return &ValidationError{Name: "project_snapshot", err: fmt.Errorf("ent: validator failed for field \"project_snapshot\": %w", err)}
+		}
 	}
 	if _, ok := dc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New("ent: missing required field \"created_at\"")}
@@ -224,6 +250,14 @@ func (dc *DeploymentCreate) createSpec() (*Deployment, *sqlgraph.CreateSpec) {
 			Column: deployment.FieldStatus,
 		})
 		_node.Status = value
+	}
+	if value, ok := dc.mutation.ProjectSnapshot(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deployment.FieldProjectSnapshot,
+		})
+		_node.ProjectSnapshot = value
 	}
 	if value, ok := dc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

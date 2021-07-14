@@ -110,6 +110,13 @@ func Status(v schema.DeploymentStatus) predicate.Deployment {
 	})
 }
 
+// ProjectSnapshot applies equality check predicate on the "project_snapshot" field. It's identical to ProjectSnapshotEQ.
+func ProjectSnapshot(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProjectSnapshot), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Deployment {
 	return predicate.Deployment(func(s *sql.Selector) {
@@ -354,6 +361,117 @@ func StatusContainsFold(v schema.DeploymentStatus) predicate.Deployment {
 	vc := string(v)
 	return predicate.Deployment(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldStatus), vc))
+	})
+}
+
+// ProjectSnapshotEQ applies the EQ predicate on the "project_snapshot" field.
+func ProjectSnapshotEQ(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProjectSnapshot), v))
+	})
+}
+
+// ProjectSnapshotNEQ applies the NEQ predicate on the "project_snapshot" field.
+func ProjectSnapshotNEQ(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldProjectSnapshot), v))
+	})
+}
+
+// ProjectSnapshotIn applies the In predicate on the "project_snapshot" field.
+func ProjectSnapshotIn(vs ...string) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldProjectSnapshot), v...))
+	})
+}
+
+// ProjectSnapshotNotIn applies the NotIn predicate on the "project_snapshot" field.
+func ProjectSnapshotNotIn(vs ...string) predicate.Deployment {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Deployment(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldProjectSnapshot), v...))
+	})
+}
+
+// ProjectSnapshotGT applies the GT predicate on the "project_snapshot" field.
+func ProjectSnapshotGT(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldProjectSnapshot), v))
+	})
+}
+
+// ProjectSnapshotGTE applies the GTE predicate on the "project_snapshot" field.
+func ProjectSnapshotGTE(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldProjectSnapshot), v))
+	})
+}
+
+// ProjectSnapshotLT applies the LT predicate on the "project_snapshot" field.
+func ProjectSnapshotLT(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldProjectSnapshot), v))
+	})
+}
+
+// ProjectSnapshotLTE applies the LTE predicate on the "project_snapshot" field.
+func ProjectSnapshotLTE(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldProjectSnapshot), v))
+	})
+}
+
+// ProjectSnapshotContains applies the Contains predicate on the "project_snapshot" field.
+func ProjectSnapshotContains(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldProjectSnapshot), v))
+	})
+}
+
+// ProjectSnapshotHasPrefix applies the HasPrefix predicate on the "project_snapshot" field.
+func ProjectSnapshotHasPrefix(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldProjectSnapshot), v))
+	})
+}
+
+// ProjectSnapshotHasSuffix applies the HasSuffix predicate on the "project_snapshot" field.
+func ProjectSnapshotHasSuffix(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldProjectSnapshot), v))
+	})
+}
+
+// ProjectSnapshotEqualFold applies the EqualFold predicate on the "project_snapshot" field.
+func ProjectSnapshotEqualFold(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldProjectSnapshot), v))
+	})
+}
+
+// ProjectSnapshotContainsFold applies the ContainsFold predicate on the "project_snapshot" field.
+func ProjectSnapshotContainsFold(v string) predicate.Deployment {
+	return predicate.Deployment(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldProjectSnapshot), v))
 	})
 }
 
