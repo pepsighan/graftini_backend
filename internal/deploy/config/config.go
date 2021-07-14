@@ -10,7 +10,7 @@ import (
 var _ = config.LoadEnvFile(".deploy.env")
 
 var (
-	Env                 = config.Environment(config.RequireEnv("ENV"))
+	Env                 = config.RequireEnvENV()
 	DatabaseURL         = config.DatabaseURL(Env)
 	VercelToken         = config.RequireEnv("VERCEL_TOKEN")
 	VercelTeamID        = config.RequireEnv("VERCEL_TEAM_ID")

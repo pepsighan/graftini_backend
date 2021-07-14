@@ -28,6 +28,17 @@ func (e Environment) IsProduction() bool {
 	return e == EnvProduction
 }
 
+// RequireEnvENV requires a valid ENV environment variable.
+func RequireEnvENV() Environment {
+	env := Environment(RequireEnv("ENV"))
+
+	if !(env.IsLocal() || env.IsDevelopment() || env.IsProduction()) {
+		log.Fatalf("environment `ENV` can only be either `local`, `development` or `production`")
+	}
+
+	return env
+}
+
 // LoadEnvFile loads the environment file if present. This function
 // needs to run before any environment is read.
 func LoadEnvFile(filename string) bool {
