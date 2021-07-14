@@ -72,6 +72,8 @@ func createDeploymentSnapshot(ctx context.Context, project *ent.Project) (*schem
 		if err != nil {
 			return nil, err
 		}
+	} else {
+		snapshot.Project.RefID = *project.RefID
 	}
 
 	for _, page := range pages {
