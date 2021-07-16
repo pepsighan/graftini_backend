@@ -62,10 +62,10 @@ var supportedImageTypes = []string{
 // a supported one.
 func checkIfSupportedImage(mimeType string) error {
 	for _, supported := range supportedImageTypes {
-		if supported != mimeType {
-			return ErrUnsupportedMimeType
+		if supported == mimeType {
+			return nil
 		}
 	}
 
-	return nil
+	return ErrUnsupportedMimeType
 }
