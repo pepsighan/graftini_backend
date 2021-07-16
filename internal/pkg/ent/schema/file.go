@@ -17,6 +17,8 @@ type File struct {
 func (File) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
+		// This field is a bit over optimized for now. We don't have any other files types.
+		// We could have added this later when needed 😜.
 		field.Enum("kind").
 			Values("image"),
 		field.String("mime_type"),
