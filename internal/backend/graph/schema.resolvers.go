@@ -371,7 +371,7 @@ func (r *queryResolver) MyLastDeployment(ctx context.Context, projectID uuid.UUI
 }
 
 func (r *queryResolver) File(ctx context.Context, fileID uuid.UUID) (*ent.File, error) {
-	panic(fmt.Errorf("not implemented"))
+	return r.Ent.File.Get(ctx, fileID)
 }
 
 // Deployment returns generated.DeploymentResolver implementation.
