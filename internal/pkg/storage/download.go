@@ -24,8 +24,8 @@ func FileURL(ctx context.Context, file *ent.File, storageClient *storage.Client)
 		uploadFileName(file.ID, file.Kind),
 		&storage.SignedURLOptions{
 			Method:         "GET",
-			GoogleAccessID: cf.clientEmail,
-			PrivateKey:     []byte(cf.privateKey),
+			GoogleAccessID: cf.ClientEmail,
+			PrivateKey:     []byte(cf.PrivateKey),
 			// Expire the signed URL in 2 days. That should be enough time to view on the UI.
 			// If it expires, the user may need to refresh the page.
 			Expires: time.Now().Add(48 * time.Hour),
@@ -40,11 +40,11 @@ func FileURL(ctx context.Context, file *ent.File, storageClient *storage.Client)
 }
 
 type credentialsFile struct {
-	clientEmail  string `json:"client_email"`
-	clientID     string `json:"client_id"`
-	privateKey   string `json:"private_key"`
-	privateKeyID string `json:"private_key_id"`
-	projectID    string `json:"project_id"`
+	ClientEmail  string `json:"client_email"`
+	ClientID     string `json:"client_id"`
+	PrivateKey   string `json:"private_key"`
+	PrivateKeyID string `json:"private_key_id"`
+	ProjectID    string `json:"project_id"`
 }
 
 // defaultCredentialsFile loads the credentials file from the environment.
@@ -55,7 +55,7 @@ func defaultCredentialsFile(ctx context.Context) (*credentialsFile, error) {
 	}
 
 	cf := new(credentialsFile)
-	if err := json.Unmarshal(creds.JSON, cf); err != nil {
+	if err := json.Unmarshal(creds.JSON, &cf); err != nil {
 		return nil, err
 	}
 
