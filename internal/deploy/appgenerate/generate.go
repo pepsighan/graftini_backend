@@ -12,7 +12,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
 
-// GenerateProject generates a code base for the project and returns the file path in which
+// GenerateCodeBaseForProject generates a code base for the project and returns the file path in which
 // it was generated in.
 func GenerateCodeBaseForProject(ctx context.Context, pages []*schema.PageSnapshot) (CodeBasePath, error) {
 	// Create a temporary directory on which a new project is to be generated.
