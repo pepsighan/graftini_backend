@@ -17,4 +17,5 @@ var (
 	Port                = config.Env("PORT", "8888")
 	TemplateNextAppPath = config.RequireEnv("TEMPLATE_NEXT_APP_PATH")
 	GitHubNPMRepoToken  = strings.Replace(config.RequireEnv("GITHUB_NPM_REPO_TOKEN"), "\\n", "\n", 1) // Replace \n with actual new line.
+	SentryDSN           = config.RequireEnv("SENTRY_DSN")
 )

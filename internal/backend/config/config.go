@@ -18,6 +18,7 @@ var (
 	MaxBodySize              = config.Env("MAX_BODY_SIZE", "2M")
 	DeployEndpoint           = config.RequireEnv("DEPLOY_ENDPOINT")
 	GoogleCloudStorageBucket = config.RequireEnv("GOOGLE_CLOUD_STORAGE_BUCKET")
+	SentryDSN                = config.RequireEnv("SENTRY_DSN")
 )
 
 func allowedOrigins() []string {

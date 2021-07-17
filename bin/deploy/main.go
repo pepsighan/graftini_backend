@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/getsentry/sentry-go"
 	_ "github.com/lib/pq"
 	"github.com/pepsighan/graftini_backend/internal/deploy/config"
 	"github.com/pepsighan/graftini_backend/internal/deploy/server"
@@ -12,7 +13,18 @@ import (
 	"google.golang.org/grpc"
 )
 
+func setupSentry() {
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn: config.SentryDSN,
+	})
+	if err != nil {
+		log.Fatalf("could not initialize sentry: %v", err)
+	}
+}
+
 func main() {
+	setupSentry()
+
 	lis, err := net.Listen("tcp", ":"+config.Port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
