@@ -14,6 +14,7 @@ import (
 	authFirebase "firebase.google.com/go/v4/auth"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	_ "github.com/lib/pq"
@@ -79,7 +80,18 @@ func playgroundHandler() echo.HandlerFunc {
 	}
 }
 
+func setupSentry() {
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn: config.SentryDSN,
+	})
+	if err != nil {
+		log.Fatalf("could not initialize sentry: %v", err)
+	}
+}
+
 func main() {
+	setupSentry()
+
 	client, err := ent.Open("postgres", config.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
