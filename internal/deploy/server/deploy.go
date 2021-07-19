@@ -16,7 +16,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 )
 
-func deployProject(ctx context.Context, projectID string, deployment *ent.Deployment, snapshot *schema.DeploymentSnapshot) (*service.DeployReply, error) {
+func deployProject(ctx context.Context, projectID string, deployment *ent.Deployment, snapshot *schema.DeploymentSnapshot, buildCtx *appgenerate.BuildContext) (*service.DeployReply, error) {
 	vercelProj, err := createVercelProjectIfNotExists(ctx, projectID)
 	if err != nil {
 		return nil, fmt.Errorf("could not create a vercel project: %w", err)
@@ -27,7 +27,7 @@ func deployProject(ctx context.Context, projectID string, deployment *ent.Deploy
 		return nil, fmt.Errorf("could not attach a graftini subdomain: %w", err)
 	}
 
-	projectPath, err := appgenerate.GenerateCodeBaseForProject(ctx, snapshot.Pages)
+	projectPath, err := appgenerate.GenerateCodeBaseForProject(ctx, snapshot.Pages, buildCtx)
 	defer projectPath.Cleanup() // Cleanup the folder regardless of the error.
 
 	if err != nil {

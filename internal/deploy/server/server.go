@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
+	"github.com/pepsighan/graftini_backend/internal/deploy/appgenerate"
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/deploy/vercel"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
@@ -34,7 +35,9 @@ func (s *Server) DeployProject(ctx context.Context, in *service.DeployRequest) (
 		return nil, fmt.Errorf("could not create the deployment: %w", err)
 	}
 
-	reply, err := deployProject(ctx, project.ID.String(), deployment, snapshot)
+	reply, err := deployProject(ctx, project.ID.String(), deployment, snapshot, &appgenerate.BuildContext{
+		Ent: s.Ent,
+	})
 	if err != nil {
 		if _, err := updateDeployment(ctx, deployment, "", schema.DeploymentError); err != nil {
 			log.Errorf("failed to mark deployment as failed manually: %v", err)
