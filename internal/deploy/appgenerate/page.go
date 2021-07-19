@@ -10,7 +10,8 @@ import (
 // buildPage generates the NextJS page component.
 func buildPage(pg *schema.PageSnapshot) (string, error) {
 	var sb strings.Builder
-	sb.WriteString("import { Box, Text } from '@graftini/bricks';\n\n")
+	sb.WriteString("import { Box, Text } from '@graftini/bricks';\n")
+	sb.WriteString("import { defaultTextProps } from 'utils/text';\n\n")
 
 	sb.WriteString("export default function Page")
 	// Name the page component with Page followed by UUID. This is not user-readable anyways.
@@ -50,6 +51,12 @@ func buildSubTreeMarkup(sb *strings.Builder, componentID string, componentMap sc
 	// Start tag of the component.
 	sb.WriteString("<")
 	sb.WriteString(comp.Type)
+
+	if comp.Type == "Text" {
+		// Add default text props to the text component. This is how
+		// a default base style for the text component is done.
+		sb.WriteString(" {...defaultTextProps}")
+	}
 
 	if err := buildProps(sb, &comp); err != nil {
 		return err
