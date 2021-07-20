@@ -19,6 +19,7 @@ var (
 	DeployEndpoint           = config.RequireEnv("DEPLOY_ENDPOINT")
 	GoogleCloudStorageBucket = config.RequireEnv("GOOGLE_CLOUD_STORAGE_BUCKET")
 	SentryDSN                = config.RequireEnv("SENTRY_DSN")
+	ImageKitURLEndpoint      = config.RequireEnv("IMAGEKIT_URL_ENDPOINT")
 )
 
 func allowedOrigins() []string {

@@ -21,7 +21,7 @@ func FileURL(ctx context.Context, file *ent.File, storageClient *storage.Client)
 
 	url, err := storage.SignedURL(
 		config.GoogleCloudStorageBucket,
-		uploadFileName(file.ID, file.Kind),
+		UploadFileName(file.ID, file.Kind),
 		&storage.SignedURLOptions{
 			Method:         "GET",
 			GoogleAccessID: cf.ClientEmail,
