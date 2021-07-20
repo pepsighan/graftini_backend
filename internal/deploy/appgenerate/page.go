@@ -5,20 +5,19 @@ import (
 	"encoding/json"
 	"strings"
 
-	st "cloud.google.com/go/storage"
 	"github.com/google/uuid"
+	"github.com/pepsighan/graftini_backend/internal/deploy/config"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
-	"github.com/pepsighan/graftini_backend/internal/pkg/storage"
+	"github.com/pepsighan/graftini_backend/internal/pkg/imagekit"
 )
 
-type BuildContext struct {
-	Ent     *ent.Client
-	Storage *st.Client
+type GenerateContext struct {
+	Ent *ent.Client
 }
 
 // buildPage generates the NextJS page component.
-func buildPage(ctx context.Context, pg *schema.PageSnapshot, buildCtx *BuildContext) (string, error) {
+func buildPage(ctx context.Context, pg *schema.PageSnapshot, generateCtx *GenerateContext) (string, error) {
 	var sb strings.Builder
 	sb.WriteString("import { Box, Text } from '@graftini/bricks';\n")
 	sb.WriteString("import { defaultTextProps } from 'utils/text';\n\n")
@@ -29,7 +28,7 @@ func buildPage(ctx context.Context, pg *schema.PageSnapshot, buildCtx *BuildCont
 	sb.WriteString(strings.ReplaceAll(pg.ID, "-", ""))
 	sb.WriteString("() {\n")
 
-	if err := buildPageMarkup(ctx, &sb, pg.ComponentMap, buildCtx); err != nil {
+	if err := buildPageMarkup(ctx, &sb, pg.ComponentMap, generateCtx); err != nil {
 		return "", err
 	}
 
@@ -38,13 +37,13 @@ func buildPage(ctx context.Context, pg *schema.PageSnapshot, buildCtx *BuildCont
 }
 
 // buildPageMarkup generates the rendering markup for the page.
-func buildPageMarkup(ctx context.Context, sb *strings.Builder, componentMap schema.ComponentMap, buildCtx *BuildContext) error {
+func buildPageMarkup(ctx context.Context, sb *strings.Builder, componentMap schema.ComponentMap, generateCtx *GenerateContext) error {
 	sb.WriteString("return (<>")
 
 	// Build the markup from the root.
 	root := componentMap["ROOT"]
 	for _, childID := range root.ChildrenNodes {
-		err := buildSubTreeMarkup(ctx, sb, childID, componentMap, buildCtx)
+		err := buildSubTreeMarkup(ctx, sb, childID, componentMap, generateCtx)
 		if err != nil {
 			return err
 		}
@@ -55,7 +54,7 @@ func buildPageMarkup(ctx context.Context, sb *strings.Builder, componentMap sche
 }
 
 // buildSubTreeMarkup generates the markup for the component and its children.
-func buildSubTreeMarkup(ctx context.Context, sb *strings.Builder, componentID string, componentMap schema.ComponentMap, buildCtx *BuildContext) error {
+func buildSubTreeMarkup(ctx context.Context, sb *strings.Builder, componentID string, componentMap schema.ComponentMap, generateCtx *GenerateContext) error {
 	comp := componentMap[componentID]
 
 	// Start tag of the component.
@@ -68,7 +67,7 @@ func buildSubTreeMarkup(ctx context.Context, sb *strings.Builder, componentID st
 		sb.WriteString(" {...defaultTextProps}")
 	}
 
-	if err := buildProps(ctx, sb, &comp, buildCtx); err != nil {
+	if err := buildProps(ctx, sb, &comp, generateCtx); err != nil {
 		return err
 	}
 
@@ -77,7 +76,7 @@ func buildSubTreeMarkup(ctx context.Context, sb *strings.Builder, componentID st
 	// Render the children components.
 	if comp.IsCanvas {
 		for _, childID := range comp.ChildrenNodes {
-			buildSubTreeMarkup(ctx, sb, childID, componentMap, buildCtx)
+			buildSubTreeMarkup(ctx, sb, childID, componentMap, generateCtx)
 		}
 	}
 
@@ -90,7 +89,7 @@ func buildSubTreeMarkup(ctx context.Context, sb *strings.Builder, componentID st
 }
 
 // buildProps generates a series of prop assignments.
-func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.ComponentNode, buildCtx *BuildContext) error {
+func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.ComponentNode, generateCtx *GenerateContext) error {
 	for k, v := range comp.Props {
 		sb.WriteString(" ")
 
@@ -111,7 +110,7 @@ func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.Component
 
 		switch k {
 		case "imageId":
-			url, err := getImageURL(ctx, value, buildCtx)
+			url, err := getImageURL(ctx, value, generateCtx)
 			if err != nil {
 				return err
 			}
@@ -127,16 +126,16 @@ func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.Component
 }
 
 // getImageURL gets the image url for the image ID.
-func getImageURL(ctx context.Context, imageID []byte, buildCtx *BuildContext) (string, error) {
+func getImageURL(ctx context.Context, imageID []byte, generateCtx *GenerateContext) (string, error) {
 	id, err := uuid.FromBytes(imageID)
 	if err != nil {
 		return "", err
 	}
 
-	file, err := buildCtx.Ent.File.Get(ctx, id)
+	file, err := generateCtx.Ent.File.Get(ctx, id)
 	if err != nil {
 		return "", err
 	}
 
-	return storage.FileURL(ctx, file, buildCtx.Storage)
+	return imagekit.GetImageKitURLForFile(config.ImageKitURLEndpoint, file.ID, file.Kind), nil
 }

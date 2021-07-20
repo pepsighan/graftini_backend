@@ -14,7 +14,7 @@ import (
 
 // GenerateCodeBaseForProject generates a code base for the project and returns the file path in which
 // it was generated in.
-func GenerateCodeBaseForProject(ctx context.Context, pages []*schema.PageSnapshot, buildCtx *BuildContext) (CodeBasePath, error) {
+func GenerateCodeBaseForProject(ctx context.Context, pages []*schema.PageSnapshot, generateCtx *GenerateContext) (CodeBasePath, error) {
 	// Create a temporary directory on which a new project is to be generated.
 	projectPath, err := newCodeBasePath()
 	if err != nil {
@@ -36,7 +36,7 @@ func GenerateCodeBaseForProject(ctx context.Context, pages []*schema.PageSnapsho
 	pagesPath := path.Join(string(projectPath), "pages")
 
 	for _, page := range pages {
-		if err := writePageInPath(ctx, page, pagesPath, buildCtx); err != nil {
+		if err := writePageInPath(ctx, page, pagesPath, generateCtx); err != nil {
 			return projectPath, err
 		}
 	}
@@ -45,7 +45,7 @@ func GenerateCodeBaseForProject(ctx context.Context, pages []*schema.PageSnapsho
 }
 
 // writePageInPath writes a page component based on the given page information.
-func writePageInPath(ctx context.Context, p *schema.PageSnapshot, pagesPath string, buildCtx *BuildContext) error {
+func writePageInPath(ctx context.Context, p *schema.PageSnapshot, pagesPath string, generateCtx *GenerateContext) error {
 	pageFilePath := path.Join(pagesPath, resolvePagePath(p.Route))
 
 	// Create directories leading to the page file.
@@ -54,7 +54,7 @@ func writePageInPath(ctx context.Context, p *schema.PageSnapshot, pagesPath stri
 		return err
 	}
 
-	page, err := buildPage(ctx, p, buildCtx)
+	page, err := buildPage(ctx, p, generateCtx)
 	if err != nil {
 		return err
 	}

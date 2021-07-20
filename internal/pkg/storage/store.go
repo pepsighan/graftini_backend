@@ -26,7 +26,7 @@ func UploadFile(ctx context.Context, reader io.Reader, mimeType string, storageC
 	kind := file.KindImage
 
 	bucket := storageClient.Bucket(config.GoogleCloudStorageBucket)
-	object := bucket.Object(uploadFileName(fileID, kind))
+	object := bucket.Object(UploadFileName(fileID, kind))
 
 	writer := object.NewWriter(ctx)
 	defer writer.Close()
@@ -47,8 +47,8 @@ func UploadFile(ctx context.Context, reader io.Reader, mimeType string, storageC
 	return fileRecord, nil
 }
 
-// uploadFileName generates a file name for the object in the GCP bucket.
-func uploadFileName(fileID uuid.UUID, kind file.Kind) string {
+// UploadFileName generates a file name for the object in the GCP bucket.
+func UploadFileName(fileID uuid.UUID, kind file.Kind) string {
 	return fmt.Sprintf("%v/%v", kind, fileID)
 }
 

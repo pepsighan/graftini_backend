@@ -35,7 +35,7 @@ func (s *Server) DeployProject(ctx context.Context, in *service.DeployRequest) (
 		return nil, fmt.Errorf("could not create the deployment: %w", err)
 	}
 
-	reply, err := deployProject(ctx, project.ID.String(), deployment, snapshot, &appgenerate.BuildContext{
+	reply, err := deployProject(ctx, project.ID.String(), deployment, snapshot, &appgenerate.GenerateContext{
 		Ent: s.Ent,
 	})
 	if err != nil {
