@@ -118,7 +118,9 @@ func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.Component
 				if err != nil {
 					return err
 				}
+				sb.WriteString("'")
 				sb.WriteString(url)
+				sb.WriteString("'")
 			} else {
 				sb.Write(value)
 			}
