@@ -39,6 +39,8 @@ func ErrorPresenter(ctx context.Context, err error) *gqlerror.Error {
 		return ErrUnsupportedMimeType
 	}
 
+	// Even though this error might have been logged at the source, we are logging it
+	// here again because there may be other errors coming out of the libraries used.
 	zap.S().Errorf("server errored due to: %v", err)
 	return ErrServerError
 }
