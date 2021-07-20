@@ -131,7 +131,7 @@ func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.Component
 
 // getImageURL gets the image url for the image ID.
 func getImageURL(ctx context.Context, imageID []byte, generateCtx *GenerateContext) (string, error) {
-	id, err := uuid.FromBytes(imageID)
+	id, err := uuid.ParseBytes(imageID)
 	if err != nil {
 		return "", err
 	}
