@@ -76,7 +76,10 @@ func buildSubTreeMarkup(ctx context.Context, sb *strings.Builder, componentID st
 	// Render the children components.
 	if comp.IsCanvas {
 		for _, childID := range comp.ChildrenNodes {
-			buildSubTreeMarkup(ctx, sb, childID, componentMap, generateCtx)
+			err := buildSubTreeMarkup(ctx, sb, childID, componentMap, generateCtx)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
