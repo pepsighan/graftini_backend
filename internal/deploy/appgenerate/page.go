@@ -97,46 +97,32 @@ func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.Component
 	for k, v := range comp.Props {
 		sb.WriteString(" ")
 
-		if k == "link" && v != nil {
-			// Link contains either of the two props.
-			to, href, err := getLinkURL(ctx, v, generateCtx)
-			if err != nil {
-				return err
-			}
-
-			if to != nil {
-				sb.WriteString("to={'")
-				sb.WriteString(*to)
-				sb.WriteString("'}")
-			} else if href != nil {
-				sb.WriteString("href={'")
-				sb.WriteString(*href)
-				sb.WriteString("'}")
-			}
-
-			// Skip the rest.
-			continue
-		}
-
 		switch k {
-		case "imageId":
-			sb.WriteString("imageUrl")
-		default:
-			sb.WriteString(k)
-		}
-
-		sb.WriteString("={")
-
-		// The prop may be an object
-		value, err := json.Marshal(v)
-		if err != nil {
-			return err
-		}
-
-		switch k {
-		case "imageId":
+		case "link":
 			if v != nil {
-				url, err := getImageURL(ctx, value, generateCtx)
+				// Link contains either of the two props.
+				to, href, err := getLinkURL(ctx, v, generateCtx)
+				if err != nil {
+					return err
+				}
+
+				if to != nil {
+					sb.WriteString("to={'")
+					sb.WriteString(*to)
+					sb.WriteString("'}")
+				} else if href != nil {
+					sb.WriteString("href={'")
+					sb.WriteString(*href)
+					sb.WriteString("'}")
+				}
+
+				// Skip the rest.
+				continue
+			}
+		case "imageId":
+			sb.WriteString("imageUrl={")
+			if v != nil {
+				url, err := getImageURL(ctx, v, generateCtx)
 				if err != nil {
 					return err
 				}
@@ -144,21 +130,38 @@ func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.Component
 				sb.WriteString(url)
 				sb.WriteString("'")
 			} else {
-				sb.Write(value)
+				sb.WriteString("null")
 			}
+			sb.WriteString("}")
 		default:
-			sb.Write(value)
+			writePropAndValue(sb, k, v)
 		}
-
-		sb.WriteString("}")
 	}
 
 	return nil
 }
 
+// writePropAndValue writes the key and value as props and value as-is.
+func writePropAndValue(sb *strings.Builder, k string, v interface{}) error {
+	sb.WriteString(k)
+	sb.WriteString("={")
+
+	// The prop may be an object
+	value, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+
+	sb.Write(value)
+	sb.WriteString("}")
+
+	return nil
+}
+
 // getImageURL gets the image url for the image ID.
-func getImageURL(ctx context.Context, imageID []byte, generateCtx *GenerateContext) (string, error) {
-	id, err := uuid.ParseBytes(imageID)
+func getImageURL(ctx context.Context, imageID interface{}, generateCtx *GenerateContext) (string, error) {
+	// imageID can only be a string type.
+	id, err := uuid.Parse(imageID.(string))
 	if err != nil {
 		return "", err
 	}
