@@ -5,9 +5,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/labstack/gommon/log"
 	"github.com/pepsighan/graftini_backend/internal/pkg/storage"
 	"github.com/vektah/gqlparser/v2/gqlerror"
+	"go.uber.org/zap"
 )
 
 var ErrUnauthorizedAccess = newGQLError("unauthorized_access", "you are not authorized to access")
@@ -39,13 +39,12 @@ func ErrorPresenter(ctx context.Context, err error) *gqlerror.Error {
 		return ErrUnsupportedMimeType
 	}
 
-	log.Errorf("server errored due to: %v", err)
+	zap.S().Errorf("server errored due to: %v", err)
 	return ErrServerError
 }
 
 // PanicPresenter returns server error while reporting the error.
 func PanicPresenter(ctx context.Context, err interface{}) error {
-	// TODO: Report the error.
-	log.Errorf("server panicked due to: %v", err)
+	zap.S().Errorf("server panicked due to: %v", err)
 	return ErrServerError
 }
