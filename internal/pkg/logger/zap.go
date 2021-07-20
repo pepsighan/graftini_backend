@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/blendle/zapdriver"
@@ -27,4 +28,20 @@ func NewLogger(env config.Environment) *zap.Logger {
 	// Using this logger instance when using global logger.
 	zap.ReplaceGlobals(logger)
 	return logger
+}
+
+// Errorf is wrapper on `fmt.Errorf`. This logs the error when created so
+// that we know the accurate source of the error.
+func Errorf(format string, a ...interface{}) error {
+	err := fmt.Errorf(format, a...)
+
+	// Logs the error while skipping one caller, so that this Errorf function
+	// does not become the source of the error but the one which calls this
+	// Errorf function.
+	zap.L().
+		WithOptions(zap.AddCallerSkip(1)).
+		Sugar().
+		Error(err)
+
+	return err
 }
