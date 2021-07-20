@@ -21,6 +21,7 @@ type GenerateContext struct {
 func buildPage(ctx context.Context, pg *schema.PageSnapshot, generateCtx *GenerateContext) (string, error) {
 	var sb strings.Builder
 	sb.WriteString("import { Box, Text } from '@graftini/bricks';\n")
+	sb.WriteString("import Head from 'next/head';\n")
 	sb.WriteString("import { defaultTextProps } from 'utils/text';\n\n")
 
 	sb.WriteString("export default function Page")
@@ -43,6 +44,11 @@ func buildPageMarkup(ctx context.Context, sb *strings.Builder, componentMap sche
 
 	// Build the markup from the root.
 	root := componentMap["ROOT"]
+
+	if err := buildSEOForPage(sb, root.Props); err != nil {
+		return err
+	}
+
 	for _, childID := range root.ChildrenNodes {
 		err := buildSubTreeMarkup(ctx, sb, childID, componentMap, generateCtx)
 		if err != nil {
@@ -303,4 +309,36 @@ func parseContent(ctx context.Context, props map[string]interface{}, generateCtx
 
 	// Convert the parsed that has been modified into a json object.
 	return json.Marshal(parsed)
+}
+
+// buildSEOForPage builds the SEO for the page.
+func buildSEOForPage(sb *strings.Builder, props map[string]interface{}) error {
+	seo := props["seo"]
+	if seo == nil {
+		return nil
+	}
+
+	switch s := seo.(type) {
+	case map[string]interface{}:
+		sb.WriteString("<Head>")
+		sb.WriteString("<meta charset=\"utf-8\" />")
+		sb.WriteString("<meta name=\"viewport\" content=\"initial-scale=1, width=device-width\" />")
+
+		title, _ := s["title"].(string)
+		sb.WriteString("<title>")
+		sb.WriteString(title)
+		sb.WriteString("</title>\n")
+
+		description, _ := s["description"].(string)
+		sb.WriteString("<meta name=\"description\" content={'")
+		sb.WriteString(description)
+		sb.WriteString("'} />\n")
+
+		sb.WriteString("</Head>\n")
+
+	default:
+		return logger.Errorf("invalid type of SEO object")
+	}
+
+	return nil
 }
