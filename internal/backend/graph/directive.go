@@ -9,6 +9,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/backend/errs"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 )
 
 func NewDirective(entClient *ent.Client, firebaseAuth *auth.Client) generated.DirectiveRoot {
@@ -20,7 +21,7 @@ func NewDirective(entClient *ent.Client, firebaseAuth *auth.Client) generated.Di
 			}
 
 			if user == nil {
-				return nil, errs.ErrUnauthorizedAccess
+				return nil, logger.Error(errs.ErrUnauthorizedAccess)
 			}
 
 			return next(iauth.WithAuthUser(ctx, user))

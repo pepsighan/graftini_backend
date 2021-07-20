@@ -45,3 +45,13 @@ func Errorf(format string, a ...interface{}) error {
 
 	return err
 }
+
+// Error logs the error right at the source and returns the error as is.
+func Error(err error) error {
+	zap.L().
+		WithOptions(zap.AddCallerSkip(1)).
+		Sugar().
+		Error(err)
+
+	return err
+}

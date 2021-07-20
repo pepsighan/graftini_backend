@@ -68,5 +68,5 @@ func checkIfSupportedImage(mimeType string) error {
 		}
 	}
 
-	return ErrUnsupportedMimeType
+	return logger.Error(ErrUnsupportedMimeType)
 }
