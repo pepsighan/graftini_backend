@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/google/uuid"
@@ -24,6 +23,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 	"github.com/pepsighan/graftini_backend/internal/pkg/storage"
 )
 
@@ -191,7 +191,7 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model1.NewPage)
 	}
 
 	if pageExists {
-		return nil, fmt.Errorf("cannot create a duplicate page")
+		return nil, logger.Errorf("cannot create a duplicate page")
 	}
 
 	return r.Ent.Page.Create().
@@ -219,7 +219,7 @@ func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, 
 	}
 
 	if pgCount == 1 {
-		return nil, fmt.Errorf("cannot delete the only page")
+		return nil, logger.Errorf("cannot delete the only page")
 	}
 
 	pg, err := prj.QueryPages().
@@ -230,7 +230,7 @@ func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, 
 	}
 
 	if pg.Route == "/" {
-		return nil, fmt.Errorf("cannot delete the default page")
+		return nil, logger.Errorf("cannot delete the default page")
 	}
 
 	err = r.Ent.Page.DeleteOne(pg).Exec(ctx)

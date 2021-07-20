@@ -3,7 +3,6 @@ package appgenerate
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 
 	"github.com/google/uuid"
@@ -11,6 +10,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 	"github.com/pepsighan/graftini_backend/internal/pkg/imagekit"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 )
 
 type GenerateContext struct {
@@ -216,11 +216,11 @@ func getLinkURL(ctx context.Context, link interface{}, generateCtx *GenerateCont
 		}
 
 	default:
-		return nil, nil, fmt.Errorf("invalid link type")
+		return nil, nil, logger.Errorf("invalid link type")
 	}
 
 	// The link object is not well formed.
-	return nil, nil, fmt.Errorf("invalid link type")
+	return nil, nil, logger.Errorf("invalid link type")
 }
 
 type ProseMirrorDocument struct {
@@ -257,7 +257,7 @@ func parseContent(ctx context.Context, props map[string]interface{}, generateCtx
 	}
 
 	if content == nil {
-		return nil, fmt.Errorf("content cannot be nil")
+		return nil, logger.Errorf("content cannot be nil")
 	}
 
 	bytes, err := json.Marshal(content)
@@ -271,17 +271,17 @@ func parseContent(ctx context.Context, props map[string]interface{}, generateCtx
 	}
 
 	if parsed.Type != "doc" {
-		return nil, fmt.Errorf("content not of doc type")
+		return nil, logger.Errorf("content not of doc type")
 	}
 
 	for _, p := range parsed.Content {
 		if p.Type != "paragraph" {
-			return nil, fmt.Errorf("doc content not of paragraph type")
+			return nil, logger.Errorf("doc content not of paragraph type")
 		}
 
 		for _, t := range p.Content {
 			if t.Type != "text" {
-				return nil, fmt.Errorf("paragraph content not of text type")
+				return nil, logger.Errorf("paragraph content not of text type")
 			}
 
 			for _, m := range t.Marks {

@@ -3,10 +3,10 @@ package deployclient
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"fmt"
 
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -37,7 +37,7 @@ func grpcConn() (*grpc.ClientConn, error) {
 	)
 
 	if err != nil {
-		return nil, fmt.Errorf("could not connect with the deploy server: %w", err)
+		return nil, logger.Errorf("could not connect with the deploy server: %w", err)
 	}
 
 	return conn, nil
@@ -49,7 +49,7 @@ func GrpcClient() (service.DeployClient, *grpc.ClientConn, error) {
 	conn, err := grpcConn()
 
 	if err != nil {
-		return nil, nil, fmt.Errorf("could not connect with the deploy server: %w", err)
+		return nil, nil, logger.Errorf("could not connect with the deploy server: %w", err)
 	}
 
 	return service.NewDeployClient(conn), conn, nil

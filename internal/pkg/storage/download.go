@@ -3,12 +3,12 @@ package storage
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 	"golang.org/x/oauth2/google"
 )
 
@@ -16,7 +16,7 @@ import (
 func FileURL(ctx context.Context, file *ent.File, storageClient *storage.Client) (string, error) {
 	cf, err := defaultCredentialsFile(ctx)
 	if err != nil {
-		return "", fmt.Errorf("could not find credentials to get file url: %w", err)
+		return "", logger.Errorf("could not find credentials to get file url: %w", err)
 	}
 
 	url, err := storage.SignedURL(
@@ -33,7 +33,7 @@ func FileURL(ctx context.Context, file *ent.File, storageClient *storage.Client)
 	)
 
 	if err != nil {
-		return "", fmt.Errorf("could not get the file url: %w", err)
+		return "", logger.Errorf("could not get the file url: %w", err)
 	}
 
 	return url, nil

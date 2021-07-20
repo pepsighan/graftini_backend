@@ -30,7 +30,7 @@ func NewLogger(env config.Environment) *zap.Logger {
 	return logger
 }
 
-// Errorf is wrapper on `fmt.Errorf`. This logs the error when created so
+// Errorf is wrapper on `logger.Errorf`. This logs the error when created so
 // that we know the accurate source of the error.
 func Errorf(format string, a ...interface{}) error {
 	err := fmt.Errorf(format, a...)

@@ -11,6 +11,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/file"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 )
 
 // ErrUnsupportedMimeType is returned when a file of unsupported mime type is uploaded.
@@ -32,7 +33,7 @@ func UploadFile(ctx context.Context, reader io.Reader, mimeType string, storageC
 	defer writer.Close()
 
 	if _, err := io.Copy(writer, reader); err != nil {
-		return nil, fmt.Errorf("could not upload file: %w", err)
+		return nil, logger.Errorf("could not upload file: %w", err)
 	}
 
 	fileRecord, err := entClient.File.Create().
@@ -41,7 +42,7 @@ func UploadFile(ctx context.Context, reader io.Reader, mimeType string, storageC
 		SetMimeType(mimeType).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("could not save the record for uploaded file: %w", err)
+		return nil, logger.Errorf("could not save the record for uploaded file: %w", err)
 	}
 
 	return fileRecord, nil

@@ -2,7 +2,6 @@ package server
 
 import (
 	context "context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
@@ -11,6 +10,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/deploy/vercel"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 )
 
 // Server is used to implement the GRPC deploy service.
@@ -22,17 +22,17 @@ type Server struct {
 func (s *Server) DeployProject(ctx context.Context, in *service.DeployRequest) (*service.DeployReply, error) {
 	projectID, err := uuid.FromBytes(in.GetProjectID())
 	if err != nil {
-		return nil, fmt.Errorf("could not get the project id: %w", err)
+		return nil, logger.Errorf("could not get the project id: %w", err)
 	}
 
 	project, err := s.Ent.Project.Get(ctx, projectID)
 	if err != nil {
-		return nil, fmt.Errorf("could not find the project: %w", err)
+		return nil, logger.Errorf("could not find the project: %w", err)
 	}
 
 	deployment, snapshot, err := initializeDeployment(ctx, project, s.Ent)
 	if err != nil {
-		return nil, fmt.Errorf("could not create the deployment: %w", err)
+		return nil, logger.Errorf("could not create the deployment: %w", err)
 	}
 
 	reply, err := deployProject(ctx, project.ID.String(), deployment, snapshot, &appgenerate.GenerateContext{
@@ -53,12 +53,12 @@ func (s *Server) DeployProject(ctx context.Context, in *service.DeployRequest) (
 func (s *Server) CheckStatus(ctx context.Context, in *service.StatusRequest) (*service.StatusReply, error) {
 	deploymentID, err := uuid.FromBytes(in.GetDeploymentID())
 	if err != nil {
-		return nil, fmt.Errorf("could not get the deployment id: %w", err)
+		return nil, logger.Errorf("could not get the deployment id: %w", err)
 	}
 
 	deployment, err := s.Ent.Deployment.Get(ctx, deploymentID)
 	if err != nil {
-		return nil, fmt.Errorf("could not find the deployment: %w", err)
+		return nil, logger.Errorf("could not find the deployment: %w", err)
 	}
 
 	// The deployment has not taken place yet or never will because it failed.
@@ -69,7 +69,7 @@ func (s *Server) CheckStatus(ctx context.Context, in *service.StatusRequest) (*s
 
 	vercelDeployment, err := vercel.GetDeployment(ctx, deployment.VercelDeploymentID)
 	if err != nil {
-		return nil, fmt.Errorf("could not get vercel deployment: %w", err)
+		return nil, logger.Errorf("could not get vercel deployment: %w", err)
 	}
 
 	// Update the status if it has changed.
@@ -78,7 +78,7 @@ func (s *Server) CheckStatus(ctx context.Context, in *service.StatusRequest) (*s
 			SetStatus(schema.DeploymentStatus(vercelDeployment.ReadyState)).
 			Save(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("could not update the deployment status")
+			return nil, logger.Errorf("could not update the deployment status")
 		}
 	}
 

@@ -10,6 +10,7 @@ import (
 	gonanoid "github.com/matoous/go-nanoid/v2"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 )
 
 // initializeDeployment initializes deployment and makes a project ready to deploy.
@@ -126,7 +127,7 @@ func subdomainFromString(name string) (string, error) {
 
 	randomSuffix, err := gonanoid.Generate(nanoidCharacterSpace, suffixLength)
 	if err != nil {
-		return "", fmt.Errorf("could not generate a random suffix: %w", err)
+		return "", logger.Errorf("could not generate a random suffix: %w", err)
 	}
 
 	return fmt.Sprintf("%v-%v", subdomain, randomSuffix), nil
