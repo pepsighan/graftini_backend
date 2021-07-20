@@ -94,6 +94,20 @@ func buildSubTreeMarkup(ctx context.Context, sb *strings.Builder, componentID st
 
 // buildProps generates a series of prop assignments.
 func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.ComponentNode, generateCtx *GenerateContext) error {
+	if comp.Type == "Text" {
+		sb.WriteString(" content={")
+
+		content, err := parseContent(ctx, comp.Props, generateCtx)
+		if err != nil {
+			return err
+		}
+		sb.Write(content)
+		sb.WriteString("}")
+
+		return nil
+	}
+
+	// The following is only applicable for box component.
 	for k, v := range comp.Props {
 		sb.WriteString(" ")
 
@@ -207,4 +221,86 @@ func getLinkURL(ctx context.Context, link interface{}, generateCtx *GenerateCont
 
 	// The link object is not well formed.
 	return nil, nil, fmt.Errorf("invalid link type")
+}
+
+type ProseMirrorDocument struct {
+	Type    string                  `json:"type"`
+	Content []*ProseMirrorParagraph `json:"content"`
+}
+
+type ProseMirrorParagraph struct {
+	Type    string                 `json:"type"`
+	Attrs   map[string]interface{} `json:"attrs"`
+	Content []*ProseMirrorText     `json:"content"`
+}
+
+type ProseMirrorText struct {
+	Type  string             `json:"type"`
+	Marks []*ProseMirrorMark `json:"marks"`
+	Text  string             `json:"text"`
+}
+
+type ProseMirrorMark struct {
+	Type  string                 `json:"type"`
+	Attrs map[string]interface{} `json:"attrs"`
+}
+
+// parseContent parses the content and modifies the links for use in the app.
+func parseContent(ctx context.Context, props map[string]interface{}, generateCtx *GenerateContext) ([]byte, error) {
+	var content interface{} = nil
+
+	for k, v := range props {
+		if k == "content" {
+			content = v
+			break
+		}
+	}
+
+	if content == nil {
+		return nil, fmt.Errorf("content cannot be nil")
+	}
+
+	bytes, err := json.Marshal(content)
+	if err != nil {
+		return nil, err
+	}
+
+	parsed := ProseMirrorDocument{}
+	if err := json.Unmarshal(bytes, &parsed); err != nil {
+		return nil, err
+	}
+
+	if parsed.Type != "doc" {
+		return nil, fmt.Errorf("content not of doc type")
+	}
+
+	for _, p := range parsed.Content {
+		if p.Type != "paragraph" {
+			return nil, fmt.Errorf("doc content not of paragraph type")
+		}
+
+		for _, t := range p.Content {
+			if t.Type != "text" {
+				return nil, fmt.Errorf("paragraph content not of text type")
+			}
+
+			for _, m := range t.Marks {
+				if m.Type == "link" {
+					// Modify the links if pageId and add them back to the marks.
+					to, href, err := getLinkURL(ctx, m.Attrs, generateCtx)
+					if err != nil {
+						return nil, err
+					}
+
+					m.Attrs = map[string]interface{}{
+						"to":   to,
+						"href": href,
+					}
+				}
+			}
+		}
+	}
+
+	// Convert the parsed that has been modified into a json object.
+	return json.Marshal(parsed)
 }
