@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net"
 
 	"github.com/getsentry/sentry-go"
@@ -10,6 +9,8 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/deploy/server"
 	"github.com/pepsighan/graftini_backend/internal/deploy/service"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
@@ -18,21 +19,24 @@ func setupSentry() {
 		Dsn: config.SentryDSN,
 	})
 	if err != nil {
-		log.Fatalf("could not initialize sentry: %v", err)
+		zap.S().Fatalf("could not initialize sentry: %v", err)
 	}
 }
 
 func main() {
+	log := logger.NewLogger(config.Env)
+	defer log.Sync()
+
 	setupSentry()
 
 	lis, err := net.Listen("tcp", ":"+config.Port)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Sugar().Fatalf("failed to listen: %v", err)
 	}
 
 	client, err := ent.Open("postgres", config.DatabaseURL)
 	if err != nil {
-		log.Fatal(err)
+		log.Sugar().Fatal(err)
 	}
 	defer client.Close()
 
@@ -41,8 +45,8 @@ func main() {
 		Ent: client,
 	})
 
-	log.Printf("server listening at %v", lis.Addr())
+	log.Sugar().Infof("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+		log.Sugar().Fatalf("failed to serve: %v", err)
 	}
 }
