@@ -3,6 +3,7 @@ package appgenerate
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/google/uuid"
@@ -96,6 +97,27 @@ func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.Component
 	for k, v := range comp.Props {
 		sb.WriteString(" ")
 
+		if k == "link" && v != nil {
+			// Link contains either of the two props.
+			to, href, err := getLinkURL(ctx, v, generateCtx)
+			if err != nil {
+				return err
+			}
+
+			if to != nil {
+				sb.WriteString("to={'")
+				sb.WriteString(*to)
+				sb.WriteString("'}")
+			} else if href != nil {
+				sb.WriteString("href={'")
+				sb.WriteString(*href)
+				sb.WriteString("'}")
+			}
+
+			// Skip the rest.
+			continue
+		}
+
 		switch k {
 		case "imageId":
 			sb.WriteString("imageUrl")
@@ -147,4 +169,39 @@ func getImageURL(ctx context.Context, imageID []byte, generateCtx *GenerateConte
 	}
 
 	return imagekit.GetImageKitURLForFile(config.ImageKitURLEndpoint, file.ID, file.Kind), nil
+}
+
+// getLinkURL gets the URL referred to by the pageID or the href.
+func getLinkURL(ctx context.Context, link interface{}, generateCtx *GenerateContext) (*string, *string, error) {
+	switch v := link.(type) {
+	case map[string]interface{}:
+		pageID, _ := v["pageId"].(string)
+		href, _ := v["href"].(string)
+
+		// Get the page link.
+		if pageID != "" {
+			id, err := uuid.Parse(pageID)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			page, err := generateCtx.Ent.Page.Get(ctx, id)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			return &page.Route, nil, nil
+		}
+
+		// Return the href as-is.
+		if href != "" {
+			return nil, &href, nil
+		}
+
+	default:
+		return nil, nil, fmt.Errorf("invalid link type")
+	}
+
+	// The link object is not well formed.
+	return nil, nil, fmt.Errorf("invalid link type")
 }
