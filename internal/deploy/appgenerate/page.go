@@ -110,11 +110,15 @@ func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.Component
 
 		switch k {
 		case "imageId":
-			url, err := getImageURL(ctx, value, generateCtx)
-			if err != nil {
-				return err
+			if v != nil {
+				url, err := getImageURL(ctx, value, generateCtx)
+				if err != nil {
+					return err
+				}
+				sb.WriteString(url)
+			} else {
+				sb.Write(value)
 			}
-			sb.WriteString(url)
 		default:
 			sb.Write(value)
 		}
