@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"firebase.google.com/go/v4/auth"
@@ -11,6 +10,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/earlyaccess"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/user"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 )
 
 type AuthContext struct {
@@ -29,30 +29,30 @@ func (a *AuthContext) user(ctx context.Context, entClient *ent.Client, firebaseA
 	token, err := firebaseAuth.VerifyIDToken(ctx, a.token)
 	if err != nil {
 		// The request has an authorized token and if the token verification fails, then the user is unauthorized.
-		return nil, fmt.Errorf("could not get user from auth: %w due to: %v", errs.ErrUnauthorizedAccess, err)
+		return nil, logger.Errorf("could not get user from auth: %w due to: %v", errs.ErrUnauthorizedAccess, err)
 	}
 
 	// The following errors in the subsequent code are not actually unauthorized access errors because the following
 	// errors are caused due to some other failures.
 	user, err := entClient.User.Query().Where(user.FirebaseUIDEQ(token.UID)).First(ctx)
 	if err != nil && !ent.IsNotFound(err) {
-		return nil, fmt.Errorf("could not get user from database: %w", err)
+		return nil, logger.Errorf("could not get user from database: %w", err)
 	}
 
 	// Try to save the user as this is the first login.
 	if user == nil {
 		userRecord, err := firebaseAuth.GetUser(ctx, token.UID)
 		if err != nil {
-			return nil, fmt.Errorf("could not get user from firebase: %w", err)
+			return nil, logger.Errorf("could not get user from firebase: %w", err)
 		}
 
 		if len(userRecord.ProviderUserInfo) == 0 {
-			return nil, fmt.Errorf("no provider user info found: %w", err)
+			return nil, logger.Errorf("no provider user info found: %w", err)
 		}
 
 		// TODO: Remove this once we are out of early access program.
 		if err := checkIfUserAllowedForEarlyAccess(ctx, userRecord.ProviderUserInfo[0].Email, entClient); err != nil {
-			return nil, fmt.Errorf("could not login the user because they are not allowed to access: %w", err)
+			return nil, logger.Errorf("could not login the user because they are not allowed to access: %w", err)
 		}
 
 		// Store the user in the database for later. This is probably the first login.
@@ -61,7 +61,7 @@ func (a *AuthContext) user(ctx context.Context, entClient *ent.Client, firebaseA
 			SetFirebaseUID(token.UID).
 			Save(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("could not save user for the first time: %w", err)
+			return nil, logger.Errorf("could not save user for the first time: %w", err)
 		}
 	}
 

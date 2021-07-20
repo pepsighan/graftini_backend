@@ -14,44 +14,45 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/domain"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 )
 
 func deployProject(ctx context.Context, projectID string, deployment *ent.Deployment, snapshot *schema.DeploymentSnapshot, generateCtx *appgenerate.GenerateContext) (*service.DeployReply, error) {
 	vercelProj, err := createVercelProjectIfNotExists(ctx, projectID)
 	if err != nil {
-		return nil, fmt.Errorf("could not create a vercel project: %w", err)
+		return nil, logger.Errorf("could not create a vercel project: %w", err)
 	}
 
 	err = attachGraftiniSubdomain(ctx, projectID, snapshot.Project)
 	if err != nil {
-		return nil, fmt.Errorf("could not attach a graftini subdomain: %w", err)
+		return nil, logger.Errorf("could not attach a graftini subdomain: %w", err)
 	}
 
 	projectPath, err := appgenerate.GenerateCodeBaseForProject(ctx, snapshot.Pages, generateCtx)
 	defer projectPath.Cleanup() // Cleanup the folder regardless of the error.
 
 	if err != nil {
-		return nil, fmt.Errorf("could not generate code base for project: %w", err)
+		return nil, logger.Errorf("could not generate code base for project: %w", err)
 	}
 
 	projectFiles, err := uploadProjectFiles(ctx, string(projectPath))
 	if err != nil {
-		return nil, fmt.Errorf("could not upload files to vercel: %w", err)
+		return nil, logger.Errorf("could not upload files to vercel: %w", err)
 	}
 
 	vercelDeployment, err := vercel.CreateNewDeployment(ctx, vercelProj.Name, projectFiles)
 	if err != nil {
-		return nil, fmt.Errorf("could not create a deployment on vercel: %w", err)
+		return nil, logger.Errorf("could not create a deployment on vercel: %w", err)
 	}
 
 	_, err = updateDeployment(ctx, deployment, vercelDeployment.ID, schema.DeploymentStatus(vercelDeployment.ReadyState))
 	if err != nil {
-		return nil, fmt.Errorf("could not record the deployment: %w", err)
+		return nil, logger.Errorf("could not record the deployment: %w", err)
 	}
 
 	deployID, err := deployment.ID.MarshalBinary()
 	if err != nil {
-		return nil, fmt.Errorf("could not get the deployment id: %w", err)
+		return nil, logger.Errorf("could not get the deployment id: %w", err)
 	}
 	return &service.DeployReply{DeploymentID: deployID}, nil
 }

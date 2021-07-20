@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 
 	"github.com/pepsighan/graftini_backend/internal/deploy/config"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 )
 
 // Deployment is a deployment on Vercel.
@@ -64,12 +65,12 @@ func CreateNewDeployment(ctx context.Context, projectName string, files []*Proje
 		Post(route("v12/now/deployments"))
 
 	if err != nil {
-		return nil, fmt.Errorf("could not create new deployment: %w", err)
+		return nil, logger.Errorf("could not create new deployment: %w", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
 	if fail != nil {
-		return nil, fmt.Errorf("could not create new deployment: %w", fail)
+		return nil, logger.Errorf("could not create new deployment: %w", fail)
 	}
 
 	return response.Result().(*Deployment), nil
@@ -80,12 +81,12 @@ func CreateNewDeployment(ctx context.Context, projectName string, files []*Proje
 func UploadDeploymentFile(ctx context.Context, filepath string) (string, int, error) {
 	bytes, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return "", 0, fmt.Errorf("could not upload deployment file: %w", err)
+		return "", 0, logger.Errorf("could not upload deployment file: %w", err)
 	}
 
 	hash, err := calcSHA1Hash(bytes)
 	if err != nil {
-		return "", 0, fmt.Errorf("could not upload deployment file: %w", err)
+		return "", 0, logger.Errorf("could not upload deployment file: %w", err)
 	}
 
 	response, err := request(ctx).
@@ -96,12 +97,12 @@ func UploadDeploymentFile(ctx context.Context, filepath string) (string, int, er
 		Post(route("v2/now/files"))
 
 	if err != nil {
-		return "", 0, fmt.Errorf("could not upload deployment file: %w", err)
+		return "", 0, logger.Errorf("could not upload deployment file: %w", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
 	if fail != nil {
-		return "", 0, fmt.Errorf("could not upload deployment file: %w", fail)
+		return "", 0, logger.Errorf("could not upload deployment file: %w", fail)
 	}
 
 	return hash, len(bytes), nil
@@ -115,12 +116,12 @@ func GetDeployment(ctx context.Context, deploymentID string) (*Deployment, error
 		Get(route(fmt.Sprintf("v11/now/deployments/%v", deploymentID)))
 
 	if err != nil {
-		return nil, fmt.Errorf("could not get deployment: %w", err)
+		return nil, logger.Errorf("could not get deployment: %w", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
 	if fail != nil {
-		return nil, fmt.Errorf("could not get deployment: %w", fail)
+		return nil, logger.Errorf("could not get deployment: %w", fail)
 	}
 
 	return response.Result().(*Deployment), nil
@@ -134,12 +135,12 @@ func CancelDeployment(ctx context.Context, deploymentID string) (*Deployment, er
 		Patch(route(fmt.Sprintf("v12/now/deployments/%v/cancel", deploymentID)))
 
 	if err != nil {
-		return nil, fmt.Errorf("could not cancel deployment: %w", err)
+		return nil, logger.Errorf("could not cancel deployment: %w", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
 	if fail != nil {
-		return nil, fmt.Errorf("could not cancel deployment: %w", fail)
+		return nil, logger.Errorf("could not cancel deployment: %w", fail)
 	}
 
 	return response.Result().(*Deployment), nil

@@ -1,11 +1,11 @@
 package gqlgen
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/google/uuid"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 )
 
 func MarshalUUID(b uuid.UUID) graphql.Marshaler {
@@ -21,6 +21,6 @@ func UnmarshalUUID(v interface{}) (uuid.UUID, error) {
 	case string:
 		return uuid.Parse(v)
 	default:
-		return uuid.UUID{}, fmt.Errorf("%T is not a bool", v)
+		return uuid.UUID{}, logger.Errorf("%T is not a bool", v)
 	}
 }

@@ -3,6 +3,8 @@ package vercel
 import (
 	"context"
 	"fmt"
+
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 )
 
 // Project is a project that is on vercel.
@@ -30,7 +32,7 @@ func GetProject(ctx context.Context, name string) (*Project, error) {
 		Get(route(fmt.Sprintf("v8/projects/%v", name)))
 
 	if err != nil {
-		return nil, fmt.Errorf("could not get the project: %w", err)
+		return nil, logger.Errorf("could not get the project: %w", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
@@ -39,7 +41,7 @@ func GetProject(ctx context.Context, name string) (*Project, error) {
 			return nil, nil
 		}
 
-		return nil, fmt.Errorf("could not get the project: %w", fail)
+		return nil, logger.Errorf("could not get the project: %w", fail)
 	}
 
 	return response.Result().(*Project), nil
@@ -56,12 +58,12 @@ func CreateProject(ctx context.Context, name string) (*Project, error) {
 		Post(route("v8/projects"))
 
 	if err != nil {
-		return nil, fmt.Errorf("could not create project: %w", err)
+		return nil, logger.Errorf("could not create project: %w", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
 	if fail != nil {
-		return nil, fmt.Errorf("could not create project: %w", fail)
+		return nil, logger.Errorf("could not create project: %w", fail)
 	}
 
 	return response.Result().(*Project), nil
@@ -74,7 +76,7 @@ func DeleteProject(ctx context.Context, projectID string) error {
 		Delete(route(fmt.Sprintf("v8/projects/%v", projectID)))
 
 	if err != nil {
-		return fmt.Errorf("could not delete project: %w", err)
+		return logger.Errorf("could not delete project: %w", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
@@ -89,7 +91,7 @@ func DoesDomainExistInProject(ctx context.Context, projectID string, domainName 
 		Get(route(fmt.Sprintf("v8/projects/%v/domains/%v", projectID, domainName)))
 
 	if err != nil {
-		return false, fmt.Errorf("could not check if domain exists: %w", err)
+		return false, logger.Errorf("could not check if domain exists: %w", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
@@ -98,7 +100,7 @@ func DoesDomainExistInProject(ctx context.Context, projectID string, domainName 
 			return false, nil
 		}
 
-		return false, fmt.Errorf("could not check if domain exists: %w", err)
+		return false, logger.Errorf("could not check if domain exists: %w", err)
 	}
 
 	return true, nil
@@ -115,12 +117,12 @@ func AddDomainToProject(ctx context.Context, projectID string, domainName string
 		Post(route(fmt.Sprintf("v8/projects/%v/domains", projectID)))
 
 	if err != nil {
-		return fmt.Errorf("could not add domain to project: %v", err)
+		return logger.Errorf("could not add domain to project: %v", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
 	if fail != nil {
-		return fmt.Errorf("could not add domain to project: %v", err)
+		return logger.Errorf("could not add domain to project: %v", err)
 	}
 
 	return nil
@@ -134,12 +136,12 @@ func RemoveDomainFromProject(ctx context.Context, projectID string, domainName s
 		Delete(route(fmt.Sprintf("v8/projects/%v/domains/%v", projectID, domainName)))
 
 	if err != nil {
-		return fmt.Errorf("could not remove domain from project: %v", err)
+		return logger.Errorf("could not remove domain from project: %v", err)
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
 	if fail != nil {
-		return fmt.Errorf("could not remove domain from project: %v", err)
+		return logger.Errorf("could not remove domain from project: %v", err)
 	}
 
 	return nil
