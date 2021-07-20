@@ -7,6 +7,7 @@ require (
 	entgo.io/ent v0.8.0
 	firebase.google.com/go/v4 v4.6.0
 	github.com/99designs/gqlgen v0.13.0
+	github.com/blendle/zapdriver v1.3.1
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/golang-migrate/migrate/v4 v4.14.1
@@ -23,6 +24,9 @@ require (
 	github.com/urfave/cli/v2 v2.3.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
 	github.com/vektah/gqlparser/v2 v2.1.0
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.7.0 // indirect
+	go.uber.org/zap v1.18.1 // indirect
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
 	golang.org/x/oauth2 v0.0.0-20210628180205-a41e5a781914
 	google.golang.org/grpc v1.35.0

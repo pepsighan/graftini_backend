@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,6 +23,8 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/backend/graph"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
+	"go.uber.org/zap"
 )
 
 func firebaseAuth() *authFirebase.Client {
@@ -31,12 +32,12 @@ func firebaseAuth() *authFirebase.Client {
 	// Make sure to add `GOOGLE_APPLICATION_CREDENTIALS` as a JSON file path.
 	app, err := firebase.NewApp(context.Background(), nil)
 	if err != nil {
-		log.Panicf("could not initialize firebase app: %v", err)
+		zap.S().Panicf("could not initialize firebase app: %v", err)
 	}
 
 	client, err := app.Auth(context.Background())
 	if err != nil {
-		log.Panicf("could not initialize firebase auth: %v", err)
+		zap.S().Panicf("could not initialize firebase auth: %v", err)
 	}
 
 	return client
@@ -46,7 +47,7 @@ func storageClient() *storage.Client {
 	// The storage client will use default application credentials.
 	client, err := storage.NewClient(context.Background())
 	if err != nil {
-		log.Panicf("could not initialize the google cloud storage client: %v", err)
+		zap.S().Panicf("could not initialize the google cloud storage client: %v", err)
 
 	}
 
@@ -85,16 +86,19 @@ func setupSentry() {
 		Dsn: config.SentryDSN,
 	})
 	if err != nil {
-		log.Fatalf("could not initialize sentry: %v", err)
+		zap.S().Fatalf("could not initialize sentry: %v", err)
 	}
 }
 
 func main() {
+	log := logger.NewLogger(config.Env)
+	defer log.Sync()
+
 	setupSentry()
 
 	client, err := ent.Open("postgres", config.DatabaseURL)
 	if err != nil {
-		log.Fatal(err)
+		log.Sugar().Fatal(err)
 	}
 	defer client.Close()
 
@@ -125,7 +129,7 @@ func main() {
 	// Start server
 	go func() {
 		if err := e.Start(":" + config.Port); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("shutting down the server")
+			log.Fatal("shutting down the server")
 		}
 	}()
 
@@ -141,10 +145,10 @@ func main() {
 
 	// Close database connections before shutting down.
 	if err := client.Close(); err != nil {
-		log.Printf("failed to close database connection: %v", err)
+		log.Sugar().Errorf("failed to close database connection: %v", err)
 	}
 
 	if err := e.Shutdown(ctx); err != nil {
-		log.Fatal(err)
+		log.Sugar().Fatal(err)
 	}
 }
