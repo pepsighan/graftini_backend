@@ -13,6 +13,7 @@ import (
 var ErrUnauthorizedAccess = newGQLError("unauthorized_access", "you are not authorized to access")
 var ErrServerError = newGQLError("server_error", "server error")
 var ErrUnsupportedMimeType = newGQLError("unsupported_mime_type", "file of unsupported mime type uploaded")
+var ErrProjectLimitExceeded = newGQLError("project_limit_exceeded", "you have exceeded your project limit")
 
 func newGQLError(kind, message string) *gqlerror.Error {
 	return &gqlerror.Error{

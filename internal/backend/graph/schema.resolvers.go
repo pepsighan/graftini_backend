@@ -11,6 +11,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/backend/auth"
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
 	"github.com/pepsighan/graftini_backend/internal/backend/deployclient"
+	"github.com/pepsighan/graftini_backend/internal/backend/errs"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
 	model1 "github.com/pepsighan/graftini_backend/internal/backend/graph/model"
 	"github.com/pepsighan/graftini_backend/internal/backend/sanitize"
@@ -22,7 +23,9 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/earlyaccess"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/project"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/user"
 	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 	"github.com/pepsighan/graftini_backend/internal/pkg/storage"
 )
@@ -36,12 +39,24 @@ func (r *fileResolver) FileURL(ctx context.Context, obj *ent.File) (string, erro
 }
 
 func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewProject) (*ent.Project, error) {
-	user := auth.RequiredAuthenticatedUser(ctx)
+	authUser := auth.RequiredAuthenticatedUser(ctx)
+
+	projectCount, err := r.Ent.Project.Query().
+		Where(project.HasOwnerWith(user.IDEQ(authUser.ID))).
+		Count(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Do not allow production users to create any more than two projects.
+	if config.Env.IsProduction() && projectCount >= 2 {
+		return nil, logger.Error(errs.ErrProjectLimitExceeded)
+	}
 
 	var project *ent.Project
 
 	// Do not create a page if project fails.
-	err := db.WithTx(ctx, r.Ent, func(tx *ent.Tx) error {
+	err = db.WithTx(ctx, r.Ent, func(tx *ent.Tx) error {
 		defaultPage, err := r.Ent.Page.
 			Create().
 			SetName("Default").
@@ -54,7 +69,7 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewPr
 
 		project, err = r.Ent.Project.Create().
 			SetName(input.Name).
-			SetOwner(user).
+			SetOwner(authUser).
 			AddPages(defaultPage).
 			Save(ctx)
 
