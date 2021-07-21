@@ -17,6 +17,11 @@ Upload represents an uploaded file.
 """
 scalar Upload
 
+"""
+Represents date and time.
+"""
+scalar Time
+
 # --------------------------------------
 # Queries are written below.
 # --------------------------------------
@@ -48,6 +53,8 @@ type Page {
 type Deployment {
   id: ID!
   status: String!
+  createdAt: Time!
+  updatedAt: Time!
 }
 
 type GraphQLQuery {
