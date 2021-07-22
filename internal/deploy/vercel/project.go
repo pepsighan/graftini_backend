@@ -80,7 +80,11 @@ func DeleteProject(ctx context.Context, projectID string) error {
 	}
 
 	fail, _ := response.Error().(*VercelFailure)
-	return fail
+	if fail != nil {
+		return fail
+	}
+
+	return nil
 }
 
 // DoesDomainExistInProject checks if the domain name exists in the project.

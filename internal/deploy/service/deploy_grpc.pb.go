@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type DeployClient interface {
 	DeployProject(ctx context.Context, in *DeployRequest, opts ...grpc.CallOption) (*DeployReply, error)
 	CheckStatus(ctx context.Context, in *StatusRequest, opts ...grpc.CallOption) (*StatusReply, error)
+	DeleteProjectDeployment(ctx context.Context, in *DeleteProjectDeploymentRequest, opts ...grpc.CallOption) (*DeleteProjectDeploymentReply, error)
 }
 
 type deployClient struct {
@@ -48,12 +49,22 @@ func (c *deployClient) CheckStatus(ctx context.Context, in *StatusRequest, opts 
 	return out, nil
 }
 
+func (c *deployClient) DeleteProjectDeployment(ctx context.Context, in *DeleteProjectDeploymentRequest, opts ...grpc.CallOption) (*DeleteProjectDeploymentReply, error) {
+	out := new(DeleteProjectDeploymentReply)
+	err := c.cc.Invoke(ctx, "/service.Deploy/DeleteProjectDeployment", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DeployServer is the server API for Deploy service.
 // All implementations must embed UnimplementedDeployServer
 // for forward compatibility
 type DeployServer interface {
 	DeployProject(context.Context, *DeployRequest) (*DeployReply, error)
 	CheckStatus(context.Context, *StatusRequest) (*StatusReply, error)
+	DeleteProjectDeployment(context.Context, *DeleteProjectDeploymentRequest) (*DeleteProjectDeploymentReply, error)
 	mustEmbedUnimplementedDeployServer()
 }
 
@@ -66,6 +77,9 @@ func (UnimplementedDeployServer) DeployProject(context.Context, *DeployRequest) 
 }
 func (UnimplementedDeployServer) CheckStatus(context.Context, *StatusRequest) (*StatusReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckStatus not implemented")
+}
+func (UnimplementedDeployServer) DeleteProjectDeployment(context.Context, *DeleteProjectDeploymentRequest) (*DeleteProjectDeploymentReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteProjectDeployment not implemented")
 }
 func (UnimplementedDeployServer) mustEmbedUnimplementedDeployServer() {}
 
@@ -116,6 +130,24 @@ func _Deploy_CheckStatus_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Deploy_DeleteProjectDeployment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteProjectDeploymentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DeployServer).DeleteProjectDeployment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.Deploy/DeleteProjectDeployment",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DeployServer).DeleteProjectDeployment(ctx, req.(*DeleteProjectDeploymentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Deploy_ServiceDesc is the grpc.ServiceDesc for Deploy service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,6 +162,10 @@ var Deploy_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CheckStatus",
 			Handler:    _Deploy_CheckStatus_Handler,
+		},
+		{
+			MethodName: "DeleteProjectDeployment",
+			Handler:    _Deploy_DeleteProjectDeployment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

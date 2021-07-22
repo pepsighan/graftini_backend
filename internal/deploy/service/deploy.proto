@@ -8,6 +8,7 @@ package service;
 service Deploy {
   rpc DeployProject(DeployRequest) returns (DeployReply) {}
   rpc CheckStatus(StatusRequest) returns (StatusReply) {}
+  rpc DeleteProjectDeployment(DeleteProjectDeploymentRequest) returns (DeleteProjectDeploymentReply) {}
 }
 
 message DeployRequest {
@@ -24,4 +25,12 @@ message StatusRequest {
 
 message StatusReply {
   bytes deploymentID = 1;
+}
+
+message DeleteProjectDeploymentRequest {
+  bytes projectID = 1;
+}
+
+message DeleteProjectDeploymentReply {
+  bytes projectID = 1;
 }

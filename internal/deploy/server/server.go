@@ -2,6 +2,7 @@ package server
 
 import (
 	context "context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/labstack/gommon/log"
@@ -83,4 +84,19 @@ func (s *Server) CheckStatus(ctx context.Context, in *service.StatusRequest) (*s
 	}
 
 	return &service.StatusReply{DeploymentID: in.DeploymentID}, nil
+}
+
+// DeleteProjectDeployment deletes the project deployment and its resources.
+func (s *Server) DeleteProjectDeployment(ctx context.Context, in *service.DeleteProjectDeploymentRequest) (*service.DeleteProjectDeploymentReply, error) {
+	projectID, err := uuid.FromBytes(in.GetProjectID())
+	if err != nil {
+		return nil, logger.Errorf("could not get the project id: %w", err)
+	}
+
+	err = vercel.DeleteProject(ctx, generateVercelProjectName(projectID.String()))
+	if err != nil {
+		return nil, fmt.Errorf("could not delete project: %w", err)
+	}
+
+	return &service.DeleteProjectDeploymentReply{ProjectID: in.ProjectID}, nil
 }
