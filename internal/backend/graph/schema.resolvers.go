@@ -60,7 +60,7 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewPr
 	err = db.WithTx(ctx, r.Ent, func(tx *ent.Tx) error {
 		defaultPage, err := r.Ent.Page.
 			Create().
-			SetName("Default").
+			SetName("Home").
 			SetRoute("/").
 			SetComponentMap(input.DefaultPageComponentMap).
 			Save(ctx)
