@@ -1,5 +1,5 @@
 import { Reset } from '@graftini/bricks';
-import Head from 'next/router';
+import Head from 'next/head';
 
 export default function MyApp({ Component, pageProps }) {
   return (
