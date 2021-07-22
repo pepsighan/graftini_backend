@@ -326,7 +326,9 @@ func (r *queryResolver) Me(ctx context.Context) (*ent.User, error) {
 
 func (r *queryResolver) MyProjects(ctx context.Context) ([]*ent.Project, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
-	return user.QueryProjects().All(ctx)
+	return user.QueryProjects().
+		Order(ent.Asc(project.FieldName)).
+		All(ctx)
 }
 
 func (r *queryResolver) MyProject(ctx context.Context, id uuid.UUID) (*ent.Project, error) {
