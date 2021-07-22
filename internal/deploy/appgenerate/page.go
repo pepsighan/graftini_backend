@@ -321,8 +321,6 @@ func buildSEOForPage(sb *strings.Builder, props map[string]interface{}) error {
 	switch s := seo.(type) {
 	case map[string]interface{}:
 		sb.WriteString("<Head>")
-		sb.WriteString("<meta charset=\"utf-8\" />")
-		sb.WriteString("<meta name=\"viewport\" content=\"initial-scale=1, width=device-width\" />")
 
 		title, _ := s["title"].(string)
 		sb.WriteString("<title>")
