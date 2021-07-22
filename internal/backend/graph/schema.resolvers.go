@@ -152,13 +152,8 @@ func (r *mutationResolver) DeployProject(ctx context.Context, projectID uuid.UUI
 		return nil, err
 	}
 
-	projectIDBytes, err := prj.ID.MarshalBinary()
-	if err != nil {
-		return nil, err
-	}
-
 	reply, err := deploy.DeployProject(ctx, &service.DeployRequest{
-		ProjectID: projectIDBytes,
+		ProjectID: prj.ID[:],
 	})
 	if err != nil {
 		return nil, err
@@ -391,13 +386,8 @@ func (r *queryResolver) MyLastDeployment(ctx context.Context, projectID uuid.UUI
 		return deployment, nil
 	}
 
-	deploymentIDBytes, err := deployment.ID.MarshalBinary()
-	if err != nil {
-		return nil, err
-	}
-
 	// Otherwise, fetch the current status.
-	_, err = deploy.CheckStatus(ctx, &service.StatusRequest{DeploymentID: deploymentIDBytes})
+	_, err = deploy.CheckStatus(ctx, &service.StatusRequest{DeploymentID: deployment.ID[:]})
 	if err != nil {
 		return nil, err
 	}
