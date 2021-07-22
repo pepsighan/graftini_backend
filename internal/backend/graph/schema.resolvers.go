@@ -26,6 +26,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/project"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/user"
+	"github.com/pepsighan/graftini_backend/internal/pkg/imagekit"
 	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 	"github.com/pepsighan/graftini_backend/internal/pkg/storage"
 )
@@ -35,7 +36,7 @@ func (r *deploymentResolver) Status(ctx context.Context, obj *ent.Deployment) (s
 }
 
 func (r *fileResolver) FileURL(ctx context.Context, obj *ent.File) (string, error) {
-	return storage.FileURL(ctx, obj, r.Storage)
+	return imagekit.GetImageKitURLForFile(config.ImageKitURLEndpoint, obj.ID, obj.Kind), nil
 }
 
 func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewProject) (*ent.Project, error) {
