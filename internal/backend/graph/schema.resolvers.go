@@ -111,7 +111,24 @@ func (r *mutationResolver) DeleteProject(ctx context.Context, projectID uuid.UUI
 		return nil, err
 	}
 
-	err = r.Ent.Project.DeleteOne(prj).Exec(ctx)
+	deploy, grpc, err := deployclient.GrpcClient()
+	if err != nil {
+		return nil, err
+	}
+	defer grpc.Close()
+
+	err = db.WithTx(ctx, r.Ent, func(tx *ent.Tx) error {
+		err = tx.Project.DeleteOne(prj).Exec(ctx)
+		if err != nil {
+			return err
+		}
+
+		_, err = deploy.DeleteProjectDeployment(ctx, &service.DeleteProjectDeploymentRequest{
+			ProjectID: prj.ID[:],
+		})
+
+		return err
+	})
 	if err != nil {
 		return nil, err
 	}
