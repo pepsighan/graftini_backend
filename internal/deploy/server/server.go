@@ -93,9 +93,18 @@ func (s *Server) DeleteProjectDeployment(ctx context.Context, in *service.Delete
 		return nil, logger.Errorf("could not get the project id: %w", err)
 	}
 
-	err = vercel.DeleteProject(ctx, generateVercelProjectName(projectID.String()))
+	projectName := generateVercelProjectName(projectID.String())
+
+	vercelProject, err := vercel.GetProject(ctx, projectName)
 	if err != nil {
-		return nil, fmt.Errorf("could not delete project: %w", err)
+		return nil, fmt.Errorf("could not find the deployed project: %w", err)
+	}
+
+	if vercelProject != nil {
+		err := vercel.DeleteProject(ctx, projectName)
+		if err != nil {
+			return nil, fmt.Errorf("could not delete project: %w", err)
+		}
 	}
 
 	return &service.DeleteProjectDeploymentReply{ProjectID: in.ProjectID}, nil
