@@ -11,15 +11,14 @@ func GenerateDomainNameFromRefID(refID string, env config.Environment) string {
 	return fmt.Sprintf("%v.%v", refID, suffixDomainName(env))
 }
 
-const graftiniAppDomain string = "graftini.app"
-
-// suffixDomainName gives the domain suffix to use. We use [graftiniaAppDomain]
-// for production and for others we append with development & local.
+// suffixDomainName gives the domain suffix to use. We use graftini.app for production
+// and graftini.xyz for development.
 func suffixDomainName(env config.Environment) string {
 	if env.IsProduction() {
-		// This is hard-coded for the app. There is no other domain we use.
-		return graftiniAppDomain
+		return "graftini.app"
 	}
 
-	return fmt.Sprintf("%v.%v", env, graftiniAppDomain)
+	// Since the same domain is being used for development and local, the graftini.xyz is
+	// divided by subdomain.
+	return fmt.Sprintf("%v.graftini.xyz", env)
 }
