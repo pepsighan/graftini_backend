@@ -5,9 +5,11 @@ package graph
 
 import (
 	"context"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/google/uuid"
+	"github.com/pepsighan/graftini_backend/internal/backend/analytics"
 	"github.com/pepsighan/graftini_backend/internal/backend/auth"
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
 	"github.com/pepsighan/graftini_backend/internal/backend/deployclient"
@@ -29,6 +31,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/imagekit"
 	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 	"github.com/pepsighan/graftini_backend/internal/pkg/storage"
+	"go.uber.org/zap"
 )
 
 func (r *deploymentResolver) Status(ctx context.Context, obj *ent.Deployment) (string, error) {
@@ -308,9 +311,21 @@ func (r *mutationResolver) UploadFile(ctx context.Context, file graphql.Upload) 
 }
 
 func (r *mutationResolver) IsEarlyAccessAllowed(ctx context.Context, email string) (bool, error) {
-	return r.Ent.EarlyAccess.Query().
+	allowed, err := r.Ent.EarlyAccess.Query().
 		Where(earlyaccess.EmailEQ(email)).
 		Exist(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	// Add the user to customer.io as an early access user requester. Any user that is registered becomes
+	// an early access user by default (because we have configured customer.io like that).
+	err = analytics.LogUser(uuid.New(), email, time.Now())
+	if err != nil {
+		zap.S().Error(err)
+	}
+
+	return allowed, nil
 }
 
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {
