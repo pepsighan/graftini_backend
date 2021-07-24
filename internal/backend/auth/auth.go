@@ -6,6 +6,7 @@ import (
 
 	"firebase.google.com/go/v4/auth"
 	"github.com/labstack/echo"
+	"github.com/pepsighan/graftini_backend/internal/backend/analytics"
 	"github.com/pepsighan/graftini_backend/internal/backend/errs"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/earlyaccess"
@@ -55,7 +56,7 @@ func (a *AuthContext) user(ctx context.Context, entClient *ent.Client, firebaseA
 			return nil, logger.Errorf("could not login the user because they are not allowed to access: %w", err)
 		}
 
-		// Store the user in the database for later. This is probably the first login.
+		// Store the user in the database for later. This is the first login.
 		user, err = entClient.User.Create().
 			SetEmail(userRecord.ProviderUserInfo[0].Email).
 			SetFirebaseUID(token.UID).
@@ -63,6 +64,8 @@ func (a *AuthContext) user(ctx context.Context, entClient *ent.Client, firebaseA
 		if err != nil {
 			return nil, logger.Errorf("could not save user for the first time: %w", err)
 		}
+
+		analytics.LogUserSignedUp(user.Email)
 	}
 
 	return user, nil
