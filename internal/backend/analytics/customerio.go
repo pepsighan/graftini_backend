@@ -3,7 +3,7 @@ package analytics
 import (
 	"github.com/customerio/go-customerio"
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
-	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
+	"go.uber.org/zap"
 )
 
 // CustomerIOEvent is a event as defined on Customer.io.
@@ -27,20 +27,18 @@ func newClient() *customerio.CustomerIO {
 }
 
 // LogUserSignedUp is an event that is logged when user signs up.
-func LogUserSignedUp(email string) error {
+func LogUserSignedUp(email string) {
 	track := newClient()
 
 	err := track.Track(email, string(CustomerIOEvent_UserSignedUp), map[string]interface{}{})
 	if err != nil {
-		return logger.Errorf("could not send %v event to customer.io: %w", CustomerIOEvent_UserSignedUp, err)
+		zap.S().Errorf("could not send %v event to customer.io: %w", CustomerIOEvent_UserSignedUp, err)
 	}
-
-	return nil
 }
 
 // LogProjectDeployedForFirstTime is an event that is logged when a project is deployed for the
 // first time by a user.
-func LogProjectDeployedForFirstTime(email string, meta *ProjectDeployedForFirstTimeMeta) error {
+func LogProjectDeployedForFirstTime(email string, meta *ProjectDeployedForFirstTimeMeta) {
 	track := newClient()
 
 	err := track.Track(email, string(CustomerIOEvent_ProjectDeployedForFirstTime), map[string]interface{}{
@@ -49,8 +47,6 @@ func LogProjectDeployedForFirstTime(email string, meta *ProjectDeployedForFirstT
 		"project_id":   meta.ProjectID,
 	})
 	if err != nil {
-		return logger.Errorf("could not send %v event to customer.io: %w", CustomerIOEvent_ProjectDeployedForFirstTime, err)
+		zap.S().Errorf("could not send %v event to customer.io: %w", CustomerIOEvent_ProjectDeployedForFirstTime, err)
 	}
-
-	return nil
 }
