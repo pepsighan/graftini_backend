@@ -8,6 +8,7 @@ require (
 	firebase.google.com/go/v4 v4.6.0
 	github.com/99designs/gqlgen v0.13.0
 	github.com/blendle/zapdriver v1.3.1
+	github.com/customerio/go-customerio v2.0.0+incompatible // indirect
 	github.com/getsentry/sentry-go v0.11.0
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/golang-migrate/migrate/v4 v4.14.1

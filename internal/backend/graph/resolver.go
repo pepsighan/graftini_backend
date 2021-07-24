@@ -3,6 +3,8 @@ package graph
 import (
 	"cloud.google.com/go/storage"
 	"firebase.google.com/go/v4/auth"
+	"github.com/customerio/go-customerio"
+	"github.com/pepsighan/graftini_backend/internal/backend/config"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 )
 
@@ -16,12 +18,16 @@ type Resolver struct {
 	Ent          *ent.Client
 	FirebaseAuth *auth.Client
 	Storage      *storage.Client
+	CustomerIO   *customerio.CustomerIO
 }
 
 func NewResolver(client *ent.Client, auth *auth.Client, storage *storage.Client) *Resolver {
+	customerIO := customerio.NewTrackClient(config.CustomerIOSiteID, config.CustomerIOAPIKey)
+
 	return &Resolver{
 		Ent:          client,
 		FirebaseAuth: auth,
 		Storage:      storage,
+		CustomerIO:   customerIO,
 	}
 }
