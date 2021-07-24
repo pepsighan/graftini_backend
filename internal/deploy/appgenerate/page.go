@@ -3,7 +3,6 @@ package appgenerate
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 
 	"github.com/google/uuid"
@@ -175,7 +174,6 @@ func buildProps(
 				return err
 			}
 		case "minWidth", "maxWidth":
-			fmt.Println(k, v)
 			err := writeDimension(isRootChild, true, sb, k, v)
 			if err != nil {
 				return err
