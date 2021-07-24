@@ -1,9 +1,11 @@
 package analytics
 
 import (
+	"time"
+
 	"github.com/customerio/go-customerio"
+	"github.com/google/uuid"
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
-	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 	"go.uber.org/zap"
 )
@@ -30,12 +32,12 @@ func newClient() *customerio.CustomerIO {
 
 // LogUser either adds the user if it does not with with customer.io or updates
 // them.
-func LogUser(user *ent.User) error {
+func LogUser(userID uuid.UUID, email string, createdAt time.Time) error {
 	track := newClient()
 
-	err := track.Identify(user.ID.String(), map[string]interface{}{
-		"email":      user.Email,
-		"created_at": user.CreatedAt.Unix(),
+	err := track.Identify(userID.String(), map[string]interface{}{
+		"email":      email,
+		"created_at": createdAt.Unix(),
 	})
 
 	if err != nil {

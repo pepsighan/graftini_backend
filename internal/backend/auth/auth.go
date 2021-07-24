@@ -69,7 +69,7 @@ func (a *AuthContext) user(ctx context.Context, entClient *ent.Client, firebaseA
 
 			// Run this in transaction because otherwise our assumption of interaction
 			// with the users would fail.
-			return analytics.LogUser(user)
+			return analytics.LogUser(user.ID, user.Email, user.CreatedAt)
 		})
 
 		if err != nil {
