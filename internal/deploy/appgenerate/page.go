@@ -3,6 +3,7 @@ package appgenerate
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	"github.com/google/uuid"
@@ -164,41 +165,60 @@ func buildProps(
 			}
 			sb.WriteString("}")
 		case "width":
-			writeDimension(isRootChild, true, sb, k, v)
+			err := writeDimension(isRootChild, true, sb, k, v)
+			if err != nil {
+				return err
+			}
 		case "height":
-			writeDimension(isRootChild, false, sb, k, v)
+			err := writeDimension(isRootChild, false, sb, k, v)
+			if err != nil {
+				return err
+			}
+		case "minWidth", "maxWidth":
+			fmt.Println(k, v)
+			err := writeDimension(isRootChild, true, sb, k, v)
+			if err != nil {
+				return err
+			}
+		case "minHeight", "maxHeight":
+			err := writeDimension(isRootChild, false, sb, k, v)
+			if err != nil {
+				return err
+			}
 		default:
-			writePropAndValue(sb, k, v)
+			err := writePropAndValue(sb, k, v)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	return nil
 }
 
-// writeDimension writes the dimension while transforming % units if it is a root child.
-func writeDimension(isRootChild bool, isWidth bool, sb *strings.Builder, k string, v interface{}) {
+// writeDimension writes the dimension while transforming % units if it is a root child. In the
+// editor, the editor itself is of 100vw and 100vh size. Since we cannot do that to the Root
+// once deployed, we are transfering that property to the children. So, 50% child of 100vh Root becomes
+// 50vh of the child.
+func writeDimension(isRootChild bool, isWidth bool, sb *strings.Builder, k string, v interface{}) error {
 	if !isRootChild {
-		writePropAndValue(sb, k, v)
-		return
+		return writePropAndValue(sb, k, v)
 	}
 
-	// This is `auto` value, nothing extra to do here.
+	// This is `auto` or `none` value, nothing extra to do here.
 	_, ok := v.(string)
 	if ok {
-		writePropAndValue(sb, k, v)
-		return
+		return writePropAndValue(sb, k, v)
 	}
 
 	obj, ok := v.(map[string]interface{})
 	if !ok {
-		writePropAndValue(sb, k, v)
-		return
+		return writePropAndValue(sb, k, v)
 	}
 
 	unit := obj["unit"]
 	if unit != "%" {
-		writePropAndValue(sb, k, v)
-		return
+		return writePropAndValue(sb, k, v)
 	}
 
 	if isWidth {
@@ -207,7 +227,7 @@ func writeDimension(isRootChild bool, isWidth bool, sb *strings.Builder, k strin
 		obj["unit"] = "vh"
 	}
 
-	writePropAndValue(sb, k, obj)
+	return writePropAndValue(sb, k, obj)
 }
 
 // writePropAndValue writes the key and value as props and value as-is.
