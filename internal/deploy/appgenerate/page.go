@@ -50,7 +50,7 @@ func buildPageMarkup(ctx context.Context, sb *strings.Builder, componentMap sche
 	}
 
 	for _, childID := range root.ChildrenNodes {
-		err := buildSubTreeMarkup(ctx, sb, childID, componentMap, generateCtx)
+		err := buildSubTreeMarkup(ctx, sb, childID, componentMap, true, generateCtx)
 		if err != nil {
 			return err
 		}
@@ -61,7 +61,14 @@ func buildPageMarkup(ctx context.Context, sb *strings.Builder, componentMap sche
 }
 
 // buildSubTreeMarkup generates the markup for the component and its children.
-func buildSubTreeMarkup(ctx context.Context, sb *strings.Builder, componentID string, componentMap schema.ComponentMap, generateCtx *GenerateContext) error {
+func buildSubTreeMarkup(
+	ctx context.Context,
+	sb *strings.Builder,
+	componentID string,
+	componentMap schema.ComponentMap,
+	isRootChild bool,
+	generateCtx *GenerateContext) error {
+
 	comp := componentMap[componentID]
 
 	// Start tag of the component.
@@ -74,7 +81,7 @@ func buildSubTreeMarkup(ctx context.Context, sb *strings.Builder, componentID st
 		sb.WriteString(" {...defaultTextProps}")
 	}
 
-	if err := buildProps(ctx, sb, &comp, generateCtx); err != nil {
+	if err := buildProps(ctx, sb, &comp, isRootChild, generateCtx); err != nil {
 		return err
 	}
 
@@ -83,7 +90,7 @@ func buildSubTreeMarkup(ctx context.Context, sb *strings.Builder, componentID st
 	// Render the children components.
 	if comp.IsCanvas {
 		for _, childID := range comp.ChildrenNodes {
-			err := buildSubTreeMarkup(ctx, sb, childID, componentMap, generateCtx)
+			err := buildSubTreeMarkup(ctx, sb, childID, componentMap, false, generateCtx)
 			if err != nil {
 				return err
 			}
@@ -99,7 +106,13 @@ func buildSubTreeMarkup(ctx context.Context, sb *strings.Builder, componentID st
 }
 
 // buildProps generates a series of prop assignments.
-func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.ComponentNode, generateCtx *GenerateContext) error {
+func buildProps(
+	ctx context.Context,
+	sb *strings.Builder,
+	comp *schema.ComponentNode,
+	isRootChild bool,
+	generateCtx *GenerateContext) error {
+
 	if comp.Type == "Text" {
 		sb.WriteString(" content={")
 
@@ -135,9 +148,6 @@ func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.Component
 					sb.WriteString(*href)
 					sb.WriteString("'}")
 				}
-
-				// Skip the rest.
-				continue
 			}
 		case "imageId":
 			sb.WriteString("imageUrl={")
@@ -153,12 +163,51 @@ func buildProps(ctx context.Context, sb *strings.Builder, comp *schema.Component
 				sb.WriteString("null")
 			}
 			sb.WriteString("}")
+		case "width":
+			writeDimension(isRootChild, true, sb, k, v)
+		case "height":
+			writeDimension(isRootChild, false, sb, k, v)
 		default:
 			writePropAndValue(sb, k, v)
 		}
 	}
 
 	return nil
+}
+
+// writeDimension writes the dimension while transforming % units if it is a root child.
+func writeDimension(isRootChild bool, isWidth bool, sb *strings.Builder, k string, v interface{}) {
+	if !isRootChild {
+		writePropAndValue(sb, k, v)
+		return
+	}
+
+	// This is `auto` value, nothing extra to do here.
+	_, ok := v.(string)
+	if ok {
+		writePropAndValue(sb, k, v)
+		return
+	}
+
+	obj, ok := v.(map[string]interface{})
+	if !ok {
+		writePropAndValue(sb, k, v)
+		return
+	}
+
+	unit := obj["unit"]
+	if unit != "%" {
+		writePropAndValue(sb, k, v)
+		return
+	}
+
+	if isWidth {
+		obj["unit"] = "vw"
+	} else {
+		obj["unit"] = "vh"
+	}
+
+	writePropAndValue(sb, k, obj)
 }
 
 // writePropAndValue writes the key and value as props and value as-is.
