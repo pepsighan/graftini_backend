@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/pepsighan/graftini_backend/internal/backend/analytics"
 	"github.com/pepsighan/graftini_backend/internal/backend/errs"
+	"github.com/pepsighan/graftini_backend/internal/pkg/db"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/earlyaccess"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/user"
@@ -56,16 +57,26 @@ func (a *AuthContext) user(ctx context.Context, entClient *ent.Client, firebaseA
 			return nil, logger.Errorf("could not login the user because they are not allowed to access: %w", err)
 		}
 
-		// Store the user in the database for later. This is the first login.
-		user, err = entClient.User.Create().
-			SetEmail(userRecord.ProviderUserInfo[0].Email).
-			SetFirebaseUID(token.UID).
-			Save(ctx)
+		err = db.WithTx(ctx, entClient, func(tx *ent.Tx) error {
+			// Store the user in the database for later. This is the first login.
+			user, err = entClient.User.Create().
+				SetEmail(userRecord.ProviderUserInfo[0].Email).
+				SetFirebaseUID(token.UID).
+				Save(ctx)
+			if err != nil {
+				return logger.Errorf("could not save user for the first time: %w", err)
+			}
+
+			// Run this in transaction because otherwise our assumption of interaction
+			// with the users would fail.
+			return analytics.LogUser(user)
+		})
+
 		if err != nil {
-			return nil, logger.Errorf("could not save user for the first time: %w", err)
+			return nil, err
 		}
 
-		analytics.LogUserSignedUp(user.Email)
+		analytics.LogUserSignedUp(userRecord.ProviderUserInfo[0].Email)
 	}
 
 	return user, nil

@@ -3,6 +3,8 @@ package analytics
 import (
 	"github.com/customerio/go-customerio"
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
+	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 	"go.uber.org/zap"
 )
 
@@ -24,6 +26,23 @@ type ProjectDeployedForFirstTimeMeta struct {
 
 func newClient() *customerio.CustomerIO {
 	return customerio.NewTrackClient(config.CustomerIOSiteID, config.CustomerIOAPIKey)
+}
+
+// LogUser either adds the user if it does not with with customer.io or updates
+// them.
+func LogUser(user *ent.User) error {
+	track := newClient()
+
+	err := track.Identify(user.ID.String(), map[string]interface{}{
+		"email":      user.Email,
+		"created_at": user.CreatedAt.Unix(),
+	})
+
+	if err != nil {
+		return logger.Errorf("could not log user to customer.io: %w", err)
+	}
+
+	return nil
 }
 
 // LogUserSignedUp is an event that is logged when user signs up.
