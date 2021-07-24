@@ -19,7 +19,6 @@ type Resolver struct {
 }
 
 func NewResolver(client *ent.Client, auth *auth.Client, storage *storage.Client) *Resolver {
-
 	return &Resolver{
 		Ent:          client,
 		FirebaseAuth: auth,
