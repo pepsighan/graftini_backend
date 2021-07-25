@@ -426,7 +426,7 @@ func buildRootStyling(sb *strings.Builder, props map[string]interface{}) error {
 		return err
 	}
 
-	sb.WriteString("<Global style={` body { background-color: ${rgbaToCss(")
+	sb.WriteString("<Global styles={` body { background-color: ${rgbaToCss(")
 	sb.Write(rgba)
 	sb.WriteString(")}; } `} />\n")
 
