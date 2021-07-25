@@ -131,6 +131,12 @@ input NewGraphQLQuery {
   gqlAst: String!
 }
 
+input ContactUsMessage {
+  name: String!
+  email: String!
+  content: String!
+}
+
 type Mutation {
   """
   Creates a new project for the logged in user. It will also create a default page
@@ -179,4 +185,8 @@ type Mutation {
   Is the email allowed for early access.
   """
   isEarlyAccessAllowed(email: String!): Boolean!
+  """
+  To allow users to send a message to us from the app.
+  """
+  contactUs(input: ContactUsMessage!): Time!
 }
