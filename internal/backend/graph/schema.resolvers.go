@@ -329,7 +329,7 @@ func (r *mutationResolver) IsEarlyAccessAllowed(ctx context.Context, email strin
 }
 
 func (r *mutationResolver) ContactUs(ctx context.Context, input model1.ContactUsMessage) (*time.Time, error) {
-	err := customer.SendContactUsEmail(ctx, input.Name, input.Email, input.Content)
+	err := customer.SendContactUsEmail(ctx, input.Name, input.Email, input.Content, r.Ent)
 	if err != nil {
 		return nil, err
 	}
