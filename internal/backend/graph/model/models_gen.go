@@ -6,6 +6,12 @@ import (
 	"github.com/google/uuid"
 )
 
+type ContactUsMessage struct {
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Content string `json:"content"`
+}
+
 type NewGraphQLQuery struct {
 	ProjectID    uuid.UUID `json:"projectId"`
 	VariableName string    `json:"variableName"`

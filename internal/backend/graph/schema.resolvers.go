@@ -9,9 +9,9 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/google/uuid"
-	"github.com/pepsighan/graftini_backend/internal/backend/analytics"
 	"github.com/pepsighan/graftini_backend/internal/backend/auth"
 	"github.com/pepsighan/graftini_backend/internal/backend/config"
+	"github.com/pepsighan/graftini_backend/internal/backend/customer"
 	"github.com/pepsighan/graftini_backend/internal/backend/deployclient"
 	"github.com/pepsighan/graftini_backend/internal/backend/errs"
 	"github.com/pepsighan/graftini_backend/internal/backend/graph/generated"
@@ -320,12 +320,22 @@ func (r *mutationResolver) IsEarlyAccessAllowed(ctx context.Context, email strin
 
 	// Add the user to customer.io as an early access user requester. Any user that is registered becomes
 	// an early access user by default (because we have configured customer.io like that).
-	err = analytics.LogUser(uuid.New(), email, time.Now())
+	err = customer.LogUser(uuid.New(), email, time.Now())
 	if err != nil {
 		zap.S().Error(err)
 	}
 
 	return allowed, nil
+}
+
+func (r *mutationResolver) ContactUs(ctx context.Context, input model1.ContactUsMessage) (*time.Time, error) {
+	err := customer.SendContactUsEmail(ctx, input.Name, input.Email, input.Content, r.Ent)
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now()
+	return &now, nil
 }
 
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {

@@ -6,7 +6,7 @@ import (
 
 	"firebase.google.com/go/v4/auth"
 	"github.com/labstack/echo"
-	"github.com/pepsighan/graftini_backend/internal/backend/analytics"
+	"github.com/pepsighan/graftini_backend/internal/backend/customer"
 	"github.com/pepsighan/graftini_backend/internal/backend/errs"
 	"github.com/pepsighan/graftini_backend/internal/pkg/db"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
@@ -69,14 +69,14 @@ func (a *AuthContext) user(ctx context.Context, entClient *ent.Client, firebaseA
 
 			// Run this in transaction because otherwise our assumption of interaction
 			// with the users would fail.
-			return analytics.LogUser(user.ID, user.Email, user.CreatedAt)
+			return customer.LogUser(user.ID, user.Email, user.CreatedAt)
 		})
 
 		if err != nil {
 			return nil, err
 		}
 
-		analytics.LogUserSignedUp(userRecord.ProviderUserInfo[0].Email)
+		customer.LogUserSignedUp(userRecord.ProviderUserInfo[0].Email)
 	}
 
 	return user, nil
