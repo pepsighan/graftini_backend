@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -330,7 +329,13 @@ func (r *mutationResolver) IsEarlyAccessAllowed(ctx context.Context, email strin
 }
 
 func (r *mutationResolver) ContactUs(ctx context.Context, input model1.ContactUsMessage) (*time.Time, error) {
-	panic(fmt.Errorf("not implemented"))
+	err := customer.SendContactUsEmail(ctx, input.Name, input.Email, input.Content)
+	if err != nil {
+		return nil, err
+	}
+
+	now := time.Now()
+	return &now, nil
 }
 
 func (r *projectResolver) Pages(ctx context.Context, obj *ent.Project) ([]*ent.Page, error) {
