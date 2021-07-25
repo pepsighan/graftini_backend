@@ -125,6 +125,13 @@ input NewPage {
   componentMap: String!
 }
 
+input UpdatePage {
+  projectId: ID!
+  pageId: ID!
+  name: String!
+  route: String!
+}
+
 input NewGraphQLQuery {
   projectId: ID!
   variableName: String!
@@ -163,6 +170,10 @@ type Mutation {
   Create a page on an existing project for the logged in user.
   """
   createPage(input: NewPage!): Page! @isAuthenticated
+  """
+  Updates an existing page.
+  """
+  updatePage(input: UpdatePage!): Page! @isAuthenticated
   """
   Delete a page on an existing project for the logged in user. It does not
   however delete if it is the last page of the project. In that case, it

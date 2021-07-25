@@ -233,6 +233,43 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model1.NewPage)
 		Save(ctx)
 }
 
+func (r *mutationResolver) UpdatePage(ctx context.Context, input model1.UpdatePage) (*ent.Page, error) {
+	user := auth.RequiredAuthenticatedUser(ctx)
+
+	prj, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(input.ProjectID, user.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	existing, err := prj.QueryPages().
+		Where(page.IDEQ(input.PageID)).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the new updated route already exists elsewhere. We do not
+	// allow duplicate routes.
+	route := sanitize.CleanRoute(input.Route)
+	pageExists, err := prj.QueryPages().
+		Where(page.And(page.RouteEQ(route), page.IDNEQ(existing.ID))).
+		Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if pageExists {
+		return nil, logger.Errorf("cannot create a duplicate page")
+	}
+
+	return existing.Update().
+		SetName(input.Name).
+		SetRoute(input.Route).
+		Save(ctx)
+}
+
 func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 

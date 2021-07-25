@@ -30,6 +30,13 @@ type NewProject struct {
 	DefaultPageComponentMap string `json:"defaultPageComponentMap"`
 }
 
+type UpdatePage struct {
+	ProjectID uuid.UUID `json:"projectId"`
+	PageID    uuid.UUID `json:"pageId"`
+	Name      string    `json:"name"`
+	Route     string    `json:"route"`
+}
+
 type UpdatePageDesign struct {
 	PageID       uuid.UUID `json:"pageId"`
 	ComponentMap string    `json:"componentMap"`
