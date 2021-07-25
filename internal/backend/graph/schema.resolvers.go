@@ -233,6 +233,29 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model1.NewPage)
 		Save(ctx)
 }
 
+func (r *mutationResolver) UpdatePage(ctx context.Context, input model1.UpdatePage) (*ent.Page, error) {
+	user := auth.RequiredAuthenticatedUser(ctx)
+
+	prj, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(input.ProjectID, user.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	page, err := prj.QueryPages().
+		Where(page.IDEQ(input.PageID)).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return page.Update().
+		SetName(input.Name).
+		SetRoute(input.Route).
+		Save(ctx)
+}
+
 func (r *mutationResolver) DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error) {
 	user := auth.RequiredAuthenticatedUser(ctx)
 
