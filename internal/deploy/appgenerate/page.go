@@ -20,8 +20,9 @@ type GenerateContext struct {
 // buildPage generates the NextJS page component.
 func buildPage(ctx context.Context, pg *schema.PageSnapshot, generateCtx *GenerateContext) (string, error) {
 	var sb strings.Builder
-	sb.WriteString("import { Box, Text } from '@graftini/bricks';\n")
+	sb.WriteString("import { Box, Text, rgbaToCss } from '@graftini/bricks';\n")
 	sb.WriteString("import Head from 'next/head';\n")
+	sb.WriteString("import { Global } from '@emotion/react';\n")
 	sb.WriteString("import { defaultTextProps } from 'utils/text';\n\n")
 
 	sb.WriteString("export default function Page")
@@ -46,6 +47,10 @@ func buildPageMarkup(ctx context.Context, sb *strings.Builder, componentMap sche
 	root := componentMap["ROOT"]
 
 	if err := buildSEOForPage(sb, root.Props); err != nil {
+		return err
+	}
+
+	if err := buildRootStyling(sb, root.Props); err != nil {
 		return err
 	}
 
@@ -404,6 +409,26 @@ func buildSEOForPage(sb *strings.Builder, props map[string]interface{}) error {
 	default:
 		return logger.Errorf("invalid type of SEO object")
 	}
+
+	return nil
+}
+
+// buildRootStyling builds the styling for the root component. The root styling
+// are put on the body itself.
+func buildRootStyling(sb *strings.Builder, props map[string]interface{}) error {
+	color := props["color"]
+	if color == nil {
+		return nil
+	}
+
+	rgba, err := json.Marshal(color)
+	if err != nil {
+		return err
+	}
+
+	sb.WriteString("<Global style={` body { background-color: ${rgbaToCss(")
+	sb.Write(rgba)
+	sb.WriteString(")}; } `} />\n")
 
 	return nil
 }
