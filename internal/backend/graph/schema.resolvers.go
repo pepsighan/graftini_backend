@@ -243,14 +243,28 @@ func (r *mutationResolver) UpdatePage(ctx context.Context, input model1.UpdatePa
 		return nil, err
 	}
 
-	page, err := prj.QueryPages().
+	existing, err := prj.QueryPages().
 		Where(page.IDEQ(input.PageID)).
 		First(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return page.Update().
+	// Check if the new updated route already exists elsewhere. We do not
+	// allow duplicate routes.
+	route := sanitize.CleanRoute(input.Route)
+	pageExists, err := prj.QueryPages().
+		Where(page.And(page.RouteEQ(route), page.IDNEQ(existing.ID))).
+		Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if pageExists {
+		return nil, logger.Errorf("cannot create a duplicate page")
+	}
+
+	return existing.Update().
 		SetName(input.Name).
 		SetRoute(input.Route).
 		Save(ctx)
