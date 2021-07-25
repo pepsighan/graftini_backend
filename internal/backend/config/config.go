@@ -22,6 +22,7 @@ var (
 	ImageKitURLEndpoint      = config.RequireEnv("IMAGEKIT_URL_ENDPOINT")
 	CustomerIOSiteID         = config.RequireEnv("CUSTOMER_IO_SITE_ID")
 	CustomerIOAPIKey         = config.RequireEnv("CUSTOMER_IO_API_KEY")
+	CustomerIOAPPAPIKey      = config.RequireEnv("CUSTOMER_IO_APP_API_KEY")
 )
 
 func allowedOrigins() []string {
