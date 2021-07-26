@@ -15,7 +15,6 @@ var (
 	Port                     = config.Env("PORT", "1323")
 	DatabaseURL              = config.DatabaseURL(Env)
 	AllowedOrigins           = allowedOrigins()
-	MaxBodySize              = config.Env("MAX_BODY_SIZE", "2M")
 	DeployEndpoint           = config.RequireEnv("DEPLOY_ENDPOINT")
 	GoogleCloudStorageBucket = config.RequireEnv("GOOGLE_CLOUD_STORAGE_BUCKET")
 	SentryDSN                = config.RequireEnv("SENTRY_DSN")
