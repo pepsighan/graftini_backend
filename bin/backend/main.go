@@ -119,10 +119,6 @@ func main() {
 	corsConfig.AllowOrigins = config.AllowedOrigins
 	e.Use(middleware.CORSWithConfig(corsConfig))
 
-	// Do not allow any request with body more than 2MB by default. This will
-	// limit DoS attacks by file uploads.
-	e.Use(middleware.BodyLimit(config.MaxBodySize))
-
 	e.POST("/query", graphqlHandler(client))
 	e.GET("/", playgroundHandler())
 
