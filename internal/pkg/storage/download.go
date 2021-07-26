@@ -6,21 +6,20 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
-	"github.com/pepsighan/graftini_backend/internal/backend/config"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 	"golang.org/x/oauth2/google"
 )
 
 // FileURL gets the download URL for the given file.
-func FileURL(ctx context.Context, file *ent.File, storageClient *storage.Client) (string, error) {
+func FileURL(ctx context.Context, file *ent.File, bucketName string, storageClient *storage.Client) (string, error) {
 	cf, err := defaultCredentialsFile(ctx)
 	if err != nil {
 		return "", logger.Errorf("could not find credentials to get file url: %w", err)
 	}
 
 	url, err := storage.SignedURL(
-		config.GoogleCloudStorageBucket,
+		bucketName,
 		UploadFileName(file.ID, file.Kind),
 		&storage.SignedURLOptions{
 			Method:         "GET",
