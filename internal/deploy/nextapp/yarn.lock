@@ -134,10 +134,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@graftini/bricks@^0.5.0":
-  version "0.5.0"
-  resolved "https://npm.pkg.github.com/download/@graftini/bricks/0.5.0/636e3725d4ffff5f5be39089fd412408977e7a4ff4d846d632f8d381f596e1f1#9421e2d6e40aa4513ff7c581c6e8e7c9318bd997"
-  integrity sha512-a1CDibLbFh9KmbN1RvDiDETD7v6QfDgp3Iqh9ijPD+MBiv4e7z58EXvWjsRv30mWkvo5R95lx4o2W5OxIv4rtw==
+"@graftini/bricks@^0.6.0":
+  version "0.6.0"
+  resolved "https://npm.pkg.github.com/download/@graftini/bricks/0.6.0/e551144474b15b865f79ee0b198bc890921d0ac92c6c180e24d7bb51c96b7ef3#3e0ea05ee4e2a20bbfa650ed4ef05ea7b7ade4ae"
+  integrity sha512-IA4i0gSNHNAFyP8E2551PgD03JZ0EuThIRK5b+r/Mp5Fm3X+TRN6/gqSEpOK12EXgZ/p0/Gz3OjYM8enmna3Jg==
   dependencies:
     "@emotion/react" "^11.4.0"
 

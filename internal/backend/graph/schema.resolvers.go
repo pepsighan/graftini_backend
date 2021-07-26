@@ -344,7 +344,7 @@ func (r *mutationResolver) DeleteQuery(ctx context.Context, projectID uuid.UUID,
 }
 
 func (r *mutationResolver) UploadFile(ctx context.Context, file graphql.Upload) (*ent.File, error) {
-	return storage.UploadFile(ctx, file.File, file.ContentType, r.Storage, r.Ent)
+	return storage.UploadFile(ctx, file.File, file.ContentType, config.GoogleCloudStorageBucket, r.Storage, r.Ent)
 }
 
 func (r *mutationResolver) IsEarlyAccessAllowed(ctx context.Context, email string) (bool, error) {
