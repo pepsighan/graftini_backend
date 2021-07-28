@@ -120,7 +120,11 @@ func main() {
 	e.Use(middleware.CORSWithConfig(corsConfig))
 
 	e.POST("/query", graphqlHandler(client))
-	e.GET("/", playgroundHandler())
+
+	// Show the playground only on local.
+	if config.Env.IsLocal() {
+		e.GET("/", playgroundHandler())
+	}
 
 	// Start server
 	go func() {
