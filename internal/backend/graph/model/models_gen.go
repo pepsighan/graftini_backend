@@ -12,6 +12,13 @@ type ContactUsMessage struct {
 	Content string `json:"content"`
 }
 
+type DuplicatePage struct {
+	ProjectID  uuid.UUID `json:"projectId"`
+	Name       string    `json:"name"`
+	Route      string    `json:"route"`
+	CopyPageID uuid.UUID `json:"copyPageId"`
+}
+
 type NewGraphQLQuery struct {
 	ProjectID    uuid.UUID `json:"projectId"`
 	VariableName string    `json:"variableName"`

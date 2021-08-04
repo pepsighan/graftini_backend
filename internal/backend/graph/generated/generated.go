@@ -80,6 +80,7 @@ type ComplexityRoot struct {
 		DeleteProject        func(childComplexity int, projectID uuid.UUID) int
 		DeleteQuery          func(childComplexity int, projectID uuid.UUID, queryID uuid.UUID) int
 		DeployProject        func(childComplexity int, projectID uuid.UUID) int
+		DuplicatePage        func(childComplexity int, input model.DuplicatePage) int
 		IsEarlyAccessAllowed func(childComplexity int, email string) int
 		UpdatePage           func(childComplexity int, input model.UpdatePage) int
 		UpdateProject        func(childComplexity int, input model.UpdateProject) int
@@ -133,6 +134,7 @@ type MutationResolver interface {
 	DeployProject(ctx context.Context, projectID uuid.UUID) (*ent.Deployment, error)
 	UpdateProjectDesign(ctx context.Context, input model.UpdateProjectDesign) (*ent.Project, error)
 	CreatePage(ctx context.Context, input model.NewPage) (*ent.Page, error)
+	DuplicatePage(ctx context.Context, input model.DuplicatePage) (*ent.Page, error)
 	UpdatePage(ctx context.Context, input model.UpdatePage) (*ent.Page, error)
 	DeletePage(ctx context.Context, projectID uuid.UUID, pageID uuid.UUID) (*ent.Page, error)
 	CreateQuery(ctx context.Context, input model.NewGraphQLQuery) (*ent.GraphQLQuery, error)
@@ -334,6 +336,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeployProject(childComplexity, args["projectId"].(uuid.UUID)), true
+
+	case "Mutation.duplicatePage":
+		if e.complexity.Mutation.DuplicatePage == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_duplicatePage_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DuplicatePage(childComplexity, args["input"].(model.DuplicatePage)), true
 
 	case "Mutation.isEarlyAccessAllowed":
 		if e.complexity.Mutation.IsEarlyAccessAllowed == nil {
@@ -741,6 +755,13 @@ input NewPage {
   componentMap: String!
 }
 
+input DuplicatePage {
+  projectId: ID!
+  name: String!
+  route: String!
+  copyPageId: ID!
+}
+
 input UpdatePage {
   projectId: ID!
   pageId: ID!
@@ -786,6 +807,10 @@ type Mutation {
   Create a page on an existing project for the logged in user.
   """
   createPage(input: NewPage!): Page! @isAuthenticated
+  """
+  Creates a new page using an existing page for reference.
+  """
+  duplicatePage(input: DuplicatePage!): Page! @isAuthenticated
   """
   Updates an existing page.
   """
@@ -960,6 +985,21 @@ func (ec *executionContext) field_Mutation_deployProject_args(ctx context.Contex
 		}
 	}
 	args["projectId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_duplicatePage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DuplicatePage
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDuplicatePage2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐDuplicatePage(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -1823,6 +1863,68 @@ func (ec *executionContext) _Mutation_createPage(ctx context.Context, field grap
 		directive0 := func(rctx context.Context) (interface{}, error) {
 			ctx = rctx // use context from middleware stack in children
 			return ec.resolvers.Mutation().CreatePage(rctx, args["input"].(model.NewPage))
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			if ec.directives.IsAuthenticated == nil {
+				return nil, errors.New("directive isAuthenticated is not implemented")
+			}
+			return ec.directives.IsAuthenticated(ctx, nil, directive0)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(*ent.Page); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be *github.com/pepsighan/graftini_backend/internal/pkg/ent.Page`, tmp)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Page)
+	fc.Result = res
+	return ec.marshalNPage2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐPage(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_duplicatePage(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_duplicatePage_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return ec.resolvers.Mutation().DuplicatePage(rctx, args["input"].(model.DuplicatePage))
 		}
 		directive1 := func(ctx context.Context) (interface{}, error) {
 			if ec.directives.IsAuthenticated == nil {
@@ -4229,6 +4331,50 @@ func (ec *executionContext) unmarshalInputContactUsMessage(ctx context.Context, 
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDuplicatePage(ctx context.Context, obj interface{}) (model.DuplicatePage, error) {
+	var it model.DuplicatePage
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "projectId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+			it.ProjectID, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "route":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("route"))
+			it.Route, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "copyPageId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("copyPageId"))
+			it.CopyPageID, err = ec.unmarshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewGraphQLQuery(ctx context.Context, obj interface{}) (model.NewGraphQLQuery, error) {
 	var it model.NewGraphQLQuery
 	var asMap = obj.(map[string]interface{})
@@ -4657,6 +4803,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "createPage":
 			out.Values[i] = ec._Mutation_createPage(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "duplicatePage":
+			out.Values[i] = ec._Mutation_duplicatePage(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -5233,6 +5384,11 @@ func (ec *executionContext) marshalNDeployment2ᚖgithubᚗcomᚋpepsighanᚋgra
 		return graphql.Null
 	}
 	return ec._Deployment(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNDuplicatePage2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐDuplicatePage(ctx context.Context, v interface{}) (model.DuplicatePage, error) {
+	res, err := ec.unmarshalInputDuplicatePage(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNFile2githubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐFile(ctx context.Context, sel ast.SelectionSet, v ent.File) graphql.Marshaler {

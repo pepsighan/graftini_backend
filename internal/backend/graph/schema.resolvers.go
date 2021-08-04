@@ -222,13 +222,50 @@ func (r *mutationResolver) CreatePage(ctx context.Context, input model1.NewPage)
 	}
 
 	if pageExists {
-		return nil, logger.Errorf("cannot create a duplicate page")
+		return nil, logger.Errorf("cannot create a page with existing route")
 	}
 
 	return r.Ent.Page.Create().
 		SetName(input.Name).
 		SetRoute(route).
 		SetComponentMap(input.ComponentMap).
+		SetPageOf(prj).
+		Save(ctx)
+}
+
+func (r *mutationResolver) DuplicatePage(ctx context.Context, input model1.DuplicatePage) (*ent.Page, error) {
+	user := auth.RequiredAuthenticatedUser(ctx)
+
+	prj, err := r.Ent.Project.Query().
+		ByIDAndOwnedBy(input.ProjectID, user.ID).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	existing, err := prj.QueryPages().
+		Where(page.IDEQ(input.CopyPageID)).
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	route := sanitize.CleanRoute(input.Route)
+	pageExists, err := prj.QueryPages().
+		Where(page.RouteEQ(route)).
+		Exist(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if pageExists {
+		return nil, logger.Errorf("cannot create a page with existing route")
+	}
+
+	return r.Ent.Page.Create().
+		SetName(input.Name).
+		SetRoute(route).
+		SetComponentMap(existing.ComponentMap).
 		SetPageOf(prj).
 		Save(ctx)
 }
@@ -261,7 +298,7 @@ func (r *mutationResolver) UpdatePage(ctx context.Context, input model1.UpdatePa
 	}
 
 	if pageExists {
-		return nil, logger.Errorf("cannot create a duplicate page")
+		return nil, logger.Errorf("cannot update a page with existing route")
 	}
 
 	return existing.Update().

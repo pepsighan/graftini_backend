@@ -125,6 +125,13 @@ input NewPage {
   componentMap: String!
 }
 
+input DuplicatePage {
+  projectId: ID!
+  name: String!
+  route: String!
+  copyPageId: ID!
+}
+
 input UpdatePage {
   projectId: ID!
   pageId: ID!
@@ -170,6 +177,10 @@ type Mutation {
   Create a page on an existing project for the logged in user.
   """
   createPage(input: NewPage!): Page! @isAuthenticated
+  """
+  Creates a new page using an existing page for reference.
+  """
+  duplicatePage(input: DuplicatePage!): Page! @isAuthenticated
   """
   Updates an existing page.
   """
