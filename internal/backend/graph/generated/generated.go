@@ -161,7 +161,7 @@ type QueryResolver interface {
 	MyProject(ctx context.Context, id uuid.UUID) (*ent.Project, error)
 	MyLastDeployment(ctx context.Context, projectID uuid.UUID) (*ent.Deployment, error)
 	File(ctx context.Context, fileID uuid.UUID) (*ent.File, error)
-	Templates(ctx context.Context) ([]*model.Template, error)
+	Templates(ctx context.Context) ([]*ent.Template, error)
 }
 
 type executableSchema struct {
@@ -3049,10 +3049,10 @@ func (ec *executionContext) _Query_templates(ctx context.Context, field graphql.
 		if tmp == nil {
 			return nil, nil
 		}
-		if data, ok := tmp.([]*model.Template); ok {
+		if data, ok := tmp.([]*ent.Template); ok {
 			return data, nil
 		}
-		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/pepsighan/graftini_backend/internal/backend/graph/model.Template`, tmp)
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be []*github.com/pepsighan/graftini_backend/internal/pkg/ent.Template`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3064,9 +3064,9 @@ func (ec *executionContext) _Query_templates(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Template)
+	res := resTmp.([]*ent.Template)
 	fc.Result = res
-	return ec.marshalNTemplate2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐTemplateᚄ(ctx, field.Selections, res)
+	return ec.marshalNTemplate2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐTemplateᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3140,7 +3140,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Template_id(ctx context.Context, field graphql.CollectedField, obj *model.Template) (ret graphql.Marshaler) {
+func (ec *executionContext) _Template_id(ctx context.Context, field graphql.CollectedField, obj *ent.Template) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3175,7 +3175,7 @@ func (ec *executionContext) _Template_id(ctx context.Context, field graphql.Coll
 	return ec.marshalNID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Template_name(ctx context.Context, field graphql.CollectedField, obj *model.Template) (ret graphql.Marshaler) {
+func (ec *executionContext) _Template_name(ctx context.Context, field graphql.CollectedField, obj *ent.Template) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -3210,7 +3210,7 @@ func (ec *executionContext) _Template_name(ctx context.Context, field graphql.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Template_snapshot(ctx context.Context, field graphql.CollectedField, obj *model.Template) (ret graphql.Marshaler) {
+func (ec *executionContext) _Template_snapshot(ctx context.Context, field graphql.CollectedField, obj *ent.Template) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -5288,7 +5288,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var templateImplementors = []string{"Template"}
 
-func (ec *executionContext) _Template(ctx context.Context, sel ast.SelectionSet, obj *model.Template) graphql.Marshaler {
+func (ec *executionContext) _Template(ctx context.Context, sel ast.SelectionSet, obj *ent.Template) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, templateImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -5860,7 +5860,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTemplate2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐTemplateᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Template) graphql.Marshaler {
+func (ec *executionContext) marshalNTemplate2ᚕᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐTemplateᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Template) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -5884,7 +5884,7 @@ func (ec *executionContext) marshalNTemplate2ᚕᚖgithubᚗcomᚋpepsighanᚋgr
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTemplate2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐTemplate(ctx, sel, v[i])
+			ret[i] = ec.marshalNTemplate2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐTemplate(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -5897,7 +5897,7 @@ func (ec *executionContext) marshalNTemplate2ᚕᚖgithubᚗcomᚋpepsighanᚋgr
 	return ret
 }
 
-func (ec *executionContext) marshalNTemplate2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋbackendᚋgraphᚋmodelᚐTemplate(ctx context.Context, sel ast.SelectionSet, v *model.Template) graphql.Marshaler {
+func (ec *executionContext) marshalNTemplate2ᚖgithubᚗcomᚋpepsighanᚋgraftini_backendᚋinternalᚋpkgᚋentᚐTemplate(ctx context.Context, sel ast.SelectionSet, v *ent.Template) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")

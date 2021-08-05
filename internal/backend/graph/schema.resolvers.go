@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -28,6 +27,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/project"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/template"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/user"
 	"github.com/pepsighan/graftini_backend/internal/pkg/imagekit"
 	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
@@ -499,8 +499,11 @@ func (r *queryResolver) File(ctx context.Context, fileID uuid.UUID) (*ent.File, 
 	return r.Ent.File.Get(ctx, fileID)
 }
 
-func (r *queryResolver) Templates(ctx context.Context) ([]*model1.Template, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *queryResolver) Templates(ctx context.Context) ([]*ent.Template, error) {
+	return r.Ent.Template.
+		Query().
+		Order(ent.Asc(template.FieldCreatedAt)).
+		All(ctx)
 }
 
 // Deployment returns generated.DeploymentResolver implementation.
