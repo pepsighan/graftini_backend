@@ -24,6 +24,8 @@ type Tx struct {
 	Page *PageClient
 	// Project is the client for interacting with the Project builders.
 	Project *ProjectClient
+	// Template is the client for interacting with the Template builders.
+	Template *TemplateClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -167,6 +169,7 @@ func (tx *Tx) init() {
 	tx.GraphQLQuery = NewGraphQLQueryClient(tx.config)
 	tx.Page = NewPageClient(tx.config)
 	tx.Project = NewProjectClient(tx.config)
+	tx.Template = NewTemplateClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

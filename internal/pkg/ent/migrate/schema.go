@@ -132,6 +132,21 @@ var (
 			},
 		},
 	}
+	// TemplatesColumns holds the columns for the "templates" table.
+	TemplatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "name", Type: field.TypeString},
+		{Name: "snapshot", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// TemplatesTable holds the schema information for the "templates" table.
+	TemplatesTable = &schema.Table{
+		Name:        "templates",
+		Columns:     TemplatesColumns,
+		PrimaryKey:  []*schema.Column{TemplatesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -157,6 +172,7 @@ var (
 		GraphQlQueriesTable,
 		PagesTable,
 		ProjectsTable,
+		TemplatesTable,
 		UsersTable,
 	}
 )

@@ -30,6 +30,7 @@ type hooks struct {
 	GraphQLQuery []ent.Hook
 	Page         []ent.Hook
 	Project      []ent.Hook
+	Template     []ent.Hook
 	User         []ent.Hook
 }
 

@@ -16,6 +16,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/project"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/template"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/user"
 
 	"entgo.io/ent/dialect"
@@ -40,6 +41,8 @@ type Client struct {
 	Page *PageClient
 	// Project is the client for interacting with the Project builders.
 	Project *ProjectClient
+	// Template is the client for interacting with the Template builders.
+	Template *TemplateClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -61,6 +64,7 @@ func (c *Client) init() {
 	c.GraphQLQuery = NewGraphQLQueryClient(c.config)
 	c.Page = NewPageClient(c.config)
 	c.Project = NewProjectClient(c.config)
+	c.Template = NewTemplateClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -101,6 +105,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		GraphQLQuery: NewGraphQLQueryClient(cfg),
 		Page:         NewPageClient(cfg),
 		Project:      NewProjectClient(cfg),
+		Template:     NewTemplateClient(cfg),
 		User:         NewUserClient(cfg),
 	}, nil
 }
@@ -126,6 +131,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		GraphQLQuery: NewGraphQLQueryClient(cfg),
 		Page:         NewPageClient(cfg),
 		Project:      NewProjectClient(cfg),
+		Template:     NewTemplateClient(cfg),
 		User:         NewUserClient(cfg),
 	}, nil
 }
@@ -162,6 +168,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.GraphQLQuery.Use(hooks...)
 	c.Page.Use(hooks...)
 	c.Project.Use(hooks...)
+	c.Template.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -815,6 +822,96 @@ func (c *ProjectClient) QueryDeployments(pr *Project) *DeploymentQuery {
 // Hooks returns the client hooks.
 func (c *ProjectClient) Hooks() []Hook {
 	return c.hooks.Project
+}
+
+// TemplateClient is a client for the Template schema.
+type TemplateClient struct {
+	config
+}
+
+// NewTemplateClient returns a client for the Template from the given config.
+func NewTemplateClient(c config) *TemplateClient {
+	return &TemplateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `template.Hooks(f(g(h())))`.
+func (c *TemplateClient) Use(hooks ...Hook) {
+	c.hooks.Template = append(c.hooks.Template, hooks...)
+}
+
+// Create returns a create builder for Template.
+func (c *TemplateClient) Create() *TemplateCreate {
+	mutation := newTemplateMutation(c.config, OpCreate)
+	return &TemplateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Template entities.
+func (c *TemplateClient) CreateBulk(builders ...*TemplateCreate) *TemplateCreateBulk {
+	return &TemplateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Template.
+func (c *TemplateClient) Update() *TemplateUpdate {
+	mutation := newTemplateMutation(c.config, OpUpdate)
+	return &TemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TemplateClient) UpdateOne(t *Template) *TemplateUpdateOne {
+	mutation := newTemplateMutation(c.config, OpUpdateOne, withTemplate(t))
+	return &TemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TemplateClient) UpdateOneID(id uuid.UUID) *TemplateUpdateOne {
+	mutation := newTemplateMutation(c.config, OpUpdateOne, withTemplateID(id))
+	return &TemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Template.
+func (c *TemplateClient) Delete() *TemplateDelete {
+	mutation := newTemplateMutation(c.config, OpDelete)
+	return &TemplateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TemplateClient) DeleteOne(t *Template) *TemplateDeleteOne {
+	return c.DeleteOneID(t.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TemplateClient) DeleteOneID(id uuid.UUID) *TemplateDeleteOne {
+	builder := c.Delete().Where(template.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TemplateDeleteOne{builder}
+}
+
+// Query returns a query builder for Template.
+func (c *TemplateClient) Query() *TemplateQuery {
+	return &TemplateQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Template entity by its id.
+func (c *TemplateClient) Get(ctx context.Context, id uuid.UUID) (*Template, error) {
+	return c.Query().Where(template.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TemplateClient) GetX(ctx context.Context, id uuid.UUID) *Template {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TemplateClient) Hooks() []Hook {
+	return c.hooks.Template
 }
 
 // UserClient is a client for the User schema.
