@@ -37,6 +37,12 @@ type NewProject struct {
 	DefaultPageComponentMap string `json:"defaultPageComponentMap"`
 }
 
+type Template struct {
+	ID       uuid.UUID `json:"id"`
+	Name     string    `json:"name"`
+	Snapshot string    `json:"snapshot"`
+}
+
 type UpdatePage struct {
 	ProjectID uuid.UUID `json:"projectId"`
 	PageID    uuid.UUID `json:"pageId"`

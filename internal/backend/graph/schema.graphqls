@@ -69,6 +69,12 @@ type File {
   fileUrl: String!
 }
 
+type Template {
+  id: ID!
+  name: String!
+  snapshot: String!
+}
+
 type Query {
   """
   The currently logged in user if the request is authenticated. It will return
@@ -91,6 +97,10 @@ type Query {
   Gets the file pointed by the ID.
   """
   file(fileId: ID!): File! @isAuthenticated
+  """
+  Get the templates.
+  """
+  templates: [Template!]! @isAuthenticated
 }
 
 # --------------------------------------

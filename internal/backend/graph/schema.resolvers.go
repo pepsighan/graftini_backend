@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -496,6 +497,10 @@ func (r *queryResolver) MyLastDeployment(ctx context.Context, projectID uuid.UUI
 
 func (r *queryResolver) File(ctx context.Context, fileID uuid.UUID) (*ent.File, error) {
 	return r.Ent.File.Get(ctx, fileID)
+}
+
+func (r *queryResolver) Templates(ctx context.Context) ([]*model1.Template, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 // Deployment returns generated.DeploymentResolver implementation.
