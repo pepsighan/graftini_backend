@@ -5,6 +5,7 @@ package graph
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -27,6 +28,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/project"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/schema"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/template"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/user"
 	"github.com/pepsighan/graftini_backend/internal/pkg/imagekit"
 	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
@@ -57,24 +59,65 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewPr
 		return nil, logger.Error(errs.ErrProjectLimitExceeded)
 	}
 
+	var parsedTemplate *schema.ProjectTemplateSnapshot
+
+	if input.TemplateID != nil {
+		usedTemplate, err := r.Ent.Template.Get(ctx, *input.TemplateID)
+		if err != nil {
+			return nil, err
+		}
+
+		parsedTemplate, err = schema.ParseStringToProjectTemplateSnapshot(usedTemplate.Snapshot)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	var project *ent.Project
 
 	// Do not create a page if project fails.
 	err = db.WithTx(ctx, r.Ent, func(tx *ent.Tx) error {
-		defaultPage, err := r.Ent.Page.
-			Create().
-			SetName("Home").
-			SetRoute("/").
-			SetComponentMap(input.DefaultPageComponentMap).
-			Save(ctx)
-		if err != nil {
-			return err
+		savedPages := []*ent.Page{}
+
+		if parsedTemplate == nil {
+			// Use the blank project template when no template is provided.
+			defaultPage, err := r.Ent.Page.
+				Create().
+				SetName("Home").
+				SetRoute("/").
+				SetComponentMap(*input.DefaultPageComponentMap).
+				Save(ctx)
+			if err != nil {
+				return err
+			}
+
+			savedPages = append(savedPages, defaultPage)
+		} else {
+			// Otherwise use the template to create a new project.
+			for _, templatePages := range parsedTemplate.Pages {
+				componentMap, err := json.Marshal(templatePages.ComponentMap)
+				if err != nil {
+					return err
+				}
+
+				page, err := r.Ent.Page.
+					Create().
+					SetName(templatePages.Name).
+					SetRoute(templatePages.Route).
+					SetComponentMap(string(componentMap)).
+					Save(ctx)
+				if err != nil {
+					return err
+				}
+
+				savedPages = append(savedPages, page)
+			}
 		}
 
 		project, err = r.Ent.Project.Create().
 			SetName(input.Name).
 			SetOwner(authUser).
-			AddPages(defaultPage).
+			AddPages(savedPages...).
 			Save(ctx)
 
 		return err
@@ -496,6 +539,13 @@ func (r *queryResolver) MyLastDeployment(ctx context.Context, projectID uuid.UUI
 
 func (r *queryResolver) File(ctx context.Context, fileID uuid.UUID) (*ent.File, error) {
 	return r.Ent.File.Get(ctx, fileID)
+}
+
+func (r *queryResolver) Templates(ctx context.Context) ([]*ent.Template, error) {
+	return r.Ent.Template.
+		Query().
+		Order(ent.Asc(template.FieldCreatedAt)).
+		All(ctx)
 }
 
 // Deployment returns generated.DeploymentResolver implementation.

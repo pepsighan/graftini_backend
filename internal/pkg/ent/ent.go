@@ -16,6 +16,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/project"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/template"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/user"
 )
 
@@ -43,6 +44,7 @@ func columnChecker(table string) func(string) error {
 		graphqlquery.Table: graphqlquery.ValidColumn,
 		page.Table:         page.ValidColumn,
 		project.Table:      project.ValidColumn,
+		template.Table:     template.ValidColumn,
 		user.Table:         user.ValidColumn,
 	}
 	check, ok := checks[table]

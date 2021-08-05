@@ -24,5 +24,8 @@ type Page func(*sql.Selector)
 // Project is the predicate function for project builders.
 type Project func(*sql.Selector)
 
+// Template is the predicate function for template builders.
+type Template func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
