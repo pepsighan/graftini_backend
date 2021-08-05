@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"time"
 
 	"entgo.io/ent"
@@ -31,4 +32,26 @@ func (Template) Fields() []ent.Field {
 // Edges of the Template.
 func (Template) Edges() []ent.Edge {
 	return nil
+}
+
+type ProjectTemplateSnapshot struct {
+	Pages []*PageTemplateSnapshot `json:"pages"`
+}
+
+type PageTemplateSnapshot struct {
+	Name         string       `json:"name"`
+	Route        string       `json:"route"`
+	ComponentMap ComponentMap `json:"componentMap"`
+}
+
+// ParseStringToProjectTemplateSnapshot parses the snapshot string to a struct.
+func ParseStringToProjectTemplateSnapshot(snapshot string) (*ProjectTemplateSnapshot, error) {
+	templateSnapshot := ProjectTemplateSnapshot{}
+
+	err := json.Unmarshal([]byte(snapshot), &templateSnapshot)
+	if err != nil {
+		return nil, err
+	}
+
+	return &templateSnapshot, nil
 }
