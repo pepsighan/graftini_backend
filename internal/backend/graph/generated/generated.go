@@ -775,7 +775,7 @@ type Query {
 
 input NewProject {
   name: String!
-  defaultPageComponentMap: String!
+  defaultPageComponentMap: String
   templateId: ID
 }
 
@@ -4680,7 +4680,7 @@ func (ec *executionContext) unmarshalInputNewProject(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("defaultPageComponentMap"))
-			it.DefaultPageComponentMap, err = ec.unmarshalNString2string(ctx, v)
+			it.DefaultPageComponentMap, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}

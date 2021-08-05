@@ -85,7 +85,7 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewPr
 				Create().
 				SetName("Home").
 				SetRoute("/").
-				SetComponentMap(input.DefaultPageComponentMap).
+				SetComponentMap(*input.DefaultPageComponentMap).
 				Save(ctx)
 			if err != nil {
 				return err

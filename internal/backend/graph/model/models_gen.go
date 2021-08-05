@@ -34,7 +34,7 @@ type NewPage struct {
 
 type NewProject struct {
 	Name                    string     `json:"name"`
-	DefaultPageComponentMap string     `json:"defaultPageComponentMap"`
+	DefaultPageComponentMap *string    `json:"defaultPageComponentMap"`
 	TemplateID              *uuid.UUID `json:"templateId"`
 }
 
