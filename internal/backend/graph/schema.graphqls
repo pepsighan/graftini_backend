@@ -110,6 +110,7 @@ type Query {
 input NewProject {
   name: String!
   defaultPageComponentMap: String!
+  templateId: ID
 }
 
 input UpdateProject {
