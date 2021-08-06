@@ -17,6 +17,8 @@ const (
 	FieldName = "name"
 	// FieldSnapshot holds the string denoting the snapshot field in the database.
 	FieldSnapshot = "snapshot"
+	// FieldPreviewFileID holds the string denoting the preview_file_id field in the database.
+	FieldPreviewFileID = "preview_file_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -30,6 +32,7 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldSnapshot,
+	FieldPreviewFileID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -45,6 +48,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultPreviewFileID holds the default value on creation for the "preview_file_id" field.
+	DefaultPreviewFileID func() uuid.UUID
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

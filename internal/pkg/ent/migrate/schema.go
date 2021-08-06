@@ -137,6 +137,7 @@ var (
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "name", Type: field.TypeString},
 		{Name: "snapshot", Type: field.TypeString},
+		{Name: "preview_file_id", Type: field.TypeUUID, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 	}

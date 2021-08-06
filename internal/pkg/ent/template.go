@@ -21,6 +21,8 @@ type Template struct {
 	Name string `json:"name,omitempty"`
 	// Snapshot holds the value of the "snapshot" field.
 	Snapshot string `json:"snapshot,omitempty"`
+	// PreviewFileID holds the value of the "preview_file_id" field.
+	PreviewFileID uuid.UUID `json:"preview_file_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -36,7 +38,7 @@ func (*Template) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case template.FieldCreatedAt, template.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case template.FieldID:
+		case template.FieldID, template.FieldPreviewFileID:
 			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Template", columns[i])
@@ -70,6 +72,12 @@ func (t *Template) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field snapshot", values[i])
 			} else if value.Valid {
 				t.Snapshot = value.String
+			}
+		case template.FieldPreviewFileID:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field preview_file_id", values[i])
+			} else if value != nil {
+				t.PreviewFileID = *value
 			}
 		case template.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -115,6 +123,8 @@ func (t *Template) String() string {
 	builder.WriteString(t.Name)
 	builder.WriteString(", snapshot=")
 	builder.WriteString(t.Snapshot)
+	builder.WriteString(", preview_file_id=")
+	builder.WriteString(fmt.Sprintf("%v", t.PreviewFileID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
