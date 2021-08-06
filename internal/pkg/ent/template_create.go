@@ -33,6 +33,12 @@ func (tc *TemplateCreate) SetSnapshot(s string) *TemplateCreate {
 	return tc
 }
 
+// SetPreviewFileID sets the "preview_file_id" field.
+func (tc *TemplateCreate) SetPreviewFileID(u uuid.UUID) *TemplateCreate {
+	tc.mutation.SetPreviewFileID(u)
+	return tc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (tc *TemplateCreate) SetCreatedAt(t time.Time) *TemplateCreate {
 	tc.mutation.SetCreatedAt(t)
@@ -119,6 +125,10 @@ func (tc *TemplateCreate) SaveX(ctx context.Context) *Template {
 
 // defaults sets the default values of the builder before save.
 func (tc *TemplateCreate) defaults() {
+	if _, ok := tc.mutation.PreviewFileID(); !ok {
+		v := template.DefaultPreviewFileID()
+		tc.mutation.SetPreviewFileID(v)
+	}
 	if _, ok := tc.mutation.CreatedAt(); !ok {
 		v := template.DefaultCreatedAt()
 		tc.mutation.SetCreatedAt(v)
@@ -191,6 +201,14 @@ func (tc *TemplateCreate) createSpec() (*Template, *sqlgraph.CreateSpec) {
 			Column: template.FieldSnapshot,
 		})
 		_node.Snapshot = value
+	}
+	if value, ok := tc.mutation.PreviewFileID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: template.FieldPreviewFileID,
+		})
+		_node.PreviewFileID = value
 	}
 	if value, ok := tc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

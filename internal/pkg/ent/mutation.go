@@ -3440,17 +3440,18 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 // TemplateMutation represents an operation that mutates the Template nodes in the graph.
 type TemplateMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	name          *string
-	snapshot      *string
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Template, error)
-	predicates    []predicate.Template
+	op              Op
+	typ             string
+	id              *uuid.UUID
+	name            *string
+	snapshot        *string
+	preview_file_id *uuid.UUID
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	done            bool
+	oldValue        func(context.Context) (*Template, error)
+	predicates      []predicate.Template
 }
 
 var _ ent.Mutation = (*TemplateMutation)(nil)
@@ -3610,6 +3611,55 @@ func (m *TemplateMutation) ResetSnapshot() {
 	m.snapshot = nil
 }
 
+// SetPreviewFileID sets the "preview_file_id" field.
+func (m *TemplateMutation) SetPreviewFileID(u uuid.UUID) {
+	m.preview_file_id = &u
+}
+
+// PreviewFileID returns the value of the "preview_file_id" field in the mutation.
+func (m *TemplateMutation) PreviewFileID() (r uuid.UUID, exists bool) {
+	v := m.preview_file_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPreviewFileID returns the old "preview_file_id" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldPreviewFileID(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPreviewFileID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPreviewFileID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPreviewFileID: %w", err)
+	}
+	return oldValue.PreviewFileID, nil
+}
+
+// ClearPreviewFileID clears the value of the "preview_file_id" field.
+func (m *TemplateMutation) ClearPreviewFileID() {
+	m.preview_file_id = nil
+	m.clearedFields[template.FieldPreviewFileID] = struct{}{}
+}
+
+// PreviewFileIDCleared returns if the "preview_file_id" field was cleared in this mutation.
+func (m *TemplateMutation) PreviewFileIDCleared() bool {
+	_, ok := m.clearedFields[template.FieldPreviewFileID]
+	return ok
+}
+
+// ResetPreviewFileID resets all changes to the "preview_file_id" field.
+func (m *TemplateMutation) ResetPreviewFileID() {
+	m.preview_file_id = nil
+	delete(m.clearedFields, template.FieldPreviewFileID)
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *TemplateMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -3696,12 +3746,15 @@ func (m *TemplateMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TemplateMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, template.FieldName)
 	}
 	if m.snapshot != nil {
 		fields = append(fields, template.FieldSnapshot)
+	}
+	if m.preview_file_id != nil {
+		fields = append(fields, template.FieldPreviewFileID)
 	}
 	if m.created_at != nil {
 		fields = append(fields, template.FieldCreatedAt)
@@ -3721,6 +3774,8 @@ func (m *TemplateMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case template.FieldSnapshot:
 		return m.Snapshot()
+	case template.FieldPreviewFileID:
+		return m.PreviewFileID()
 	case template.FieldCreatedAt:
 		return m.CreatedAt()
 	case template.FieldUpdatedAt:
@@ -3738,6 +3793,8 @@ func (m *TemplateMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldName(ctx)
 	case template.FieldSnapshot:
 		return m.OldSnapshot(ctx)
+	case template.FieldPreviewFileID:
+		return m.OldPreviewFileID(ctx)
 	case template.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case template.FieldUpdatedAt:
@@ -3764,6 +3821,13 @@ func (m *TemplateMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSnapshot(v)
+		return nil
+	case template.FieldPreviewFileID:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPreviewFileID(v)
 		return nil
 	case template.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -3808,7 +3872,11 @@ func (m *TemplateMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *TemplateMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(template.FieldPreviewFileID) {
+		fields = append(fields, template.FieldPreviewFileID)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -3821,6 +3889,11 @@ func (m *TemplateMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *TemplateMutation) ClearField(name string) error {
+	switch name {
+	case template.FieldPreviewFileID:
+		m.ClearPreviewFileID()
+		return nil
+	}
 	return fmt.Errorf("unknown Template nullable field %s", name)
 }
 
@@ -3833,6 +3906,9 @@ func (m *TemplateMutation) ResetField(name string) error {
 		return nil
 	case template.FieldSnapshot:
 		m.ResetSnapshot()
+		return nil
+	case template.FieldPreviewFileID:
+		m.ResetPreviewFileID()
 		return nil
 	case template.FieldCreatedAt:
 		m.ResetCreatedAt()

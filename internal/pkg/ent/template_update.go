@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/predicate"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/template"
 )
@@ -36,6 +37,18 @@ func (tu *TemplateUpdate) SetName(s string) *TemplateUpdate {
 // SetSnapshot sets the "snapshot" field.
 func (tu *TemplateUpdate) SetSnapshot(s string) *TemplateUpdate {
 	tu.mutation.SetSnapshot(s)
+	return tu
+}
+
+// SetPreviewFileID sets the "preview_file_id" field.
+func (tu *TemplateUpdate) SetPreviewFileID(u uuid.UUID) *TemplateUpdate {
+	tu.mutation.SetPreviewFileID(u)
+	return tu
+}
+
+// ClearPreviewFileID clears the value of the "preview_file_id" field.
+func (tu *TemplateUpdate) ClearPreviewFileID() *TemplateUpdate {
+	tu.mutation.ClearPreviewFileID()
 	return tu
 }
 
@@ -142,6 +155,19 @@ func (tu *TemplateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: template.FieldSnapshot,
 		})
 	}
+	if value, ok := tu.mutation.PreviewFileID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: template.FieldPreviewFileID,
+		})
+	}
+	if tu.mutation.PreviewFileIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: template.FieldPreviewFileID,
+		})
+	}
 	if value, ok := tu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -177,6 +203,18 @@ func (tuo *TemplateUpdateOne) SetName(s string) *TemplateUpdateOne {
 // SetSnapshot sets the "snapshot" field.
 func (tuo *TemplateUpdateOne) SetSnapshot(s string) *TemplateUpdateOne {
 	tuo.mutation.SetSnapshot(s)
+	return tuo
+}
+
+// SetPreviewFileID sets the "preview_file_id" field.
+func (tuo *TemplateUpdateOne) SetPreviewFileID(u uuid.UUID) *TemplateUpdateOne {
+	tuo.mutation.SetPreviewFileID(u)
+	return tuo
+}
+
+// ClearPreviewFileID clears the value of the "preview_file_id" field.
+func (tuo *TemplateUpdateOne) ClearPreviewFileID() *TemplateUpdateOne {
+	tuo.mutation.ClearPreviewFileID()
 	return tuo
 }
 
@@ -305,6 +343,19 @@ func (tuo *TemplateUpdateOne) sqlSave(ctx context.Context) (_node *Template, err
 			Type:   field.TypeString,
 			Value:  value,
 			Column: template.FieldSnapshot,
+		})
+	}
+	if value, ok := tuo.mutation.PreviewFileID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: template.FieldPreviewFileID,
+		})
+	}
+	if tuo.mutation.PreviewFileIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: template.FieldPreviewFileID,
 		})
 	}
 	if value, ok := tuo.mutation.UpdatedAt(); ok {

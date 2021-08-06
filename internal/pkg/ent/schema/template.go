@@ -20,6 +20,9 @@ func (Template) Fields() []ent.Field {
 		field.UUID("id", uuid.UUID{}).Default(uuid.New),
 		field.String("name"),
 		field.String("snapshot"),
+		field.UUID("preview_file_id", uuid.UUID{}).
+			Default(uuid.New).
+			Optional(),
 		field.Time("created_at").
 			Default(time.Now).
 			Immutable(),

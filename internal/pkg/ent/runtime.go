@@ -129,12 +129,16 @@ func init() {
 	project.DefaultID = projectDescID.Default.(func() uuid.UUID)
 	templateFields := schema.Template{}.Fields()
 	_ = templateFields
+	// templateDescPreviewFileID is the schema descriptor for preview_file_id field.
+	templateDescPreviewFileID := templateFields[3].Descriptor()
+	// template.DefaultPreviewFileID holds the default value on creation for the preview_file_id field.
+	template.DefaultPreviewFileID = templateDescPreviewFileID.Default.(func() uuid.UUID)
 	// templateDescCreatedAt is the schema descriptor for created_at field.
-	templateDescCreatedAt := templateFields[3].Descriptor()
+	templateDescCreatedAt := templateFields[4].Descriptor()
 	// template.DefaultCreatedAt holds the default value on creation for the created_at field.
 	template.DefaultCreatedAt = templateDescCreatedAt.Default.(func() time.Time)
 	// templateDescUpdatedAt is the schema descriptor for updated_at field.
-	templateDescUpdatedAt := templateFields[4].Descriptor()
+	templateDescUpdatedAt := templateFields[5].Descriptor()
 	// template.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	template.DefaultUpdatedAt = templateDescUpdatedAt.Default.(func() time.Time)
 	// template.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.

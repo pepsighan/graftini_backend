@@ -72,6 +72,7 @@ type File {
 type Template {
   id: ID!
   name: String!
+  fileUrl: String
   snapshot: String!
 }
 

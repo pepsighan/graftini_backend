@@ -107,6 +107,13 @@ func Snapshot(v string) predicate.Template {
 	})
 }
 
+// PreviewFileID applies equality check predicate on the "preview_file_id" field. It's identical to PreviewFileIDEQ.
+func PreviewFileID(v uuid.UUID) predicate.Template {
+	return predicate.Template(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPreviewFileID), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Template {
 	return predicate.Template(func(s *sql.Selector) {
@@ -340,6 +347,96 @@ func SnapshotEqualFold(v string) predicate.Template {
 func SnapshotContainsFold(v string) predicate.Template {
 	return predicate.Template(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldSnapshot), v))
+	})
+}
+
+// PreviewFileIDEQ applies the EQ predicate on the "preview_file_id" field.
+func PreviewFileIDEQ(v uuid.UUID) predicate.Template {
+	return predicate.Template(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPreviewFileID), v))
+	})
+}
+
+// PreviewFileIDNEQ applies the NEQ predicate on the "preview_file_id" field.
+func PreviewFileIDNEQ(v uuid.UUID) predicate.Template {
+	return predicate.Template(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPreviewFileID), v))
+	})
+}
+
+// PreviewFileIDIn applies the In predicate on the "preview_file_id" field.
+func PreviewFileIDIn(vs ...uuid.UUID) predicate.Template {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Template(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPreviewFileID), v...))
+	})
+}
+
+// PreviewFileIDNotIn applies the NotIn predicate on the "preview_file_id" field.
+func PreviewFileIDNotIn(vs ...uuid.UUID) predicate.Template {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Template(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPreviewFileID), v...))
+	})
+}
+
+// PreviewFileIDGT applies the GT predicate on the "preview_file_id" field.
+func PreviewFileIDGT(v uuid.UUID) predicate.Template {
+	return predicate.Template(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPreviewFileID), v))
+	})
+}
+
+// PreviewFileIDGTE applies the GTE predicate on the "preview_file_id" field.
+func PreviewFileIDGTE(v uuid.UUID) predicate.Template {
+	return predicate.Template(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPreviewFileID), v))
+	})
+}
+
+// PreviewFileIDLT applies the LT predicate on the "preview_file_id" field.
+func PreviewFileIDLT(v uuid.UUID) predicate.Template {
+	return predicate.Template(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPreviewFileID), v))
+	})
+}
+
+// PreviewFileIDLTE applies the LTE predicate on the "preview_file_id" field.
+func PreviewFileIDLTE(v uuid.UUID) predicate.Template {
+	return predicate.Template(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPreviewFileID), v))
+	})
+}
+
+// PreviewFileIDIsNil applies the IsNil predicate on the "preview_file_id" field.
+func PreviewFileIDIsNil() predicate.Template {
+	return predicate.Template(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPreviewFileID)))
+	})
+}
+
+// PreviewFileIDNotNil applies the NotNil predicate on the "preview_file_id" field.
+func PreviewFileIDNotNil() predicate.Template {
+	return predicate.Template(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPreviewFileID)))
 	})
 }
 
