@@ -33,7 +33,6 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/imagekit"
 	"github.com/pepsighan/graftini_backend/internal/pkg/logger"
 	"github.com/pepsighan/graftini_backend/internal/pkg/storage"
-	"go.uber.org/zap"
 )
 
 func (r *deploymentResolver) Status(ctx context.Context, obj *ent.Deployment) (string, error) {
@@ -433,13 +432,6 @@ func (r *mutationResolver) IsEarlyAccessAllowed(ctx context.Context, email strin
 		Exist(ctx)
 	if err != nil {
 		return false, err
-	}
-
-	// Add the user to customer.io as an early access user requester. Any user that is registered becomes
-	// an early access user by default (because we have configured customer.io like that).
-	err = customer.LogUser(uuid.New(), email, time.Now())
-	if err != nil {
-		zap.S().Error(err)
 	}
 
 	return allowed, nil
