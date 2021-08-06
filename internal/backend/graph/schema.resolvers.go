@@ -24,6 +24,7 @@ import (
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/deployment"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/earlyaccess"
+	"github.com/pepsighan/graftini_backend/internal/pkg/ent/file"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/graphqlquery"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/page"
 	"github.com/pepsighan/graftini_backend/internal/pkg/ent/project"
@@ -540,6 +541,16 @@ func (r *queryResolver) Templates(ctx context.Context) ([]*ent.Template, error) 
 		All(ctx)
 }
 
+func (r *templateResolver) FileURL(ctx context.Context, obj *ent.Template) (*string, error) {
+	zeroUUID := uuid.UUID{}
+	if obj.PreviewFileID == zeroUUID {
+		return nil, nil
+	}
+
+	fileURL := imagekit.GetImageKitURLForFile(config.ImageKitURLEndpoint, obj.PreviewFileID, file.KindImage)
+	return &fileURL, nil
+}
+
 // Deployment returns generated.DeploymentResolver implementation.
 func (r *Resolver) Deployment() generated.DeploymentResolver { return &deploymentResolver{r} }
 
@@ -555,8 +566,12 @@ func (r *Resolver) Project() generated.ProjectResolver { return &projectResolver
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+// Template returns generated.TemplateResolver implementation.
+func (r *Resolver) Template() generated.TemplateResolver { return &templateResolver{r} }
+
 type deploymentResolver struct{ *Resolver }
 type fileResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type projectResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type templateResolver struct{ *Resolver }

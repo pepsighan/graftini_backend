@@ -45,6 +45,7 @@ type ResolverRoot interface {
 	Mutation() MutationResolver
 	Project() ProjectResolver
 	Query() QueryResolver
+	Template() TemplateResolver
 }
 
 type DirectiveRoot struct {
@@ -114,6 +115,7 @@ type ComplexityRoot struct {
 	}
 
 	Template struct {
+		FileURL  func(childComplexity int) int
 		ID       func(childComplexity int) int
 		Name     func(childComplexity int) int
 		Snapshot func(childComplexity int) int
@@ -162,6 +164,9 @@ type QueryResolver interface {
 	MyLastDeployment(ctx context.Context, projectID uuid.UUID) (*ent.Deployment, error)
 	File(ctx context.Context, fileID uuid.UUID) (*ent.File, error)
 	Templates(ctx context.Context) ([]*ent.Template, error)
+}
+type TemplateResolver interface {
+	FileURL(ctx context.Context, obj *ent.Template) (*string, error)
 }
 
 type executableSchema struct {
@@ -544,6 +549,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Templates(childComplexity), true
 
+	case "Template.fileUrl":
+		if e.complexity.Template.FileURL == nil {
+			break
+		}
+
+		return e.complexity.Template.FileURL(childComplexity), true
+
 	case "Template.id":
 		if e.complexity.Template.ID == nil {
 			break
@@ -738,6 +750,7 @@ type File {
 type Template {
   id: ID!
   name: String!
+  fileUrl: String
   snapshot: String!
 }
 
@@ -3211,6 +3224,38 @@ func (ec *executionContext) _Template_name(ctx context.Context, field graphql.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Template_fileUrl(ctx context.Context, field graphql.CollectedField, obj *ent.Template) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Template",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Template().FileURL(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Template_snapshot(ctx context.Context, field graphql.CollectedField, obj *ent.Template) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -5309,17 +5354,28 @@ func (ec *executionContext) _Template(ctx context.Context, sel ast.SelectionSet,
 		case "id":
 			out.Values[i] = ec._Template_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		case "name":
 			out.Values[i] = ec._Template_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
+		case "fileUrl":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Template_fileUrl(ctx, field, obj)
+				return res
+			})
 		case "snapshot":
 			out.Values[i] = ec._Template_snapshot(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
