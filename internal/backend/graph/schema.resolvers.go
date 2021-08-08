@@ -54,8 +54,8 @@ func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewPr
 		return nil, err
 	}
 
-	// Do not allow production users to create any more than two projects.
-	if config.Env.IsProduction() && projectCount >= 2 {
+	// Do not allow production users (other than admin) to create any more than two projects.
+	if config.Env.IsProduction() && projectCount >= 2 && !authUser.IsAdmin {
 		return nil, logger.Error(errs.ErrProjectLimitExceeded)
 	}
 
