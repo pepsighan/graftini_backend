@@ -81,6 +81,26 @@ func (uu *UserUpdate) SetEmail(s string) *UserUpdate {
 	return uu
 }
 
+// SetIsAdmin sets the "is_admin" field.
+func (uu *UserUpdate) SetIsAdmin(b bool) *UserUpdate {
+	uu.mutation.SetIsAdmin(b)
+	return uu
+}
+
+// SetNillableIsAdmin sets the "is_admin" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableIsAdmin(b *bool) *UserUpdate {
+	if b != nil {
+		uu.SetIsAdmin(*b)
+	}
+	return uu
+}
+
+// ClearIsAdmin clears the value of the "is_admin" field.
+func (uu *UserUpdate) ClearIsAdmin() *UserUpdate {
+	uu.mutation.ClearIsAdmin()
+	return uu
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (uu *UserUpdate) SetUpdatedAt(t time.Time) *UserUpdate {
 	uu.mutation.SetUpdatedAt(t)
@@ -246,6 +266,19 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldEmail,
 		})
 	}
+	if value, ok := uu.mutation.IsAdmin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: user.FieldIsAdmin,
+		})
+	}
+	if uu.mutation.IsAdminCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Column: user.FieldIsAdmin,
+		})
+	}
 	if value, ok := uu.mutation.UpdatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -375,6 +408,26 @@ func (uuo *UserUpdateOne) ClearLastName() *UserUpdateOne {
 // SetEmail sets the "email" field.
 func (uuo *UserUpdateOne) SetEmail(s string) *UserUpdateOne {
 	uuo.mutation.SetEmail(s)
+	return uuo
+}
+
+// SetIsAdmin sets the "is_admin" field.
+func (uuo *UserUpdateOne) SetIsAdmin(b bool) *UserUpdateOne {
+	uuo.mutation.SetIsAdmin(b)
+	return uuo
+}
+
+// SetNillableIsAdmin sets the "is_admin" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableIsAdmin(b *bool) *UserUpdateOne {
+	if b != nil {
+		uuo.SetIsAdmin(*b)
+	}
+	return uuo
+}
+
+// ClearIsAdmin clears the value of the "is_admin" field.
+func (uuo *UserUpdateOne) ClearIsAdmin() *UserUpdateOne {
+	uuo.mutation.ClearIsAdmin()
 	return uuo
 }
 
@@ -565,6 +618,19 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: user.FieldEmail,
+		})
+	}
+	if value, ok := uuo.mutation.IsAdmin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: user.FieldIsAdmin,
+		})
+	}
+	if uuo.mutation.IsAdminCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Column: user.FieldIsAdmin,
 		})
 	}
 	if value, ok := uuo.mutation.UpdatedAt(); ok {

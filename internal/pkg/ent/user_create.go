@@ -62,6 +62,20 @@ func (uc *UserCreate) SetEmail(s string) *UserCreate {
 	return uc
 }
 
+// SetIsAdmin sets the "is_admin" field.
+func (uc *UserCreate) SetIsAdmin(b bool) *UserCreate {
+	uc.mutation.SetIsAdmin(b)
+	return uc
+}
+
+// SetNillableIsAdmin sets the "is_admin" field if the given value is not nil.
+func (uc *UserCreate) SetNillableIsAdmin(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetIsAdmin(*b)
+	}
+	return uc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
 	uc.mutation.SetCreatedAt(t)
@@ -251,6 +265,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldEmail,
 		})
 		_node.Email = value
+	}
+	if value, ok := uc.mutation.IsAdmin(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: user.FieldIsAdmin,
+		})
+		_node.IsAdmin = value
 	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
