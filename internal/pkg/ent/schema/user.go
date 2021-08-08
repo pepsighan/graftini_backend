@@ -23,6 +23,7 @@ func (User) Fields() []ent.Field {
 		field.String("first_name").Optional(),
 		field.String("last_name").Optional(),
 		field.String("email"),
+		field.Bool("is_admin").Optional(),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
 	}

@@ -21,6 +21,8 @@ const (
 	FieldLastName = "last_name"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
+	// FieldIsAdmin holds the string denoting the is_admin field in the database.
+	FieldIsAdmin = "is_admin"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -45,6 +47,7 @@ var Columns = []string{
 	FieldFirstName,
 	FieldLastName,
 	FieldEmail,
+	FieldIsAdmin,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
