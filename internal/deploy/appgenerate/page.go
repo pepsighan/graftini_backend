@@ -168,23 +168,13 @@ func buildProps(
 				sb.WriteString("null")
 			}
 			sb.WriteString("}")
-		case "width":
-			err := writeDimension(isRootChild, true, sb, k, v)
-			if err != nil {
-				return err
-			}
 		case "height":
-			err := writeDimension(isRootChild, false, sb, k, v)
-			if err != nil {
-				return err
-			}
-		case "minWidth", "maxWidth":
-			err := writeDimension(isRootChild, true, sb, k, v)
+			err := writeHeightDimension(isRootChild, sb, k, v)
 			if err != nil {
 				return err
 			}
 		case "minHeight", "maxHeight":
-			err := writeDimension(isRootChild, false, sb, k, v)
+			err := writeHeightDimension(isRootChild, sb, k, v)
 			if err != nil {
 				return err
 			}
@@ -199,11 +189,10 @@ func buildProps(
 	return nil
 }
 
-// writeDimension writes the dimension while transforming % units if it is a root child. In the
-// editor, the editor itself is of 100vw and 100vh size. Since we cannot do that to the Root
-// once deployed, we are transfering that property to the children. So, 50% child of 100vh Root becomes
-// 50vh of the child.
-func writeDimension(isRootChild bool, isWidth bool, sb *strings.Builder, k string, v interface{}) error {
+// writeHeightDimension writes the dimension while transforming % units of height if it is a root child. In the
+// editor, the editor itself is of 100vh height. Since we cannot do that to the Root once deployed,
+// we are transfering that property to the children. So, 50% child of 100vh Root becomes 50vh of the child.
+func writeHeightDimension(isRootChild bool, sb *strings.Builder, k string, v interface{}) error {
 	if !isRootChild {
 		return writePropAndValue(sb, k, v)
 	}
@@ -224,12 +213,7 @@ func writeDimension(isRootChild bool, isWidth bool, sb *strings.Builder, k strin
 		return writePropAndValue(sb, k, v)
 	}
 
-	if isWidth {
-		obj["unit"] = "vw"
-	} else {
-		obj["unit"] = "vh"
-	}
-
+	obj["unit"] = "vh"
 	return writePropAndValue(sb, k, obj)
 }
 
