@@ -109,6 +109,11 @@ type Query {
 # Mutations are written below.
 # --------------------------------------
 
+input UpdateProfile {
+  firstName: String!
+  lastName: String!
+}
+
 input NewProject {
   name: String!
   defaultPageComponentMap: String
@@ -165,6 +170,10 @@ input ContactUsMessage {
 }
 
 type Mutation {
+  """
+  Updates the logged in user with newer information.
+  """
+  updateProfile(input: UpdateProfile!): User! @isAuthenticated
   """
   Creates a new project for the logged in user. It will also create a default page
   with the project.

@@ -44,6 +44,15 @@ func (r *fileResolver) FileURL(ctx context.Context, obj *ent.File) (string, erro
 	return imagekit.GetImageKitURLForFile(config.ImageKitURLEndpoint, obj.ID, obj.Kind), nil
 }
 
+func (r *mutationResolver) UpdateProfile(ctx context.Context, input model1.UpdateProfile) (*ent.User, error) {
+	authUser := auth.RequiredAuthenticatedUser(ctx)
+
+	return authUser.Update().
+		SetFirstName(input.FirstName).
+		SetLastName(input.LastName).
+		Save(ctx)
+}
+
 func (r *mutationResolver) CreateProject(ctx context.Context, input model1.NewProject) (*ent.Project, error) {
 	authUser := auth.RequiredAuthenticatedUser(ctx)
 

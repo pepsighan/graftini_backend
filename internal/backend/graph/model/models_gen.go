@@ -50,6 +50,11 @@ type UpdatePageDesign struct {
 	ComponentMap string    `json:"componentMap"`
 }
 
+type UpdateProfile struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
+
 type UpdateProject struct {
 	ID              uuid.UUID `json:"id"`
 	Name            string    `json:"name"`
