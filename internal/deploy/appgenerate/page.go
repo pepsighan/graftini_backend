@@ -126,7 +126,41 @@ func buildProps(
 			return err
 		}
 		sb.Write(content)
-		sb.WriteString("}")
+		sb.WriteString("} ")
+
+		width := comp.Props["width"]
+		if width != nil {
+			err := writePropAndValue(sb, "width", width)
+			if err != nil {
+				return err
+			}
+		} else {
+			// If no width is provided, use the full-width for backwards compatibility.
+			err := writePropAndValue(sb, "width", map[string]interface{}{
+				"size": 100,
+				"unit": "%",
+			})
+			if err != nil {
+				return err
+			}
+		}
+
+		// Add space between props.
+		sb.WriteString(" ")
+
+		height := comp.Props["height"]
+		if height != nil {
+			err := writeHeightDimension(isRootChild, sb, "height", height)
+			if err != nil {
+				return err
+			}
+		} else {
+			// If no height is provided, then use "auto" for backgrounds comptability.
+			err := writeHeightDimension(isRootChild, sb, "height", "auto")
+			if err != nil {
+				return err
+			}
+		}
 
 		return nil
 	}
